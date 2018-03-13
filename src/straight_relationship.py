@@ -14,10 +14,10 @@ class StraightRelationship(Relationship):
         super().__init__(person1, person2)
 
     def get_male(self):
-        return next(person for person in self.persons if person.is_male())
+        return next(person for person in self.persons if person.is_male)
 
     def get_female(self):
-        return next(person for person in self.persons if person.is_female())
+        return next(person for person in self.persons if person.is_female)
 
     def get_pregnant(self):
         """Set pregnancy to True and assign number of expecting children"""

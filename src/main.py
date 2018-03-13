@@ -19,12 +19,47 @@ def validate_choice(prompt, valid_values):
             print(error_message)
 
 
+world.age_up_population()
 world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.age_up_population()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.age_up_population()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.age_up_population()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.age_up_population()
+
 
 for p in world.get_population():
     print(p)
 
-print("length: " + str(len(world.population)))
+print("length of population: " + str(len(world.population)))
+print("length of couples: " + str(len(world.couples)))
+print("length of romanceable population: " + str(len(world.romanceable_outsiders)))
+print("length of unromanceable population: " + str(len(world.unromanceable_outsiders)))
+print("length of partnered population: " + str(len(world.partnered_outsiders)))
+print("length of deceased: " + str(len(world.deceased_population)))
+
+for p in world.population:
+    if p.in_love_with_family:
+        print("{} is in love with a family member.".format(p.name))
+
 
 """ for relationship in world.couples:
     attrs = vars(relationship)

@@ -1,65 +1,19 @@
 
 from person_attributes import PersonAttributes
+from compatibility import Compatibility
 from randomizer import Randomizer
 import random
 
-class RelationshipGenerator(PersonAttributes):
+class RelationshipGenerator(Compatibility):
 
-    def get_intergenerational(self):
-        """Returns true if intergenerational relationship. False otherwise."""
-        options = {
-            True: 20,
-            False: 80
-        }
-
-        return Randomizer().get_random_dict_key(options)
-
-    def get_incest(self):
-        """Returns true if incestuous relationship. False otherwise."""
-        options = {
-            True: 20,
-            False: 80
-        }
-
-        return Randomizer().get_random_dict_key(options)
-
-    def find_partner(self, person, romanceable_outsiders):
-        """Returns a random compatible person"""
-        lst = self.get_list_of_compatible_common_persons(person, romanceable_outsiders)
-        return random.choice(lst)
-
-    def get_list_of_compatible_persons(self, person, romanceable_outsiders):
-
-        # If incest
-        if self.get_incest():
-            pass
-
-        # If intergenerational
-        age_gap = self.get_intergenerational()
-
-        compatible_outsiders = []
-
-        for i in range(len(romanceable_outsiders)-1):
-            person2 = romanceable_outsiders[i]
-
-            if person != person2 and person.is_compatible(person2):
-                if age_gap:
-                    if not person.is_of_same_age(person2):
-                        compatible_outsiders.append(person2)
-                else:
-                    if person.is_of_same_age(person2):
-                        compatible_outsiders.append(person2)
-
-        return compatible_outsiders
-
-    def assign_common_partner(self, person, persons_list):
-        """Returns a random compatible common person (not intergenerational / incest) """
+    def assign_partner(self, person, persons_list):
+        """Returns a random compatible person """
 
         # Validation
         if len(persons_list) <= 1:
-            raise Exception("Unexpected error occurred. List of persons is less than 2.")
+            return False
 
-        candidates_list = self.get_list_of_compatible_common_persons(person, persons_list)
+        candidates_list = self.get_compatible_candidates(person, persons_list)
 
         # Validation
         if candidates_list is None or len(candidates_list) <= 0:
@@ -80,13 +34,13 @@ class RelationshipGenerator(PersonAttributes):
 
         return True
 
-    def get_list_of_compatible_common_persons(self, person, persons_list):
+    def get_compatible_candidates(self, person, persons_list):
         """Returns list of compatible persons that have the same age."""
 
         compatible_persons = []
 
         for candidate in persons_list:
-            if person != candidate and person.is_compatible(candidate):
+            if person != candidate and self.are_compatible(person, candidate):
                 compatible_persons.append(candidate)
 
         return compatible_persons

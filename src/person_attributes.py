@@ -1,9 +1,32 @@
+from utilities import Utilities
 
 class PersonAttributes:
 
     MALE_NAMES = []
     FEMALE_NAMES = []
     SURNAMES = []
+    PROFESSIONS = []
+
+    MALE = "Male"
+    FEMALE = "Female"
+    GENDERS = (MALE, FEMALE)
+
+    CISGENDER = "Cisgender"
+    TRANSGENDER = "Transgender"
+    GENDER_IDENTITIES = (CISGENDER, TRANSGENDER)
+
+    SINGLE = "Single"
+    COMMITTED = "Committed"
+    MARRIED = "Married"
+    DIVORCED = "Divorced"
+    SEPARATED = "Separated"
+    WIDOWED = "Widowed"
+    CIVIL_STATUS = (SINGLE, COMMITTED, MARRIED, DIVORCED, SEPARATED, WIDOWED)
+
+    EMPLOYED = "Employed"
+    UNEMPLOYED = "Unemployed"
+    RETIRED = "Retired"
+    EMPLOYMENT = (EMPLOYED, UNEMPLOYED, RETIRED)
 
     BABY = "Baby"
     CHILD = "Child"
@@ -58,26 +81,39 @@ class PersonAttributes:
         "aromantic": AROMANTIC_ASEXUAL
     }
 
-    MALE = "Male"
-    FEMALE = "Female"
-    GENDERS = (MALE, FEMALE)
+    def __init__(self):
+        self.MALE_NAMES = self.get_male_names()
+        self.FEMALE_NAMES = self.get_female_names()
+        self.SURNAMES = self.get_surnames()
+        self.PROFESSIONS = self.get_professions()
 
-    CISGENDER = "Cisgender"
-    TRANSGENDER = "Transgender"
-    GENDER_IDENTITIES = (CISGENDER, TRANSGENDER)
+    def get_male_names(self):
+        path_males = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\male_names.txt"
+        file_males = open(path_males, "r")
+        names = set([x.split(' ')[0] for x in file_males.readlines()])
+        names = [item.capitalize() for item in names]
+        file_males.close()
+        return names
 
-    SINGLE = "Single"
-    COMMITTED = "Committed"
-    MARRIED = "Married"
-    DIVORCED = "Divorced"
-    SEPARATED = "Separated"
-    WIDOWED = "Widowed"
-    CIVIL_STATUS = (SINGLE, COMMITTED, MARRIED, DIVORCED, SEPARATED, WIDOWED)
+    def get_female_names(self):
+        path_females = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\female_names.txt"
+        file_females = open(path_females, "r")
+        names = set([x.split(' ')[0] for x in file_females.readlines()])
+        names = [item.capitalize() for item in names]
+        return names
 
-    def get_lifestage_from_age(self, age):
-        for key, value in self.AGES.items():
-            if value == age:
-                return key
+    def get_surnames(self):
+        path_surnames = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\surnames.txt"
+        file_surnames = open(path_surnames, "r")    
+        surnames = set([x.split(' ')[0] for x in file_surnames.readlines()])
+        surnames = [item.capitalize() for item in surnames]    
+        file_surnames.close()
+        return surnames
 
-        raise Exception(
-            "Unexpected error occurred. Given age not found in dict.")
+    def get_professions(self):
+        path_professions = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\professions.txt"
+        file_professions = open(path_professions, "r")
+        professions = set([x.split('\n')[0] for x in file_professions.readlines()])
+        professions = [item.capitalize() for item in professions]
+        file_professions.close()
+        return professions

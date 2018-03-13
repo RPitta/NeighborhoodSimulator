@@ -1,15 +1,16 @@
-
-from person_attributes import PersonAttributes
 from randomizer import Randomizer
+from statistics import Statistics
+from person_attributes import PersonAttributes
 
 
-class Person(PersonAttributes):
+class Person(Statistics, PersonAttributes):
 
     def __init__(self, gender, life_stage, gender_identity, sexual_orientation, relationship_orientation):
+        super(Person, self).__init__()
+        
         self.family_id = None
         self.gender = gender
-        self.life_stage = life_stage
-        self.age = None
+        self.age = self.AGES[life_stage]
         self.gender_identity = gender_identity
         self.sexual_orientation = sexual_orientation
         self.relationship_orientation = relationship_orientation
@@ -23,13 +24,16 @@ class Person(PersonAttributes):
         self.is_liberal = None
         self.death_date = None
         self.death_cause = None
-
-        self.wants_domestic_partnership = None
-        self.wants_marriage = None
-        self.wants_children = None
+        self.occupation = None
+        self.employment = None
 
         self.relationship_status = self.SINGLE
-        self.loves_family_member = None
+        self.wants_domestic_partnership = None
+        self.wants_marriage = None
+
+   
+        self.in_love_with_family = None
+        self.in_love_with_intergenerational = None
 
         self.is_alive = True
         self.is_pregnant = False
@@ -37,22 +41,27 @@ class Person(PersonAttributes):
         # Family
         self.father = None
         self.mother = None
-
-        self.uncles = []
-        self.aunts = []
-        self.nephews = []
-        self.nieces = []
+        self.parents = []
+        self.siblings = []
+        self.half_siblings = []
+        self.parents_siblings = []
+        self.siblings_children = []
         self.cousins = []
-
         self.partner = None
         self.partners = []
+        self.ex_partners = []
         self.children = []
-
         self.grandparents = []
         self.grandchildren = []
 
-        self.siblings = []
-        self.half_siblings = []
+        self.wants_children = None
+
+
+    @property
+    def family(self):
+        family = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings, self.half_siblings, self.cousins, self.parents_siblings, self.siblings_children, [self.partner]]
+        family = list(filter(any, family))
+        return [j for i in family for j in i]
 
     @property
     def surname(self):
@@ -63,16 +72,11 @@ class Person(PersonAttributes):
         self._surname = surname
 
     @property
-    def can_have_children(self):
-        return self._can_have_children
+    def life_stage(self):
+        for key, value in self.AGES.items():
+            if self._age == value:
+                return key
 
-    @can_have_children.setter
-    def can_have_children(self, bool):
-        self._can_have_children = bool
-
-
-    # AGE
-    
     @property
     def age(self):
         return self._age
@@ -80,19 +84,23 @@ class Person(PersonAttributes):
     @age.setter
     def age(self, age):
         self._age = age
+        
+        if self.life_stage == self.YOUNG_ADULT:
+            self.occupation = Randomizer().get_random_list_item(self.PROFESSIONS)
+            self.employment = self.get_employment_chance(self)
+            self.check_if_in_love()
+
+        if self.life_stage == self.SENIOR:
+            self.can_have_children = False
+            self.employment = self.RETIRED
 
     @property
-    def life_stage(self):
-        return self._life_stage
+    def can_have_children(self):
+        return self._can_have_children
 
-    @life_stage.setter
-    def life_stage(self, life_stage):
-        """Automatically update age and children ability when life stage changes."""
-        self._life_stage = life_stage
-        self._age = self.AGES[self._life_stage]
-
-        if self._life_stage == self.SENIOR:
-            self.can_have_children = False
+    @can_have_children.setter
+    def can_have_children(self, bool):
+        self._can_have_children = bool
 
     @property
     def partner(self):
@@ -115,7 +123,7 @@ class Person(PersonAttributes):
         self._relationship_status = status
 
         # If person is female and is married to a male, take male's surname
-        if self.is_female() and self._relationship_status == self.MARRIED and self.partner.gender == self.MALE:
+        if self.is_female and self._relationship_status == self.MARRIED and self.partner.gender == self.MALE:
             self._surname = self.partner.surname
 
         # If person is married to a same-gender person, 50/50 chance of who changes their name
@@ -127,245 +135,142 @@ class Person(PersonAttributes):
             else:
                 self._surname = self.partner.surname
 
-    @property
-    def father(self):
-        return self._father
-
-    @property
-    def mother(self):
-        return self._mother
-
-    @property
-    def grandparents(self):
-        return self._grandparents
-
-    @property
-    def siblings(self):
-        return self._siblings
-
-    @property
-    def cousins(self):
-        return self._cousins
+    
+    # READ ONLY
 
     @property
     def uncles(self):
-        return self._uncles
+        return [uncle for uncle in self.parents_siblings if uncle.is_male]
 
     @property
     def aunts(self):
-        return self._aunts
+        return [aunt for aunt in self.parents_siblings if aunt.is_female]
 
     @property
     def nephews(self):
-        return self._nephews
+        return [nephew for nephew in self.siblings_children if nephew.is_male]
 
     @property
     def nieces(self):
-        return self._nieces
+        return [niece for niece in self.siblings_children if niece.is_female]
 
     @property
-    def children(self):
-        return self._children
+    def parents(self):
+        return self._parents
 
-    @father.setter
-    def father(self, father):
-        self._father = father
+    @parents.setter
+    def parents(self, parents):
+        self._parents = parents
 
-        # If has father
-        if self._father is not None:
+        if self._parents is None or len(self._parents) == 0:
+            return
 
-            # Same surname as father
-            self._surname = self._father.surname
-            self.original_surname = self._surname
+        # MOTHER AND FATHER
+        self.father = next(
+            parent for parent in self._parents if parent.is_male)
+        self.mother = next(
+            parent for parent in self._parents if parent.is_female)
+        self.father.children.append(self)
+        self.mother.children.append(self)
 
-            # Grandparents and grandchildren on father's side
-            if self._father._mother is not None:
-                self._grandparents.append(self._father._mother)
-                self._father._mother._grandchildren.append(self)
-            if self._father._father is not None:
-                self._grandparents.append(self._father._father)
-                self._father._father._grandchildren.append(self)
+        # FATHER'S SURNAME
+        self._surname = self.father.surname
+        self.original_surname = self._surname
 
-            # Siblings
-            for sibling in self._father.children:
-                if sibling not in self._siblings:
-                    self._siblings.append(sibling)
-                if self not in sibling._siblings:
-                    sibling._siblings.append(self)
+        # SIBLINGS
+        self.siblings = [
+            child for child in self.father.children if child.mother == self.mother and child != self]
+        for sibling in self.siblings:
+            sibling.siblings.append(self)
 
-            # Uncles and aunts, nephews and nieces on father's side
-            if self._father._siblings is not None:
-                for fathers_sibling in self._father.siblings:
-                    if fathers_sibling.is_male() and fathers_sibling not in self._uncles:
-                        self._uncles.append(fathers_sibling)
-                    if self.is_male() and self not in fathers_sibling._nephews:
-                        fathers_sibling._nephews.append(self)
-                    if fathers_sibling.is_female() and fathers_sibling not in self._aunts:
-                        self._aunts.append(fathers_sibling)
-                    if self.is_female() and self not in fathers_sibling._nieces:
-                        self._aunts._nieces.append(fathers_sibling)
+        # GRANDPARENTS
 
-            # Cousins on father's side
-            for cousin in self._father.nephews:
-                if cousin not in self._cousins:
-                    self._cousins.append(cousin)
-                if self not in cousin.self._cousins:
-                    cousin._cousins.append(self)
-            for cousin in self._father.nieces:
-                if cousin not in self._cousins:
-                    self._cousins.append(cousin)
-                if self not in cousin.self._cousins:
-                    cousin._cousins.append(self)
+        if self.father._parents is not None:
+            self.grandparents.extend(self.father._parents)
+        if self.mother._parents is not None:
+            self.grandparents.extend(self.mother._parents)
+        for grandparent in self.grandparents:
+            grandparent.grandchildren.append(self)
 
-            # Child of Father
-            self._father._children.append(self)
+        # HALF-SIBLINGS
+        self.half_siblings = [child for child in self.father.children if child.mother !=
+                              self.mother] + [child for child in self.mother.children if child.father != self.father]
+        for sibling in self.half_siblings:
+            sibling.half_siblings.append(self)
 
-    @mother.setter
-    def mother(self, mother):
-        self._mother = mother
+        # UNCLES/AUNTS AND COUSINS
+        if self.father.siblings is not None:
+            self.parents_siblings.extend(self.father.siblings)
+        if self.mother.siblings is not None:
+            self.parents_siblings.extend(self.mother.siblings)
+        if self.parents_siblings is not None:
+            for uncle_aunt in self.parents_siblings:
+                uncle_aunt.siblings_children.append(self)
+                self.cousins.extend(uncle_aunt.children)
+            for cousin in self.cousins:
+                cousin.cousins.append(self)
 
-        # If has mother
-        if self._mother is not None:
-
-            # Grandparents on mother's side
-            if self._mother.mother is not None:
-                self._grandparents.append(self._mother.mother)
-            if self._mother.father is not None:
-                self._grandparents.append(self._mother.father)
-
-            # Siblings
-            for sibling in self._mother.children:
-                if sibling not in self._siblings:
-                    self._siblings.append(sibling)
-                if self not in sibling._siblings:
-                    sibling._siblings.append(self)
-
-            # Uncles and aunts on mother's side
-            if self._mother.siblings is not None:
-                for mothers_sibling in self._mother.siblings:
-                    if mothers_sibling.is_male() and mothers_sibling not in self.uncles:
-                        self.uncles.append(mothers_sibling)
-                    if mothers_sibling.is_female() and mothers_sibling not in self.aunts:
-                        self.aunts.append(mothers_sibling)
-
-            # Cousins on mother's side
-            for cousin in self._mother.nephews:
-                if cousin not in self._cousins:
-                    self._cousins.append(cousin)
-            for cousin in self._mother.nieces:
-                if cousin not in self._cousins:
-                    self._cousins.append(cousin)
-
-            # Child of Mother
-            self._mother._children.append(self)
-
-    @grandparents.setter
-    def grandparents(self, grandparents):
-        self._grandparents = grandparents
-
-    @nephews.setter
-    def nephews(self, nephews):
-        self._nephews = nephews
-
-    @nieces.setter
-    def nieces(self, nieces):
-        self._nieces = nieces
-
-    @siblings.setter
-    def siblings(self, siblings):
-        self._siblings = siblings
-
-    @cousins.setter
-    def cousins(self, cousins):
-        self._cousins = cousins
-
-    @uncles.setter
-    def uncles(self, uncles):
-        self._uncles = uncles
-
-    @aunts.setter
-    def aunts(self, aunts):
-        self._aunts = aunts
-
-    @children.setter
-    def children(self, children):
-        self._children = children
-
-        
-
+    @property
     def is_male(self):
         return self.gender == self.MALE
 
+    @property
     def is_female(self):
         return self.gender == self.FEMALE
 
+    @property
     def is_mono(self):
         return self.relationship_orientation == self.MONOAMOROUS
 
+    @property
     def is_poly(self):
         return self.relationship_orientation == self.POLYAMOROUS
 
+    @property
     def is_minority(self):
         """Returns true if person is not cis-straight, mono or is/was in love with a family member."""
         return self.sexual_orientation != self.HETEROSEXUAL or \
             self.gender_identity == self.TRANSGENDER or \
             self.relationship_orientation == self.POLYAMOROUS or \
-            self.loves_family_member
+            self.in_love_with_family
 
+    @property
     def is_of_age(self):
         return self.age >= self.AGES[self.YOUNG_ADULT]
 
+    @property
     def is_free_and_willing_to_date(self):
 
         # If person is underage, automatically returns false
-        if not self.is_of_age():
-            return False
-
         # If mono, return true if they are single/divorced/widowed and want a committed relationship
         # If poly, return true if they want (a / another) committed relationship
-        if self.is_mono():
-            return self.wants_domestic_partnership and self.is_not_in_relationship()
-        if self.is_poly():
-            return self.wants_domestic_partnership
+        if self.is_mono:
+            return self.is_of_age and self.wants_domestic_partnership and self.is_free
+        else:
+            return self.is_of_age and self.wants_domestic_partnership
 
-    def is_not_in_relationship(self):
+    @property
+    def is_free(self):
         return self.relationship_status != self.MARRIED and self.relationship_status != self.COMMITTED
 
+    @property
     def can_and_wants_children(self):
         return self.can_have_children and self.wants_children
 
+    @property
     def cant_but_wants_children(self):
-        return self.can_have_children == False and self.wants_children
+        return self.can_have_children is False and self.wants_children
 
-    # DETERMINING COMPATIBILITY WITH ANOTHER PERSON
+    @property
+    def wants_children(self):
+        return self._wants_children
+    
+    @wants_children.setter
+    def wants_children(self, bool):
+        self._wants_children = bool
 
-    def is_target_gender(self, person):
-        return person.gender in self.target_gender
-
-    def is_of_same_age(self, person):
-        return self.age == person.age
-
-    def is_compatible_if_minority(self, candidate):
-
-        # If the other person is not trans or poly, compatibility is automatically true.
-        # If the other person is trans and/or poly, and self is liberal, return true.
-        # If the other person is trans and/or poly, and self is conservative, return false.
-
-        if candidate.is_minority():
-            if self.is_liberal:
-                return True
-            else:
-                return False
-        else:
-            return True
-
-    def is_compatible(self, candidate):
-
-        if self.is_free_and_willing_to_date() and candidate.is_free_and_willing_to_date() and candidate.family_id != self.family_id:
-            # Returns true if self is compatible with another person when it comes to age, sexual orientation and ideology if minority
-            return self.is_target_gender(candidate) and self.is_compatible_if_minority(candidate) and candidate.is_target_gender(self) and candidate.is_compatible_if_minority(self)
-        else:
-            return False
+        if self.children is not None and len(self.children) >= 4:
+            self._wants_children = False
 
     # FAMILY
     def get_fathers_name(self):
@@ -416,8 +321,19 @@ class Person(PersonAttributes):
 
         if self.life_stage == self.SENIOR:
             return False
-
-        self.age += 1
-        self.life_stage = self.get_lifestage_from_age(self.age)
+        
+        self.age = self.age + 1
 
         return True
+
+    # READ/WRITE ATTRIBUTES
+
+    def check_if_in_love(self):
+
+        if self.get_family_love_chance(self):
+            self.in_love_with_family = True
+            return
+        if self.get_intergenerational_chance(self):
+            self.in_love_with_intergenerational = True
+            return
+        return
