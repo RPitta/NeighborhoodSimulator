@@ -1,5 +1,3 @@
-from utilities import Utilities
-
 class PersonAttributes:
 
     MALE_NAMES = []
@@ -42,15 +40,6 @@ class PersonAttributes:
     ACCIDENT = "Accident"
     DEATH_CAUSES = (OLD_AGE, SUICIDE, ILLNESS, ACCIDENT)
 
-    AGES = {
-        BABY: 1,
-        CHILD: 2,
-        TEEN: 3,
-        YOUNG_ADULT: 4,
-        ADULT: 5,
-        SENIOR: 6
-    }
-
     MONOAMOROUS = "Monoamorous"
     POLYAMOROUS = "Polyamorous"
     RELATIONSHIP_ORIENTATIONS = (MONOAMOROUS, POLYAMOROUS)
@@ -81,39 +70,21 @@ class PersonAttributes:
         "aromantic": AROMANTIC_ASEXUAL
     }
 
+    # ABOUT RELATIONSHIPS
+
+    ONE_CHILD = 1
+    TWO_CHILDREN = 2
+    THREE_CHILDREN = 3
+    FOUR_CHILDREN = 4
+    NUM_OF_CHILDREN_PER_COUPLE = (ONE_CHILD, TWO_CHILDREN, THREE_CHILDREN, FOUR_CHILDREN)
+    
+    ALLOWED_NUM_OF_ADOPTIONS = (ONE_CHILD, TWO_CHILDREN)
+
+
+    SINGLETON = 1
+    TWINS = 2
+    TRIPLETS = 3
+    ALLOWED_NUM_OF_CHILDREN = (SINGLETON, TWINS, TRIPLETS)
+
     def __init__(self):
-        self.MALE_NAMES = self.get_male_names()
-        self.FEMALE_NAMES = self.get_female_names()
-        self.SURNAMES = self.get_surnames()
-        self.PROFESSIONS = self.get_professions()
-
-    def get_male_names(self):
-        path_males = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\male_names.txt"
-        file_males = open(path_males, "r")
-        names = set([x.split(' ')[0] for x in file_males.readlines()])
-        names = [item.capitalize() for item in names]
-        file_males.close()
-        return names
-
-    def get_female_names(self):
-        path_females = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\female_names.txt"
-        file_females = open(path_females, "r")
-        names = set([x.split(' ')[0] for x in file_females.readlines()])
-        names = [item.capitalize() for item in names]
-        return names
-
-    def get_surnames(self):
-        path_surnames = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\surnames.txt"
-        file_surnames = open(path_surnames, "r")    
-        surnames = set([x.split(' ')[0] for x in file_surnames.readlines()])
-        surnames = [item.capitalize() for item in surnames]    
-        file_surnames.close()
-        return surnames
-
-    def get_professions(self):
-        path_professions = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\professions.txt"
-        file_professions = open(path_professions, "r")
-        professions = set([x.split('\n')[0] for x in file_professions.readlines()])
-        professions = [item.capitalize() for item in professions]
-        file_professions.close()
-        return professions
+        pass

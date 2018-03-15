@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import abc
 from world import World
 
 world = World()
@@ -19,52 +20,34 @@ def validate_choice(prompt, valid_values):
             print(error_message)
 
 
-world.age_up_population()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.age_up_population()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.age_up_population()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.age_up_population()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.time_jump()
-world.age_up_population()
-
+world.time_jump() # Partnered
+#world.time_jump() # Married
+#world.time_jump() # Pregnant/Adoption process
+#world.time_jump() # Birth/Adopt
+#world.age_up_population() # Babies are now Childs. Parents are now Adults
+#world.age_up_population() # Babies are now Teens. Parents are now Seniors
+#world.age_up_population() # Babies are now Young Adults. Parents are now dead. """
 
 for p in world.get_population():
     print(p)
 
-print("length of population: " + str(len(world.population)))
+print("length of population: " + str(len(world.living_population)))
 print("length of couples: " + str(len(world.couples)))
 print("length of romanceable population: " + str(len(world.romanceable_outsiders)))
 print("length of unromanceable population: " + str(len(world.unromanceable_outsiders)))
 print("length of partnered population: " + str(len(world.partnered_outsiders)))
-print("length of deceased: " + str(len(world.deceased_population)))
+print("length of deceased: " + str(len(world.dead_population)))
+print("length of total population: " + str(len(world.population)))
 
 for p in world.population:
     if p.in_love_with_family:
         print("{} is in love with a family member.".format(p.name))
 
 
-""" for relationship in world.couples:
-    attrs = vars(relationship)
+for p in world.living_population:
+    attrs = vars(p)
     print(', '.join("%s: %s" % item for item in attrs.items()))
-    print() """
+    print()
 
 def time_function():
 
@@ -85,6 +68,57 @@ def time_function():
             sys.exit(0)
             return False
 
+
+
+
+class Shape(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def draw(self, color):
+        pass
+
+class Triangle(Shape):
+    def draw(self, color):
+        print("Drawing Triangle with color " + color)
+
+class Circle(Shape):
+    def draw(self, color):
+        print("Drawing Circle with color " + color)
+
+class Drawing(Shape):
+    def __init__(self):
+        self.shapes = []
+
+    def draw(self, color):
+        for sh in self.shapes:
+            sh.draw(color)
+
+    def add(self, sh):
+        self.shapes.append(sh)
+
+    def remove(self, sh):
+        self.shapes.remove(sh)
+
+    def clear(self):
+        print("Clearing all the shapes from drawing")
+        self.shapes = []
+
+def do():
+    tri1 = Triangle()
+    tri2 = Triangle()
+    cir  = Circle()
+
+    drawing = Drawing()
+    drawing.add(tri1)
+    drawing.add(tri2)
+    drawing.add(cir)
+
+    drawing.draw("Red")
+
+    drawing.clear()
+
+    drawing.add(tri1)
+    drawing.add(cir)
+    drawing.draw("Green")
 
 if __name__ == '__main__':
     pass

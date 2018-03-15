@@ -1,10 +1,9 @@
 import random
-from person_attributes import PersonAttributes
-from relationship_attributes import RelationshipAttributes
 from randomizer import Randomizer
+from person_attributes import PersonAttributes
+from life_stage import *
 
-
-class Statistics(PersonAttributes, RelationshipAttributes):
+class Statistics(PersonAttributes):
 
     def get_name(self, person):
 
@@ -18,8 +17,9 @@ class Statistics(PersonAttributes, RelationshipAttributes):
             ) and name not in person.get_cousins_names()
         return name
 
-    def get_surname(self, unavailable_surnames):
-
+    def get_surname(self, person, unavailable_surnames = None):
+        if unavailable_surnames is None:
+            return Randomizer().get_random_list_item(self.SURNAMES)
         unique = False
         while not unique:
             surname = Randomizer().get_random_list_item(self.SURNAMES)
@@ -308,7 +308,7 @@ class Statistics(PersonAttributes, RelationshipAttributes):
 
     def get_desired_number_of_children(self, couple):
 
-        if not couple.will_get_pregnant and not couple.will_adopt:
+        if not couple.all_can_and_want_children and not couple.all_want_children_but_cant:
             return 0
 
         options = {
@@ -320,7 +320,30 @@ class Statistics(PersonAttributes, RelationshipAttributes):
 
         return Randomizer().get_random_dict_key(options)
 
+    def get_pregnancy_num_of_children(self, couple):
+        """Random number of children for pregnancy: singleton/twins/triplets"""
+
+        options = {
+            self.SINGLETON: 96,
+            self.TWINS: 3,
+            self.TRIPLETS: 1
+        }
+
+        return Randomizer().get_random_dict_key(options)
+
+    def get_adoption_num_of_children(self, couple):
+        
+        options = {
+            self.ONE_CHILD : 70,
+            self.TWO_CHILDREN : 30        
+        }
+
+        return Randomizer().get_random_dict_key(options)
+
     def get_breakup_chance(self, couple):
+
+        if couple is None or couple.person1 is None or couple.person2 is None:
+            raise Exception("Unexpected error occurred. Couple is none.")
 
         # If a person is already a senior when they get into a committed relationship, they won't break up as death will come first
         if couple.person1.life_stage == self.SENIOR or couple.person2.life_stage == self.SENIOR:
@@ -334,6 +357,9 @@ class Statistics(PersonAttributes, RelationshipAttributes):
         return Randomizer().get_random_dict_key(options)
 
     def get_breakup_date(self, couple):
+
+        if couple is None or couple.person1 is None or couple.person2 is None:
+            raise Exception("Unexpected error occurred. Couple is none.")
 
         # Automatically return none if couple won't break up
         if not couple.will_breakup:
@@ -359,23 +385,23 @@ class Statistics(PersonAttributes, RelationshipAttributes):
         # If couple are young adults, they can break up soon as young adults, adults or seniors
         # If couple is intergenerational, they can break up when soon when youngest is a young adult, or when youngest is an adult
         if not couple.is_intergenerational:
-            if couple.person1.life_stage == self.ADULT:
+            if couple.person1.life_stage == Adult():
                 selected = Randomizer().get_random_dict_key(options_for_adults)        
-            elif couple.person1.life_stage == self.YOUNG_ADULT:
+            elif couple.person1.life_stage == YoungAdult():
                 selected = Randomizer().get_random_dict_key(options_for_young_adults)
             else:
                 raise Exception("Unexpected error occurred. Couple's age is wrong, are seniors or underage.")     
         else:
             selected = Randomizer().get_random_dict_key(options_for_intergenerational)
 
-        if selected not in self.LIFE_STAGES:
+        if selected not in LifeStages().life_stages:
             raise Exception("Unexpected error occurred. Break-up date is not correct.")
 
         return selected
 
     def get_intergenerational_chance(self, person):
         """Returns true if intergenerational relationship. False otherwise."""
-
+        
         if not person.wants_domestic_partnership:
             return False
 
