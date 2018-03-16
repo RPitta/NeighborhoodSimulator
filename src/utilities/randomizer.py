@@ -39,5 +39,5 @@ class Randomizer:
         """Returns a completely random item from list."""
         if lst is None or len(lst) <= 0:
             raise Exception("Unexpected error occurred. Given list is empty.")
-
+            
         return random.choice(lst)

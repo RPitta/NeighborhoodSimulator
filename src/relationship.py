@@ -1,7 +1,9 @@
-from statistics import Statistics
-from person_attributes import PersonAttributes
+from utilities.statistics import Statistics
+from utilities.randomizer import Randomizer
+from person import Person
 
-class Relationship(Statistics, PersonAttributes):
+
+class Relationship(Person):
 
     def __init__(self, person1, person2, person3=None):
 
@@ -14,31 +16,39 @@ class Relationship(Statistics, PersonAttributes):
         else:
             self.persons = [person1, person2, person3]
 
-        # Random break up chance
-        self.will_breakup = self.get_breakup_chance(self)
-        self.breakup_date = self.get_breakup_date(self) # Depends on will_breakup
+        self.desired_num_of_children = 0
+        self.expecting_children = 0
+        self.will_breakup = None
 
-        # Pregnancy/Adoption
-        self.desired_num_of_children = self.get_desired_number_of_children(self)
-        self.expecting_children = 0 
+    # OVERRIDEN PROPERTIES
 
-    # PROPERTIES
+    @property
+    def is_straight(self):
+        return False
+
+    @property
+    def will_get_pregnant(self):
+        return False
+
+    # SHARED READ-ONLY PROPERTIES
 
     @property
     def oldest(self):
-        return max(person.age for person in self.persons)
+        return next(person for person in self.persons if person.age == self.get_oldest_age)
 
     @property
     def youngest(self):
-        return min(person.age for person in self.persons)
+        return next(person for person in self.persons if person.age == self.get_youngest_age)
 
     @property
     def is_intergenerational(self):
-        return self.oldest == self.youngest
+        return self.oldest.stage != self.youngest.stage
 
     @property
     def is_family_love(self):
         return all([self.persons[0] in p.family for p in self.persons])
+
+    # TIME-CHANGING PROPERTIES
 
     @property
     def all_can_and_want_children(self):
@@ -49,58 +59,47 @@ class Relationship(Statistics, PersonAttributes):
         return all([self.persons[0].cant_but_wants_children for p in self.persons])
 
     @property
-    def is_married(self):
-        return all([self.persons[0].relationship_status == self.MARRIED for p in self.persons])
-
-    @property
     def common_children(self):
         if self.person3 is None:
             return [child for child in self.person1.children if child in self.person2.children]
         return [child for child in self.person1.children if child in self.person2.children and child in self.person3.children]
 
-    # MODIFIABLE PROPERTIES
+    # RELATIONSHIP GOALS NOT YET ACHIEVED
 
     @property
     def will_get_married(self):
         return self.is_married is False and all([self.persons[0].wants_marriage for p in self.persons])
 
     @property
+    def will_have_children(self):
+        """Returns true if all persons want children and their expected pregnancy/adoption date is within young adult stage."""
+        if self.will_get_married:
+            return (self.all_can_and_want_children or self.all_want_children_but_cant) and \
+            self.oldest.age < self.YOUNGADULT.end and self.oldest.marriage_date < (self.YOUNGADULT.end - 1)
+        return (self.all_can_and_want_children or self.all_want_children_but_cant) and self.oldest.age < self.YOUNGADULT.end
+
+    @property
     def will_adopt(self):
         return self.in_adoption_process is False and self.desired_num_of_children > 0 and self.all_want_children_but_cant
+
+    # RELATIONSHIP GOALS IN PROCESS PRESENTLY
 
     @property
     def in_adoption_process(self):
         return all([self.persons[0].in_adoption_process for p in self.persons])
 
-    # METHODS
+    # ACHIEVED RELATIONSHIP GOALS
 
-    def get_married(self):
+    @property
+    def is_married(self):
+        return all([self.persons[0].is_married for p in self.persons])
 
-        for person in self.persons:
-            person.relationship_status = self.MARRIED
+    # HELPER METHODS
 
-        print("\n{} and {} have married.\n".format(
-            self.person1.name, self.person2.name))
+    @property
+    def get_oldest_age(self):
+        return max(person.age for person in self.persons)
 
-    def start_adoption_process(self):
-
-        self.expecting_children = self.get_adoption_num_of_children(self)
-        self.print_expecting_num_of_adoptions()
-
-        for person in self.persons:
-            person.in_adoption_process = True       
-
-    def print_expecting_num_of_adoptions(self):
-        if self.expecting_children not in self.ALLOWED_NUM_OF_ADOPTIONS:
-            raise Exception(
-                "Unexpected error occurred. Wrong number of expecting children.")
-
-        if self.expecting_children == self.ONE_CHILD:
-            print("{} and {} are going to adopt a child!".format(
-                self.person1.name, self.person2.name))
-        elif self.expecting_children == self.TWO_CHILDREN:
-            print("{} and {} are going to adopt two children!".format(
-                self.person1.name, self.person2.name))
-        else:
-            raise Exception(
-                "Unexpected error occurred. Wrong number of expecting children.") 
+    @property
+    def get_youngest_age(self):
+        return min(person.age for person in self.persons)

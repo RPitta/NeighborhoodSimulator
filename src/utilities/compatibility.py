@@ -15,8 +15,8 @@ class Compatibility:
 
     def are_age_compatible(self, person1, person2):
         if person1.in_love_with_intergenerational and person2.in_love_with_intergenerational:
-            return person1.age not in person2.life_stage.span and person2.age not in person1.life_stage.span
-        return person1.age in person2.life_stage.span and person2.age in person1.life_stage.span
+            return person1.age not in person2.stage.span and person2.age not in person1.stage.span
+        return person1.age in person2.stage.span and person2.age in person1.stage.span
         
     def are_consanguinity_compatible(self, person1, person2):
         if person1.in_love_with_family and person2.in_love_with_family:

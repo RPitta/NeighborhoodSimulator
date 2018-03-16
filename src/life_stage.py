@@ -1,47 +1,11 @@
-
-from abc import ABCMeta, abstractmethod, abstractproperty
-
-
-class AbstractLifeStage:
-
-    @property
-    @abstractmethod
-    def start(self):
-        return
-
-    @property
-    @abstractmethod
-    def end(self):
-        return
-
-    @property
-    @abstractmethod
-    def span(self):
-        return
-
-    @property
-    @abstractmethod
-    def is_of_age(self):
-        return
-
-    @property
-    @abstractmethod
-    def next_stage(self):
-        return
-
-
-class Baby(AbstractLifeStage):
+class LifeStage:
 
     def __init__(self):
-        self._name = "Baby"
-        self._start = 1
-        self._end = 3
+        self._stage = None
+        self._start = None
+        self._end = None
         self._span = range(self._start, self._end)
-        # Other baby specific attributes
-
-    def __str__(self):
-        return self._name
-
+    
     @property
     def start(self):
         return self._start
@@ -53,189 +17,168 @@ class Baby(AbstractLifeStage):
     @property
     def span(self):
         return self._span
-
+    
     @property
-    def is_of_age(self):
-        return False
+    def next_stage(self):
+        pass
+
+class Baby(LifeStage):
+
+    def __init__(self):
+        self._stage = "Baby"
+        self._start = 1
+        self._end = 3
+        self._span = range(self._start, self._end)
+    
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self._stage == other._stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self._stage != other._stage
+
+    def __str__(self):
+        return self._stage 
 
     @property
     def next_stage(self):
         return Child()
 
 
-class Child(AbstractLifeStage):
+class Child(LifeStage):
 
     def __init__(self):
-        self._name = "Child"
+        self._stage = "Child"
         self._start = 4
         self._end = 12
         self._span = range(self._start, self._end)
-        # Other child specific attributes
+
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self._stage == other._stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self._stage != other._stage
 
     def __str__(self):
-        return self._name
-
-    @property
-    def start(self):
-        return self._start
-
-    @property
-    def end(self):
-        return self._end
-
-    @property
-    def span(self):
-        return self._span
-
-    @property
-    def is_of_age(self):
-        return False
+        return self._stage 
 
     @property
     def next_stage(self):
         return Teen()
 
 
-class Teen(AbstractLifeStage):
+class Teen(LifeStage):
 
     def __init__(self):
-        self._name = "Teen"
+        self._stage = "Teen"
         self._start = 13
         self._end = 17
         self._span = range(self._start, self._end)
-        # Other teen specific attributes
+
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self._stage == other._stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self._stage != other._stage
 
     def __str__(self):
-        return self._name
-
-    @property
-    def start(self):
-        return self._start
-
-    @property
-    def end(self):
-        return self._end
-
-    @property
-    def span(self):
-        return self._span
-
-    @property
-    def is_of_age(self):
-        return False
+        return self._stage 
 
     @property
     def next_stage(self):
         return YoungAdult()
 
 
-class YoungAdult(AbstractLifeStage):
+class YoungAdult(LifeStage):
 
     def __init__(self):
-        self._name = "Young Adult"
+        self._stage = "Young Adult"
         self._start = 18
         self._end = 39
         self._span = range(self._start, self._end)
-        # Other young adult specific attributes
+
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self._stage == other._stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self._stage != other._stage
 
     def __str__(self):
-        return self._name
-
-    @property
-    def start(self):
-        return self._start
-
-    @property
-    def end(self):
-        return self._end
-
-    @property
-    def span(self):
-        return self._span
-
-    @property
-    def is_of_age(self):
-        return True
+        return self._stage 
 
     @property
     def next_stage(self):
         return Adult()
 
 
-class Adult(AbstractLifeStage):
+class Adult(LifeStage):
 
     def __init__(self):
-        self._name = "Adult"
+        self._stage = "Adult"
         self._start = 40
         self._end = 59
         self._span = range(self._start, self._end)
-        # Other adult specific attributes
+
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self._stage == other._stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self._stage != other._stage
 
     def __str__(self):
-        return self._name
-
-    @property
-    def start(self):
-        return self._start
-
-    @property
-    def end(self):
-        return self._end
-
-    @property
-    def span(self):
-        return self._span
-
-    @property
-    def is_of_age(self):
-        return True
+        return self._stage 
 
     @property
     def next_stage(self):
         return Senior()
 
 
-class Senior(AbstractLifeStage):
+class Senior(LifeStage):
 
     def __init__(self):
-        self._name = "Senior"
+        self._stage = "Senior"
         self._start = 60
         self._end = 79
         self._span = range(self._start, self._end)
-        # Other senior specific attributes
+
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self._stage == other._stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self._stage != other._stage
 
     def __str__(self):
-        return self._name
-
-    @property
-    def start(self):
-        return self._start
-
-    @property
-    def end(self):
-        return self._end
-
-    @property
-    def span(self):
-        return self._span
-
-    @property
-    def is_of_age(self):
-        return True
+        return self._stage 
 
     @property
     def next_stage(self):
         return False
-
-
-class LifeStages:
-
-    def __init__(self):
-        self._life_stages = set()
-
-    def life_stages(self):
-        if self.life_stages is not None and len(self.life_stages) > 0:
-            return [life_stage for life_stage in self._life_stages]
-
-    def add(self, life_stage):
-        self._life_stages.add(life_stage)

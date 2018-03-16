@@ -2,13 +2,65 @@
 
 import sys
 import abc
+from utilities.statistics import Statistics
+from utilities.randomizer import Randomizer
+from utilities.compatibility import Compatibility
+from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
+from traits import Names, Professions, Traits, LifeStages
+from person_generator import PersonGenerator
+from person_developer import PersonDeveloper
+from relationship_developer import RelationshipDeveloper
+from relationship_generator import RelationshipGenerator
 from world import World
 
-world = World()
+# Traits: Names, Professions, Traits and LifeStages
+names = Names()
+professions = Professions()
+traits = Traits()
+life_stages = LifeStages()
+
+randomizer = Randomizer()
+statistics = Statistics(names, professions, traits, life_stages, randomizer)
+
+developer = PersonDeveloper(
+    names, professions, traits, life_stages, randomizer, statistics)
+generator = PersonGenerator(
+    names, professions, traits, life_stages, statistics, developer)
+compatibility = Compatibility()
+relationship_developer = RelationshipDeveloper(randomizer, statistics)
+relationship_generator = RelationshipGenerator(traits, compatibility, randomizer, statistics, relationship_developer)
+
+
+world = World(generator, developer, relationship_generator, traits, life_stages, statistics, randomizer, relationship_developer)
+
+
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+world.time_jump()
+
+for p in world.get_population():
+    print(p)
+
+print("length of population: " + str(len(world.living_population)))
+print("length of couples: " + str(len(world.couples)))
+print("length of romanceable population: " +
+      str(len(world.romanceable_outsiders)))
+print("length of unromanceable population: " +
+      str(len(world.unromanceable_outsiders)))
+print("length of partnered population: " + str(len(world.partnered_outsiders)))
+print("length of deceased: " + str(len(world.dead_population)))
+print("length of total population: " + str(len(world.population)))
+
 
 def validate_choice(prompt, valid_values):
     '''Validates user input.'''
-    
+
     error_message = "\nValid commands: " + \
         ", ".join((str(x) for x in valid_values))
 
@@ -19,26 +71,6 @@ def validate_choice(prompt, valid_values):
         else:
             print(error_message)
 
-
-world.time_jump() # Partnered
-#world.time_jump() # Married
-#world.time_jump() # Pregnant/Adoption process
-#world.time_jump() # Birth/Adopt
-#world.age_up_population() # Babies are now Childs. Parents are now Adults
-#world.age_up_population() # Babies are now Teens. Parents are now Seniors
-#world.age_up_population() # Babies are now Young Adults. Parents are now dead. """
-
-for p in world.get_population():
-    print(p)
-
-print("length of population: " + str(len(world.living_population)))
-print("length of couples: " + str(len(world.couples)))
-print("length of romanceable population: " + str(len(world.romanceable_outsiders)))
-print("length of unromanceable population: " + str(len(world.unromanceable_outsiders)))
-print("length of partnered population: " + str(len(world.partnered_outsiders)))
-print("length of deceased: " + str(len(world.dead_population)))
-print("length of total population: " + str(len(world.population)))
-
 for p in world.population:
     if p.in_love_with_family:
         print("{} is in love with a family member.".format(p.name))
@@ -46,6 +78,11 @@ for p in world.population:
 
 for p in world.living_population:
     attrs = vars(p)
+    print(', '.join("%s: %s" % item for item in attrs.items()))
+    print()
+
+for c in world.couples:
+    attrs = vars(c)
     print(', '.join("%s: %s" % item for item in attrs.items()))
     print()
 
@@ -69,20 +106,21 @@ def time_function():
             return False
 
 
-
-
 class Shape(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def draw(self, color):
         pass
 
+
 class Triangle(Shape):
     def draw(self, color):
         print("Drawing Triangle with color " + color)
 
+
 class Circle(Shape):
     def draw(self, color):
         print("Drawing Circle with color " + color)
+
 
 class Drawing(Shape):
     def __init__(self):
@@ -102,10 +140,11 @@ class Drawing(Shape):
         print("Clearing all the shapes from drawing")
         self.shapes = []
 
+
 def do():
     tri1 = Triangle()
     tri2 = Triangle()
-    cir  = Circle()
+    cir = Circle()
 
     drawing = Drawing()
     drawing.add(tri1)
@@ -119,6 +158,7 @@ def do():
     drawing.add(tri1)
     drawing.add(cir)
     drawing.draw("Green")
+
 
 if __name__ == '__main__':
     pass
