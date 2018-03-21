@@ -1,86 +1,83 @@
-
-from utilities.randomizer import Randomizer
 from traits import Traits, LifeStages
 
+
 class Person(Traits, LifeStages):
-    def __init__(self, gender, stage, gender_identity, sexual_orientation, relationship_orientation):
+    def __init__(self, gender, stage):
 
-            # Age-related -> Will be overriden
-            self.stage = stage
-            self.age = self.stage.start
+        self.stage = stage
+        self.age = self.stage.start
 
-            # Names
-            self.name = None # May depend on family
-            self.surname = None
-            self.original_surname = self.surname # Depends on surname
+        # Names
+        self.name = None  # May depend on family
+        self.surname = None
+        self.original_surname = self.surname  # Depends on surname
 
-            # Basics
-            self.family_id = None
-            self.gender = gender
-            self.gender_identity = gender_identity # Linked to gender
-            self.sexual_orientation = sexual_orientation
-            self.target_gender = [] # Linked to sexual_orientation
-            self.relationship_orientation = relationship_orientation
+        # Basics
+        self.household_id = None
+        self.gender = gender
+        self.gender_identity = None  # Linked to gender
+        self.sexual_orientation = None
+        self.target_gender = []  # Linked to sexual_orientation
+        self.relationship_orientation = None
 
-            # Default: Alive, Single, Not Pregnant, Not in adoption process
-            self.is_alive = True
-            self.relationship_status = None
-            self.is_pregnant = False
-            self.in_adoption_process = False
+        # Default: Alive, not adopted, not a twin or triplet
+        # Single, not pregnant or in adoption process
+        self.is_alive = True
+        self.is_adopted = False
+        self.is_twin = False
+        self.is_triplet = False
+        self.relationship_status = self.SINGLE
+        self.is_pregnant = False
+        self.is_in_adoption_process = False
 
-            # Family
-            self.parents = []
-            self.father = None
-            self.mother = None
-            self.siblings = []
-            self.half_siblings = []
-            self.parents_siblings = []
-            self.siblings_children = []
-            self.cousins = []
-            self.partner = None
-            self.spouse = None
-            self.ex_spouses = []
-            self.partners = []
-            self.ex_partners = []
-            self.children = []
-            self.grandparents = []
-            self.grandchildren = []
-            
-            # Personality
-            self.can_have_bio_children = None # Depends on gender identity, sexual orientation, age and love target
-            self.is_liberal = None
-            self.wants_children = None # Depends on liberalism
-            self.wants_domestic_partnership = None # Depends on liberalism
-            self.in_love_with_family = None # Depends on wants_domestic_partnership and if person has family. Initialized false because of is_minority()
-            self.in_love_with_intergenerational = None # Depends on wants_domestic_partnership
-            self.in_love_date = False # Depends on wants_domestic_partnership
-            self.wants_marriage = None # Depends on wants_domestic_partnership
-            self.marriage_date = None # Depends on wants_marriage and is set in Relationship.py
-            self.pregnancy_date = None # Depends on wants_children and is set in Relationship.py
-            self.adoption_date = None
-            self.breakup_date = None # Depends on wants_domestic_partnership and is set in Relationship.py
-            
-            self.occupation = None
-            self.employment = None
+        # Family
+        self.parents = []
+        self.father = None
+        self.mother = None
+        self.siblings = []
+        self.half_siblings = []
+        self.parents_siblings = []
+        self.siblings_children = []
+        self.cousins = []
+        self.partner = None
+        self.spouse = None
+        self.ex_spouses = []
+        self.partners = []
+        self.ex_partners = []
+        self.children = []
+        self.grandparents = []
+        self.grandchildren = []
 
-            self.death_date = None
-            self.death_cause = None # Depends on death_date
+        # Personality (Defaults all False)
+        self.can_have_bio_children = False
+        self.is_liberal = None  # Not applicable until young adult stage
+        self.wants_domestic_partnership = False
+        self.wants_marriage = False
+        self.wants_children = False
+        self.in_love_with_family = False
+        self.in_love_with_intergenerational = False
+        self.in_love_as_throuple = False
+
+        # Relationships and children future dates -> will be set once Young Adult
+        self.in_love_date = -1
+        self.come_out_date = -1
+
+        # Professions -> Will be intitialized once Young Adult
+        self.occupation = None
+        self.employment = None
+
+        # Death (Default: Old age)
+        self.death_date = False
+        self.death_cause = self.OLD_AGE  # Depends on death_date
 
     # READ ONLY PROPERTIES
-
-    # Will be overriden
-
-    # READ ONLY GLOBAL PERSON PROPERTIES
 
     def __str__(self):
         return self.fullname
 
     @property
-    def span_left(self):
-        return range(self.age + 1, self.stage.end)
-
-    @property
     def fullname(self):
+        """Name + Surname"""
         return "{} {}".format(self.name, self.surname)
 
     @property
@@ -92,6 +89,41 @@ class Person(Traits, LifeStages):
         return self.gender == self.FEMALE
 
     @property
+    def baby_gender(self):
+        if self.is_male:
+            return "boy"
+        return "girl"
+
+    @property
+    def is_straight(self):
+        return self.sexual_orientation == self.HETEROSEXUAL
+
+    @property
+    def is_heteroromantic(self):
+        return self.is_straight or self.sexual_orientation == self.HETEROROMANTIC_ASEXUAL
+
+    @property
+    def is_bi(self):
+        return self.sexual_orientation == self.BISEXUAL
+
+    @property
+    def is_gay(self):
+        return self.sexual_orientation == self.HOMOSEXUAL
+
+    @property
+    def is_asexual(self):
+        return self.sexual_orientation in [self.AROMANTIC_ASEXUAL, self.HETEROROMANTIC_ASEXUAL, self.HOMOROMANTIC_ASEXUAL, self.BIROMANTIC_ASEXUAL]
+
+    @property
+    def is_trans(self):
+        return self.gender_identity == self.TRANSGENDER
+
+    @property
+    def is_lgbta(self):
+        """True if gay, bisexual, asexual or transgender."""
+        return self.is_gay or self.is_bi or self.is_trans or self.is_asexual
+
+    @property
     def is_mono(self):
         return self.relationship_orientation == self.MONOAMOROUS
 
@@ -100,16 +132,33 @@ class Person(Traits, LifeStages):
         return self.relationship_orientation == self.POLYAMOROUS
 
     @property
+    def is_minority(self):
+        """Returns true if person is LGBTA, poly or is/was in love with a family member."""
+        return self.is_lgbta or self.is_poly or self.in_love_with_family
+
+    # AGE
+
+    @property
     def is_of_age(self):
         return self.age >= self.YOUNGADULT.start
 
     @property
-    def is_minority(self):
-        """Returns true if person is not cis-straight, mono or is/was in love with a family member."""
-        return self.sexual_orientation != self.HETEROSEXUAL or \
-            self.gender_identity == self.TRANSGENDER or \
-            self.relationship_orientation == self.POLYAMOROUS or \
-            self.in_love_with_family
+    def is_young_adult(self):
+        return self.age in self.YOUNGADULT.span
+
+    @property
+    def adult_timespan_till_present_age(self):
+        return list(range(self.YOUNGADULT.start, self.age + 1))
+
+    @property
+    def span_left_till_next_stage(self):
+        return list(range(self.age + 1, self.stage.end + 1))
+
+    @property
+    def span_left_till_old_age(self):
+        return list(range(self.age + 1, self.SENIOR.end + 1))
+
+    # RELATIONSHIP STATUS
 
     @property
     def is_single(self):
@@ -118,39 +167,105 @@ class Person(Traits, LifeStages):
     @property
     def is_committed(self):
         return self.relationship_status == self.COMMITTED
-    
-    @property
-    def is_married(self):
-        return self.relationship_status == self.MARRIED
 
     @property
-    def is_free(self):
-        return self.is_committed is False and self.is_married is False
+    def is_married_or_remarried(self):
+        return self.relationship_status == self.MARRIED or self.relationship_status == self.REMARRIED
+
+    @property
+    def is_divorced(self):
+        return self.relationship_status == self.DIVORCED
+
+    @property
+    def is_separated(self):
+        return self.relationship_status == self.SEPARATED
+
+    @property
+    def is_widowed(self):
+        return self.relationship_status == self.WIDOWED
+
+    @property
+    def is_fully_partnered(self):
+        """Returns true if: Mono person has a partner or a spouse.
+        Poly person has max number of partners, or a spouse + remaining possible number of partners until max."""
+        if self.is_mono:
+            return self.partner is not None or self.spouse is not None
+        else:
+            if len(self.partners) >= self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS:
+                return True
+            if self.spouse is not None and (1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS:
+                return True
+            return False
 
     @property
     def is_romanceable(self):
-        if self.is_mono:
-            return self.is_of_age and self.age >= self.in_love_date and self.wants_domestic_partnership and self.is_free
-        else:
-            return self.is_of_age and self.age >= self.in_love_date and self.wants_domestic_partnership
+        """Returns true if: person is alive, of age, wants partnership, have reached their dateable date, and are not fully partnered."""
+        return self.wants_domestic_partnership and self.is_alive and self.is_of_age and not self.is_fully_partnered and self.in_love_date <= self.age
+
+    # FUTURE DATES
 
     @property
     def is_death_date(self):
-        return self.death_date == self.age
+        return self.age == self.death_date
 
     @property
-    def can_and_wants_children(self):
-        return self.can_have_bio_children and self.wants_children
+    def is_love_date(self):
+        return self.age == self.in_love_date
+
+    @property
+    def is_come_out_date(self):
+        return self.age == self.come_out_date
+
+    # CHILDREN
+
+    @property
+    def can_and_wants_bio_or_adopted_children(self):
+        """Wants children and can get pregnant or adopt."""
+        return self.can_and_wants_bio_children or self.cant_but_wants_children
+
+    @property
+    def can_and_wants_bio_children(self):
+        """Wants children. Has not reached maximum number of children. Is young adult. Can have biological children."""
+        return self.wants_children and self.has_max_num_of_children is False and self.is_young_adult and self.can_have_bio_children
 
     @property
     def cant_but_wants_children(self):
-        return self.can_have_bio_children is False and self.wants_children
+        """Wants children. Has not reached maximum number of children. Is young adult. Cannot have biological children."""
+        return self.wants_children and self.has_max_num_of_children is False and self.is_young_adult and self.can_have_bio_children is False
 
     @property
-    def family(self):
-        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings, self.half_siblings, self.cousins, self.parents_siblings, self.siblings_children, [self.partner], self.partners, [self.spouse]]
+    def has_max_num_of_children(self):
+        return len(self.children) >= len(self.ALLOWED_NUM_OF_CHILDREN_PER_COUPLE)
+
+    # FAMILY
+
+    @property
+    def bio_family(self):
+        """Returns biological family members; Parents, Grandparents, Siblings, Half-Siblings,
+        Children, Grandchildren, Cousins, Aunts/Uncles and Nephews/Nieces."""
+        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings, self.half_siblings,
+                          self.cousins, self.parents_siblings, self.siblings_children]
         family_2d_filtered_list = list(filter(any, family_2d_list))
         return [family_member for family_1d_list in family_2d_filtered_list for family_member in family_1d_list]
+
+    @property
+    def living_bio_family(self):
+        """Returns all living family members."""
+        return [family_member for family_member in self.bio_family if family_member.is_alive]
+
+    @property
+    def living_inlaws_family(self):
+        inlaws_family_2d_list = [[self.partner], [self.spouse], self.partners]
+        if self.partner is not None:
+            inlaws_family_2d_list.extend([self.partner.living_bio_family])
+        elif self.spouse is not None:
+            inlaws_family_2d_list.extend([self.spouse.living_bio_family])
+        elif len(self.partners) == 1:
+            inlaws_family_2d_list.extend([self.partners[0].living_bio_family])
+
+        inlaws_family_2d_filtered_list = list(
+            filter(any, inlaws_family_2d_list))
+        return [family_member for inlaws_family_1d_list in inlaws_family_2d_filtered_list for family_member in inlaws_family_1d_list if family_member.is_alive]
 
     @property
     def uncles(self):
@@ -167,35 +282,6 @@ class Person(Traits, LifeStages):
     @property
     def nieces(self):
         return [niece for niece in self.siblings_children if niece.is_female]
-
-    # READ/WRITE ATTRIBUTES
-
-    # Set liberalism to true if in love with family/intergenerational
-    @property
-    def in_love_with_family(self):
-        return self._in_love_with_family
-
-    @in_love_with_family.setter
-    def in_love_with_family(self, is_in_love):
-        self._in_love_with_family = is_in_love
-
-        # If in love with family, automatically become liberal
-        if self._in_love_with_family:
-            self.is_liberal = True
-
-    @property
-    def in_love_with_intergenerational(self):
-        return self._in_love_with_intergenerational
-
-    @in_love_with_intergenerational.setter
-    def in_love_with_intergenerational(self, is_in_love):
-        self._in_love_with_intergenerational = is_in_love
-
-        # If in love with intergenerational, automatically become liberal
-        if self._in_love_with_intergenerational:
-            self.is_liberal = True
-
-    # METHODS
 
     # FAMILY NAMES
 
@@ -226,4 +312,4 @@ class Person(Traits, LifeStages):
     def get_names_list(self, lst):
         if lst is None or len(lst) == 0:
             return "None"
-        return ', '.join(map(str, [person.name for person in lst])) 
+        return ', '.join(map(str, [person.name for person in lst]))

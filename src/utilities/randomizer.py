@@ -35,7 +35,7 @@ class Randomizer:
         # Raise exception if no matching value
         raise Exception("Unexpected error occurred. Key not found in dict.")
 
-    def get_random_list_item(self, lst):
+    def get_random_item(self, lst):
         """Returns a completely random item from list."""
         if lst is None or len(lst) <= 0:
             raise Exception("Unexpected error occurred. Given list is empty.")

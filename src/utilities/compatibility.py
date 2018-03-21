@@ -1,35 +1,128 @@
+import itertools
+
+
 class Compatibility:
 
-    def are_different_persons(self, person1, person2):
-        if person1 == person2:
+    def are_compatible(self, person1, person2, person3=None):
+        if person3 is None:
+            persons = [person1, person2]
+        else:
+            persons = [person1, person2, person3]
+        return self.are_different_persons(persons) and self.are_all_dating(persons) and self.are_sexually_compatible(persons) and \
+            self.are_age_compatible(persons) and self.are_consanguinity_compatible(persons) and \
+            self.are_compatible_if_minority(persons) and self.are_not_ex(
+                persons) and self.are_throuple_compatible(persons)
+
+    def are_different_persons(self, persons):
+        if all(persons[0] == person for person in persons):
             return False
-        if person1.partner == person2 or person2.partner == person1:
+        if any(persons[0].partner == person for person in persons):
             return False
-        return person1 not in person2.partners and person2 not in person1.partners
-        
-    def are_both_dating(self, person1, person2):
-        return person1.is_romanceable and person2.is_romanceable
+        if any(persons[0].spouse == person for person in persons):
+            return False
+        if any(persons[0] in person.partners for person in persons):
+            return False
+        return True
 
-    def are_sexually_compatible(self, person1, person2):
-        return person1.gender in person2.target_gender and person2.gender in person1.target_gender
+    def are_all_dating(self, persons):
+        """Assumed all persons are romanceable, but check anyway."""
+        return all(p.is_romanceable for p in persons)
 
-    def are_age_compatible(self, person1, person2):
-        if person1.in_love_with_intergenerational and person2.in_love_with_intergenerational:
-            return person1.age not in person2.stage.span and person2.age not in person1.stage.span
-        return person1.age in person2.stage.span and person2.age in person1.stage.span
-        
-    def are_consanguinity_compatible(self, person1, person2):
-        if person1.in_love_with_family and person2.in_love_with_family:
-            return person1 in person2.family and person2 in person1.family
-        return person1 not in person2.family and person2 not in person1.family
-
-    def are_compatible_if_minority(self, person1, person2):
-        if not person1.is_minority and not person2.is_minority:
-            return True
-        if (person1.is_minority and person2.is_minority) or (person1.is_minority and person2.is_liberal) or (person2.is_minority and person1.is_liberal):
-            return True
+    def are_sexually_compatible(self, persons):
+        if len(persons) == 2:
+            if persons[0].gender in persons[1].target_gender and \
+                    persons[1].gender in persons[0].target_gender:
+                return True
+        else:
+            if persons[0].gender in persons[1].target_gender and \
+                    persons[0].gender in persons[2].target_gender and \
+                    persons[1].gender in persons[0].target_gender and \
+                    persons[1].gender in persons[2].target_gender and \
+                    persons[2].gender in persons[0].target_gender and \
+                    persons[2].gender in persons[1].target_gender:
+                return True
         return False
 
-    def are_compatible(self, person1, person2):
-        return self.are_different_persons(person1, person2) and self.are_both_dating(person1, person2) and self.are_sexually_compatible(person1, person2) and self.are_age_compatible(person1, person2) \
-            and self.are_consanguinity_compatible(person1, person2) and self.are_compatible_if_minority(person1, person2)
+    def are_age_compatible(self, persons):
+
+        # If consang, skip age compatibility
+        if all([persons[0].in_love_with_family for person in persons]):
+            return True
+
+        # Intergenerational+intergenerational = compatible
+        if all([persons[0].in_love_with_intergenerational for person in persons]):
+            if len(persons) == 2:
+                return abs(persons[0].age - persons[1].age) >= 20
+            else:
+                return abs(persons[0].age - persons[1].age) >= 20 and abs(persons[0].age - persons[2].age) >= 20 and abs(persons[1].age - persons[2].age) >= 20
+
+        # Intergenerational+NotIntergenerational = not compatible
+        if any([persons[0].in_love_with_intergenerational for person in persons]):
+            return False
+
+        # NotIntergenerational+NotIntergenerational = compatible
+        if len(persons) == 2:
+            if persons[0].in_love_with_intergenerational or persons[1].in_love_with_intergenerational:
+                return False
+            else:
+                return abs(persons[0].age - persons[1].age) < 20
+        else:
+            if persons[0].in_love_with_intergenerational or persons[1].in_love_with_intergenerational or persons[2].in_love_with_intergenerational:
+                return False
+            else:
+                return abs(persons[0].age - persons[1].age) < 20 and abs(persons[0].age - persons[2].age) < 20 and abs(persons[1].age - persons[2].age) < 20
+
+    def are_consanguinity_compatible(self, persons):
+
+        # Consang+consang = compatible if family
+        if all(persons[0].in_love_with_family for person in persons):
+            if len(persons) == 2:
+                if persons[0] in persons[1].living_bio_family:
+                    return True
+                else:
+                    return False
+            else:
+                if persons[0] in persons[1].living_bio_family and persons[0] in persons[2].living_bio_family:
+                    return True
+                else:
+                    return False
+            return True
+
+        # Consang+Noconsang = not compatible
+        if any(persons[0].in_love_with_family for person in persons):
+            return False
+
+        # Noconsang+Noconsang = compatible if not family
+        return all(persons[0] not in person.living_bio_family for person in persons)
+
+    def are_throuple_compatible(self, persons):
+        # If all want throuple = compatible
+        if all(persons[0].in_love_as_throuple for person in persons):
+            return True
+        # If none want throuple = compatible
+        if all(persons[0].in_love_as_throuple is False for person in persons):
+            return True
+        # If throuple-with+no throuple-wish = not compatible
+        return False
+
+    def are_not_ex(self, persons):
+        # If expartners = not compatible
+        if any(persons[0] in person.ex_partners for person in persons):
+            return False
+        # If exspouses = not compatible
+        if any(persons[0] in person.ex_spouses for person in persons):
+            return False
+        return True
+
+    def are_compatible_if_minority(self, persons):
+        # If none is minority = compatible
+        if all(persons[0].is_minority is False for person in persons):
+            return True
+        # If all are minority = compatible
+        if all(persons[0].is_minority for person in persons):
+            return True
+        # If minority+liberal = compatible
+        if any(persons[0].is_liberal for person in persons):
+            return True
+        # If minority+conservative = not compatible
+        return False
