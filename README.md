@@ -8,7 +8,8 @@ So before the user starts a new game, we first populate the city with a big numb
 Then, we populate the neighborhood by choosing 10 (or whichever number of households the building has) random unrelated adults, and move them and their families to each apartment.
 So now the game can begin for the user. We start by presenting him/her the neighborhood (who lives in each household and their basic info) and then the user can time jump at any moment so that he/she can see the neighbors growing up and their life developments year by year.
 
-RULES
+**RULES**
+
 (always modifiable if needed, and many haven't been implemented yet)
 
 HOUSEHOLD
