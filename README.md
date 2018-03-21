@@ -87,30 +87,16 @@ NEIGHBORHOOD
 * Neighbors may attend one another's weddings/funerals and may react to one another's life choices. Neighbors who are friends can do activities together if shared hobbies such as tennis competitions or going to their community-shared swimming pool.
 * Two neighbors from different households who are single and are friends, can choose to live together in the same apartment. They will be added to each other's family list if they remain single and living together throughout the years.
 
-Pending:
-* Empty household must be handled
-* Empty household except for underage child must be handled
-* Pets for each household (statistical chance, statistical number and type of pets).
-* Neighborhood friendship/enmity system
-* Upper class / Middle class / Lower class for each person (statistical chance)
-* Disabilities such as autistic kids (statistical chance)
-* Addictions such as drug / alcohol addict (statistical chance), and rehabilitation options
-* Step-families
-* Gay adoption
-* Single persons adoption
-* Throuple biological / adopted children (?)
-* Consang biological / adopted children (?)
-* Consequences of coming out if conservative family (statistical chance for being thrown out / moving out / suicide)
-* Intermittent employment (statistical chance)
-* Nonbinary persons (statistical chance) and relationships (should not be called "straight" or "gay" if person has no gender)
-* Once young adult: university vs working vs not doing anything (statistical chance, and also may depend on class)
-* Personality and hobbies for neighbors
+PENDING TO BE IMPLEMENTED:
+
 * Setting option for users: realistic statistics and custom statistics (user can modify for example the statistical chance for male/female to a 20/80 ratio instead of default 50/50)
 * Save/Load game system
 * Statistics need to be further researched and adjusted to be as close to real-life as possible.
 
 Bugs:
+
 * Too many to list... Project needs bug cheking, error handling / debugging ASAP. Also, it's currently SLOW as fuck.
 
 Contribution:
+
 Please anyone feel free to create a branch and contribute regardless of programming/python skill level, as long as you know what you're doing and won't just make a mess of things lol. I am a beginner myself! :)
