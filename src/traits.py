@@ -98,6 +98,12 @@ class Traits:
     TRANSGENDER = "Transgender"
     GENDER_IDENTITIES = (CISGENDER, TRANSGENDER)
 
+    # Social class
+    UPPERCLASS = "Upperclass"
+    MIDDLECLASS = "Middleclass"
+    LOWERCLASS = "Lowerclass"
+    SOCIAL_CLASSES = (UPPERCLASS, MIDDLECLASS, LOWERCLASS)
+
     # Sexual orientations
     HETEROSEXUAL = "Heterosexual"
     HOMOSEXUAL = "Homosexual"

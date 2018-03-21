@@ -15,6 +15,7 @@ class PersonGenerator:
         # Set random surname that is unique among the population
         child.surname = self.statistics.get_surname(child, surnames)
         child.original_surname = child.surname
+        child.social_class = self.statistics.get_social_class()
         # Assign baby traits and return baby. Skip link family.
         self.set_baby_traits(child)
         return child
@@ -43,6 +44,8 @@ class PersonGenerator:
         # FATHER'S SURNAME
         baby.surname = baby.father.surname
         baby.original_surname = baby.surname
+        # FATHER'S SOCIAL CLASS
+        baby.social_class = baby.father.social_class
 
         # SIBLINGS
         baby.siblings = [

@@ -49,7 +49,7 @@ print("\nNeighbors:")
 for p in world.neighbors:
     print(p)
 
-print("\nStats, for debugging purposes:")
+print("\nStats, for debugging purposes:\n")
 for p in world.neighbors:
     attrs = vars(p)
     print(', '.join("%s: %s" % item for item in attrs.items()))

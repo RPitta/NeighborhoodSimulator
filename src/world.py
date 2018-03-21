@@ -270,12 +270,13 @@ class World:
         for household in self.households:
             print("\n***** " + str(household.apartment_id) + " ********\n")
             for person in household.members:
-                desc = "\nApartmment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nCivil Status: {}\nProfession: {}\nEmployment: {}".format(
+                desc = "\nApartmment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nProfession: {}\nEmployment: {}".format(
                     household.apartment_id,
                     person.name,
                     person.surname,
                     person.gender,
                     person.age,
+                    person.social_class,
                     person.relationship_status,
                     person.occupation,
                     person.employment

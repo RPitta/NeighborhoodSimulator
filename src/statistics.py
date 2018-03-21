@@ -62,6 +62,22 @@ class Statistics:
 
         return selected
 
+    def get_social_class(self):
+
+        options = {
+            Traits.LOWERCLASS: 10,
+            Traits.MIDDLECLASS: 80,
+            Traits.UPPERCLASS: 10
+        }
+
+        selected = self.randomizer.get_random_dict_key(options)
+
+        if selected not in Traits.SOCIAL_CLASSES:
+            raise Exception(
+                "Unexpected error occurred. Wrong social class.")
+
+        return selected
+
     def get_employment_chance(self, person):
 
         options = {
@@ -78,6 +94,12 @@ class Statistics:
         return selected
 
     def get_death_cause(self, person):
+
+        if person.death_date is False:
+            return Traits.OLD_AGE
+
+        if person.death_date < self.stages.TEEN.start:
+            return Traits.ILLNESS
 
         options_teen = {
             Traits.ILLNESS: 30,
@@ -102,6 +124,8 @@ class Statistics:
             Traits.ACCIDENT: 10
         }
 
+        if person.death_date in self.stages.CHILD.span:
+            selected = self.randomizer.get_random_dict_key(options_teen)
         if person.death_date in self.stages.TEEN.span:
             selected = self.randomizer.get_random_dict_key(options_teen)
         elif person.death_date in self.stages.YOUNGADULT.span:
@@ -111,10 +135,10 @@ class Statistics:
         elif person.death_date in self.stages.SENIOR.span:
             selected = self.randomizer.get_random_dict_key(options_senior)
         else:
-            raise Exception("Unexpected error occurred. Wrong deatraitste.")
+            raise Exception("Wrong death date.")
 
         if selected not in Traits.DEATH_CAUSES:
-            raise Exception("Unexpected error occurred. Wrong deatraitsuse.")
+            raise Exception("Wrong death cause.")
 
         return selected
 
@@ -143,6 +167,9 @@ class Statistics:
             options_before_old_age)
 
         death_date = self.randomizer.get_random_item(random_life_stage.span)
+
+        if death_date not in self.stages.LIFESPAN:
+            raise Exception("Wrong death date.")
 
         return death_date
 

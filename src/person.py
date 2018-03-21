@@ -19,6 +19,7 @@ class Person(Traits, LifeStages):
         self.sexual_orientation = None
         self.target_gender = []  # Linked to sexual_orientation
         self.relationship_orientation = None
+        self.social_class = None
 
         # Default: Alive, not adopted, not a twin or triplet
         # Single, not pregnant or in adoption process
