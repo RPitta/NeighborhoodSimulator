@@ -58,7 +58,7 @@ PREGNANCY AND ADOPTION
 * Couples can only have childen if both want to.
 * Couples can only have biological children if neither were born infertile. Otherwise, they'll resort to adoption.
 * Pregnancy and adoption can happen from age 19 until the end of the young adult stage (39). Teenage pregnancy not implemented (yet?).
-* Only 4 children at most allowed per person/couple due to having 5 or more children being an extreme rarity.
+* Only 4 children at most allowed per person/couple (excluding chance of twins/triplets) due to having 5 or more children being an extreme rarity.
 * Pregnant women can only have 1 child, twins or triplets.
 * Only 1 or 2 children can be adopted at the same time.
 * Who can have biological children: straight couples (excluding infertile couples), two (m/f) persons from a throuple (but all three will be the child's parents),  and consanguineous couples (who will have a slightly increased chance of having a disabled child). Transgender persons and asexual persons (regardless or romantic orientation) cannot.
