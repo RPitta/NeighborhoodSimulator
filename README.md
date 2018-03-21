@@ -24,7 +24,7 @@ Pending:
 * Intermittent employment (statistical chance)
 * Once young adult: university vs working vs not doing anything (statistical chance, and also may depend on class)
 * Personality and hobbies for neighbors
-* Setting option for users: realistic statistics and custom statistics (user can modify for example the statistical chance for male/female to a 20/70 ratio instead of default 50/50)
+* Setting option for users: realistic statistics and custom statistics (user can modify for example the statistical chance for male/female to a 20/80 ratio instead of default 50/50)
 * Save/Load game system
 * Statistics need to be further researched and adjusted to be as close to real-life as possible.
 
