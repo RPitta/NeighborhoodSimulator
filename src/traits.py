@@ -1,3 +1,4 @@
+import os
 from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
 
 
@@ -14,8 +15,9 @@ class Names:
         self.SURNAMES = self.get_surnames()
 
     def get_male_names(self):
-        path_males = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\male_names.txt"
-        file_males = open(path_males, "r")
+        path_males_file = os.path.dirname(os.path.realpath(__file__))
+        path_males_full = path_males_file + '\\files\\male_names.txt'
+        file_males = open(path_males_full, "r")
         names = set([x.split('\n')[0] for x in file_males.readlines()])
 
         # Validation
@@ -29,8 +31,9 @@ class Names:
         return names
 
     def get_female_names(self):
-        path_females = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\female_names.txt"
-        file_females = open(path_females, "r")
+        path_females = os.path.dirname(os.path.realpath(__file__))
+        path_males_full = path_females + '\\files\\female_names.txt'
+        file_females = open(path_males_full, "r")
         names = set([x.split('\n')[0] for x in file_females.readlines()])
 
         # Validation
@@ -44,9 +47,11 @@ class Names:
         return names
 
     def get_surnames(self):
-        path_surnames = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\surnames.txt"
-        file_surnames = open(path_surnames, "r")
-        surnames = set([x.split('\t')[0] for x in file_surnames.readlines()])
+        path_surnames_file = os.path.dirname(os.path.realpath(__file__))
+        path_surnames_full = path_surnames_file + '\\files\\surnames.txt'
+        file_surnames = open(path_surnames_full, "r")
+        surnames = set([x.split('\t')[0]
+                        for x in file_surnames.readlines()])
 
         # Validation
         # Whatever number the developer wishes to set as minimum.
@@ -69,8 +74,9 @@ class Professions:
         self.PROFESSIONS = self.get_professions()
 
     def get_professions(self):
-        path_professions = r"C:\Users\cugat\Documents\Programming\Python\NeighborhoodSimulator\src\files\professions.txt"
-        file_professions = open(path_professions, "r")
+        path_professions_file = os.path.dirname(os.path.realpath(__file__))
+        path_professions_full = path_professions_file + '\\files\\professions.txt'
+        file_professions = open(path_professions_full, "r")
         professions = set([x.split('\n')[0]
                            for x in file_professions.readlines()])
 
