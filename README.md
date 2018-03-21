@@ -1,6 +1,6 @@
 # NeighborhoodSimulator
 
-Neighboorhood Simulator is, like the name says, a simulator of a neighboorhood (a small-sized apartment building) based on real-life statistics. For example, what'd be the ratio of males/females or heterosexuals/homosexuals or married/divorced people in a neighborhood of 30 people? What are the chances that you'll see a couple give birth to twins? Or that a polyamorous person will date two persons at the same time? What if a teen comes out as transgender, or an adult couple turns out to also be full-siblings? How will the families and neighbors react to one another's life choices and developments? Which neighbors are going to be friends and which will not be able to stand each other? How will they deal with a death in the family / neighborhood?
+Neighboorhood Simulator is, as the name suggests, a simulator of a neighboorhood (a small-sized apartment building) based on real-life statistics. For example, what'd be the ratio of males/females or heterosexuals/homosexuals or married/divorced people in a neighborhood of 30 people? What are the chances that you'll see a couple give birth to twins? Or that a polyamorous person will date two persons at the same time? What if a teen comes out as transgender, or an adult couple turns out to also be full-siblings? How will the families and neighbors react to one another's life choices and developments? Which neighbors are going to be friends and which will not be able to stand each other? How will they deal with a death in the family / neighborhood?
 
 We'll assume two facts: first, the building is located a bit far from the city, so neighbors will be friendlier/closer to each other than they normally would be if they lived in a large city. And two, the location will likely be New Jersey, as very few other US states allow legal consanguinamory.
 
@@ -25,7 +25,8 @@ Pending:
 * Once young adult: university vs working vs not doing anything (statistical chance, and also may depend on class)
 * Personality and hobbies for neighbors
 * Setting option for users: realistic statistics and custom statistics (user can modify for example the statistical chance for male/female to a 20/70 ratio instead of default 50/50)
-* Save/Load system.
+* Save/Load game system
+* Statistics need to be further researched and adjusted to be as close to real-life as possible.
 
 Bugs:
 * Too many to list... Project needs bug cheking, error handling / debugging ASAP. Also, it's currently SLOW as fuck.
