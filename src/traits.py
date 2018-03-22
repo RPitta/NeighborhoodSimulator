@@ -1,93 +1,67 @@
 import os
+
 from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
 
 
-class Names:
+class Setup:
     """Initialize names and surnames from files."""
     MALE_NAMES = []
     FEMALE_NAMES = []
     SURNAMES = []
+    PROFESSIONS = []
+    MIN_WORDS = 800
 
     def __init__(self):
         self.MALE_NAMES = self.get_male_names()
         self.FEMALE_NAMES = self.get_female_names()
         self.SURNAMES = self.get_surnames()
-
-    def get_male_names(self):
-        path_males_file = os.path.dirname(os.path.realpath(__file__))
-        path_males_full = path_males_file + '\\files\\male_names.txt'
-        file_males = open(path_males_full, "r")
-        names = set([x.split('\n')[0] for x in file_males.readlines()])
-
-        # Validation
-        # Whatever number the developer wishes to set as minimum.
-        if names is None or len(names) < 1000:
-            raise Exception("List of names is empty or less than the minimum.")
-
-        names = [item.capitalize() for item in names]
-
-        file_males.close()
-        return names
-
-    def get_female_names(self):
-        path_females = os.path.dirname(os.path.realpath(__file__))
-        path_males_full = path_females + '\\files\\female_names.txt'
-        file_females = open(path_males_full, "r")
-        names = set([x.split('\n')[0] for x in file_females.readlines()])
-
-        # Validation
-        # Whatever number the developer wishes to set as minimum.
-        if names is None or len(names) < 800:
-            raise Exception("List of names is empty or less than the minimum.")
-
-        names = [item.capitalize() for item in names]
-
-        file_females.close()
-        return names
-
-    def get_surnames(self):
-        path_surnames_file = os.path.dirname(os.path.realpath(__file__))
-        path_surnames_full = path_surnames_file + '\\files\\surnames.txt'
-        file_surnames = open(path_surnames_full, "r")
-        surnames = set([x.split('\t')[0]
-                        for x in file_surnames.readlines()])
-
-        # Validation
-        # Whatever number the developer wishes to set as minimum.
-        if surnames is None or len(surnames) < 1000:
-            raise Exception(
-                "List of surnames is empty or less than the minimum.")
-
-        surnames = [item.capitalize() for item in surnames]
-
-        file_surnames.close()
-        return surnames
-
-
-class Professions:
-    """Initialize professions from file."""
-    PROFESSIONS = []
-
-    def __init__(self):
         self.PROFESSIONS = self.get_professions()
 
+    def get_male_names(self):
+        with open(self.find_file_location("male_names.txt"), "r") as file_males:
+            names = set([x.split('\n')[0] for x in file_males.readlines()])
+            self.validate_list(names)
+            names = self.capitalize_words(names)
+
+            return names
+
+    def get_female_names(self):
+        with open(self.find_file_location("female_names.txt"), "r") as file_females:
+            names = set([x.split('\n')[0] for x in file_females.readlines()])
+            self.validate_list(names)
+            names = self.capitalize_words(names)
+
+            return names
+
+    def get_surnames(self):
+        with open(self.find_file_location("surnames.txt"), "r") as file_surnames:
+            surnames = set([x.split('\t')[0] for x in file_surnames.readlines()])
+            self.validate_list(surnames)
+            surnames = self.capitalize_words(surnames)
+
+            return surnames
+
     def get_professions(self):
-        path_professions_file = os.path.dirname(os.path.realpath(__file__))
-        path_professions_full = path_professions_file + '\\files\\professions.txt'
-        file_professions = open(path_professions_full, "r")
-        professions = set([x.split('\n')[0]
-                           for x in file_professions.readlines()])
+        with open(self.find_file_location("professions.txt"), "r") as file_professions:
+            professions = set([x.split('\n')[0] for x in file_professions.readlines()])
+            self.validate_list(professions)
+            professions = self.capitalize_words(professions)
 
-        # Validation
-        # Whatever number the developer wishes to set as minimum.
-        if professions is None or len(professions) < 1000:
-            raise Exception(
-                "List of professions is empty or less than the minimum.")
+            return professions
 
-        professions = [item.capitalize() for item in professions]
+    @staticmethod
+    def find_file_location(file_name):
+        path_file = os.path.dirname(os.path.realpath(__file__))
+        path_full = path_file + '\\files\\' + file_name
+        return path_full
 
-        file_professions.close()
-        return professions
+    @staticmethod
+    def capitalize_words(lst):
+        return [item.capitalize() for item in lst]
+
+    def validate_list(self, lst):
+        if lst is None or len(lst) < self.MIN_WORDS:
+            raise Exception("Given list from file is empty or less than the minimum.")
 
 
 class Traits:
@@ -118,6 +92,8 @@ class Traits:
     BIROMANTIC_ASEXUAL = "Biromantic asexual"
     SEXUAL_ORIENTATIONS = (HETEROSEXUAL, HOMOSEXUAL, BISEXUAL, AROMANTIC_ASEXUAL,
                            HETEROROMANTIC_ASEXUAL, HOMOROMANTIC_ASEXUAL, BIROMANTIC_ASEXUAL)
+    ASEXUAL_ORIENTATIONS = (AROMANTIC_ASEXUAL, HETEROROMANTIC_ASEXUAL,
+                            HOMOROMANTIC_ASEXUAL, BIROMANTIC_ASEXUAL)
 
     SEXUAL_ORIENTATIONS_DICT = {
         "het": {
