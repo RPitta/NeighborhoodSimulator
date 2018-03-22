@@ -61,7 +61,7 @@ PREGNANCY AND ADOPTION
 * Only 4 children at most allowed per person/couple (excluding chance of twins/triplets) due to having 5 or more children being an extreme rarity.
 * Pregnant women can only have 1 child, twins or triplets.
 * Only 1 or 2 children can be adopted at the same time.
-* Who can have biological children: straight couples (excluding infertile couples), two (m/f) persons from a throuple (but all three will be the child's parents),  and consanguineous couples (who will have a slightly increased chance of having a disabled child). Transgender persons and asexual persons (regardless or romantic orientation) cannot.
+* Who can have biological children: straight couples (excluding infertile couples), two (m/f) persons from a throuple (but all three will be the child's parents), and consanguineous couples (who will have a slightly increased chance of having a disabled child). Transgender persons and asexual persons (regardless of romantic orientation) cannot.
 * Who can adopt: everyone (single persons and couples). However, only single persons who want children but do not want a committed relationship will adopt. Throuples will "officially" adopt as couples (but all three will be the child's parents), and consanguineous couples will "officially" adopt as single persons (but both will be the child's parents). 
 
 DIVORCE
