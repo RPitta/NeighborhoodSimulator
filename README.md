@@ -2,11 +2,9 @@
 
 Neighborhood Simulator is, as the name suggests, a simulator of a neighborhood (a small-sized apartment building) based on real-life statistics. For example, what'd be the ratio of males/females or heterosexuals/homosexuals or married/divorced people in a neighborhood of 30 people? What are the chances that you'll see a couple give birth to twins? Or that a polyamorous person will date two persons at the same time? What if a teen comes out as transgender, or an adult couple turns out to also be full-siblings? How will the families and neighbors react to one another's life choices and developments? Which neighbors are going to be friends and which will not be able to stand each other? How will they deal with a death in the family / neighborhood, and what are the chances of a newborn dying or a teen committing suicide?
 
-We'll assume two facts: first, the building is located a bit far from the city, so neighbors will be friendlier/closer to each other than they normally would be if they lived in a large city. And two, the location will likely be New Jersey, as very few other US states allow legal consanguinamory.
-
 So before the user starts a new game, we first populate the city with a big number of random people, and time jump until the first generation (the one that is born without parents) is dead.
 Then, we populate the neighborhood by choosing 10 (or whichever number of households the building has) random unrelated adults, and move them and their families to each apartment.
-So now the game can begin for the user. We start by presenting him/her the neighborhood (who lives in each household and their basic info) and then the user can time jump at any moment so that he/she can see the neighbors growing up and their life developments year by year.
+So now the game can begin for the user. We start by presenting him/her the neighborhood (basic info of who lives in each household) and then the user can time jump at any moment so that he/she can see the neighbors growing up and their life developments year by year.
 
 **RULES**
 
@@ -58,7 +56,7 @@ PREGNANCY AND ADOPTION
 * Couples can only have childen if both want to.
 * Couples can only have biological children if neither were born infertile. Otherwise, they'll resort to adoption.
 * Pregnancy and adoption can happen from age 19 until the end of the young adult stage (39). Teenage pregnancy not implemented (yet?).
-* Only 4 children at most allowed per person/couple (excluding chance of twins/triplets) due to having 5 or more children being an extreme rarity.
+* Only 4 children at most allowed per person/couple (excluding chance of twins/triplets) at present as it's rare to have more.
 * Pregnant women can only have 1 child, twins or triplets.
 * Only 1 or 2 children can be adopted at the same time.
 * Who can have biological children: straight couples (excluding infertile couples), two (m/f) persons from a throuple (but all three will be the child's parents), and consanguineous couples (who will have a slightly increased chance of having a disabled child). Transgender persons and asexual persons (regardless of romantic orientation) cannot.
@@ -82,11 +80,25 @@ MINORITIES
 * Relationships between minority and non-minority (for example, between transgender/cisgender or mono/poly, can only happen if the non-minority person is liberal)
 
 NEIGHBORHOOD
+* Located a bit far from the city, so neighbors will be friendlier/closer to each other than they normally would be if they lived in a large city. 
+* Its location will likely be New Jersey, as very few other US states allow legal consanguinamory.
 * Neighbors can date each other, become friends, enemies, or neutral (by default). Will depend on age, personality and other traits. 
 * If two kids from two different households become friends, there's a good chance that their parents will also become friends.
 * If two households do not stand each other and their kids become friends/lovers, the families may oppose it (and either succeed in breaking them up, or fail and either learn to accept the relationship or watch them move out)
 * Neighbors may attend one another's weddings/funerals and may react to one another's life choices. Neighbors who are friends can do activities together if shared hobbies such as tennis competitions or going to their community-shared swimming pool.
 * Two neighbors from different households who are single and are friends, can choose to live together in the same apartment. They will be added to each other's family list if they remain single and living together throughout the years.
+
+PERSONALITY AND HOBBIES
+Personality traits (neighborhood)
+* Friendly - persons with this trait will easily befriend other friendly neighbors
+* Loner - persons with this trait will generally stay neutral / not befriend other neighbors (exceptions may occur)
+* Mean - persons with this trait are often nosy and nasty and might have enemies within the neighborhood
+Hobbies (neighborhood):
+* Tennis
+* Soccer
+* Swimming
+* Working on the community garden
+* Picnic
 
 PENDING TO BE IMPLEMENTED:
 
