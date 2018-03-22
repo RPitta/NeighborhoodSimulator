@@ -5,7 +5,7 @@ from utilities.randomizer import Randomizer
 from utilities.compatibility import Compatibility
 
 
-class CoupleCreator:
+class CityCoupleCreator:
 
     def __init__(self):
         self.randomizer = Randomizer()
@@ -35,8 +35,6 @@ class CoupleCreator:
         self.set_as_partner(person, found_person1, found_person2)
         self.update_relationship_status_to_committed(
             person, found_person1, found_person2)
-        self.display_new_relationship_message(
-            person, found_person1, found_person2)
         throuple = self.create_new_relationship(
             person, found_person1, found_person2)
 
@@ -46,7 +44,6 @@ class CoupleCreator:
         found_person = self.get_random_candidate(candidates)
         self.set_as_partner(person, found_person)
         self.update_relationship_status_to_committed(person, found_person)
-        self.display_new_relationship_message(person, found_person)
         couple = self.create_new_relationship(person, found_person)
 
         return couple
@@ -114,10 +111,3 @@ class CoupleCreator:
         else:
             new_throuple = Throuple(person1, person2, person3)
             return new_throuple
-
-    def display_new_relationship_message(self, person, found_person, found_person2=None):
-        if found_person2 is None:
-            print("\n{} has started dating {}.\n".format(person, found_person))
-        else:
-            print("\n{} has started dating {} and {}.\n".format(
-                person, found_person, found_person2))

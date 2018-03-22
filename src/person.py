@@ -13,7 +13,7 @@ class Person(Traits, LifeStages):
         self.original_surname = self.surname  # Depends on surname
 
         # Basics
-        self.household_id = None
+        self.is_neighbor = False
         self.gender = gender
         self.gender_identity = None  # Linked to gender
         self.sexual_orientation = None
@@ -59,7 +59,7 @@ class Person(Traits, LifeStages):
         self.in_love_with_intergenerational = False
         self.in_love_as_throuple = False
 
-        # Relationships and children future dates -> will be set once Young Adult
+        # Relationships and children future dates
         self.in_love_date = -1
         self.come_out_date = -1
 

@@ -2,7 +2,7 @@ from traits import Traits
 from person import Person
 
 
-class PersonGenerator:
+class BabyGenerator:
 
     def __init__(self, stages, statistics):
         self.stages = stages
@@ -17,7 +17,7 @@ class PersonGenerator:
         child.original_surname = child.surname
         child.social_class = self.statistics.get_social_class()
         # Assign baby traits and return baby. Skip link family.
-        self.set_baby_traits(child)
+        self.set_baby_essential_traits(child)
         return child
 
     def generate_baby(self, couple):
@@ -25,7 +25,7 @@ class PersonGenerator:
         baby = Person(self.statistics.get_gender(), self.stages.BABY)
 
         self.link_family(baby, couple)
-        self.set_baby_traits(baby)
+        self.set_baby_essential_traits(baby)
         self.baby_validation(baby)
         return baby
 
@@ -84,7 +84,7 @@ class PersonGenerator:
                 if cousin not in baby.cousins:
                     baby.cousins.append(cousin)
 
-    def set_baby_traits(self, baby):
+    def set_baby_essential_traits(self, baby):
         """Gives baby/person a random name, target gender, death date/cause and fertility."""
         baby.name = self.statistics.get_name(baby)
         baby.death_date = self.statistics.get_death_date(baby)

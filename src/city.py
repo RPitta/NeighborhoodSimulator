@@ -1,12 +1,7 @@
-from handler import *
-from utilities.randomizer import Randomizer
+from city_handler import *
 
 
 class City:
-
-    NEIGHBOORHOOD_APARTMENTS = 10
-    NEIGHBOORHOOD_FAMILIES = NEIGHBOORHOOD_APARTMENTS
-    FAMILY_IDS = NEIGHBOORHOOD_APARTMENTS
 
     def __init__(self, generator, developer, couple_creator, stages, relationship_developer, statistics):
         self.generator = generator
@@ -26,13 +21,19 @@ class City:
         self.divorce_handler = DivorceHandler()
         self.death_handler = DeathHandler()
 
-        self.couples = []
+        self.city_couples = []
         self.population = []
+
+        # Populate city
         self.populate_city()
 
     @property
     def living_population(self):
         return [person for person in self.population if person.is_alive]
+
+    @property
+    def living_outsiders(self):
+        return [person for person in self.living_population if person.is_neighbor is False]
 
     @property
     def dead_population(self):
@@ -44,55 +45,62 @@ class City:
 
     @property
     def romanceable_outsiders(self):
-        return [person for person in self.living_population if person.is_romanceable]
+        """Returns all city inhabitats that are dating and do not live in the neighborhood."""
+        return [person for person in self.living_population if person.is_romanceable and person.is_neighbor is False]
 
     # ACTIONS
 
     def populate_city(self):
-
+        """Populate the city with X number of random people.
+        Starting at the Child stage so that they can be set with essential traits once they reach the teen stage."""
         for _ in (number+1 for number in range(20)):
             person = self.generator.create_first_child(
                 self.population_surnames)
+            # Add each person to city's population.
             self.population.append(person)
 
-    def time_jump(self):
+    def time_jump_city(self):
+        """Ages up city inhabitants."""
+        for person in self.living_outsiders:
+            self.do_person_action(person)
 
-        for person in self.living_population:
-            person = self.personal_handler.age_up(person)
-
-            if person.is_come_out_date:
-                person = self.personal_handler.come_out(person)
-
-            if person.is_romanceable:
-                # Create new couple if successful match
-                couple = self.couple_creator.create_couple(
-                    person, self.romanceable_outsiders)
-
-                if couple is False:
-                    pass
-                else:
-                    # Else, set couple traits
-                    couple = self.relationship_developer.set_new_couple_traits(
-                        couple)
-                    # Set new love date for polys
-                    couple = self.person_developer.set_new_love_date_for_polys(
-                        couple)
-                    # Add couple to couples list
-                    self.couples.append(couple)
-
-        # Remove dead couples
+            # Remove dead couples
         self.remove_dead_and_brokenup_couples()
 
-        for couple in self.couples:
+        for couple in self.city_couples:
             self.do_couple_action(couple)
 
         # Remove broken-up couples
         self.remove_dead_and_brokenup_couples()
 
     def remove_dead_and_brokenup_couples(self):
-        if self.couples is not None and len(self.couples) > 0:
-            self.couples = [couple for couple in self.couples if all(
-                p.is_alive and (p.is_committed or p.is_married_or_remarried) for p in couple.persons)]
+        """Remove city couples that are dead, have broken up, or live in the neighborhood."""
+        if self.city_couples is not None and len(self.city_couples) > 0:
+            self.city_couples = [couple for couple in self.city_couples if all(
+                p.is_alive and (p.is_committed or p.is_married_or_remarried) and p.is_neighbor is False for p in couple.persons)]
+
+    def do_person_action(self, person):
+        person = self.personal_handler.age_up(person)
+
+        if person.is_come_out_date:
+            self.personal_handler.come_out(person)
+
+        if person.is_romanceable:
+            # Create new couple if successful match
+            couple = self.couple_creator.create_couple(
+                person, self.romanceable_outsiders)
+
+            if couple is False:
+                pass
+            else:
+                # Else, set couple traits
+                couple = self.relationship_developer.set_new_couple_traits(
+                    couple)
+                # Set new love date for polys
+                couple = self.person_developer.set_new_love_date_for_polys(
+                    couple)
+                # Add couple to couples list
+                self.city_couples.append(couple)
 
     def do_couple_action(self, couple):
 
