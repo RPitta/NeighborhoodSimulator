@@ -1,10 +1,27 @@
-class LifeStage:
+from abc import ABCMeta, abstractmethod
+
+
+class LifeStage(metaclass=ABCMeta):
 
     def __init__(self):
-        self._stage = None
+        self.stage = None
         self._start = None
         self._end = None
-        self._span = range(0, 0)
+        self._span = list(range(0, 0))
+
+    def __hash__(self):
+        return 1
+
+    def __eq__(self, other):
+        """Override the default Equals behavior"""
+        return self.stage == other.stage
+
+    def __ne__(self, other):
+        """Override the default Unequal behavior"""
+        return self.stage != other.stage
+
+    def __str__(self):
+        return self.stage
 
     @property
     def start(self):
@@ -19,6 +36,7 @@ class LifeStage:
         return self._span
 
     @property
+    @abstractmethod
     def next_stage(self):
         raise NotImplementedError
 
@@ -26,24 +44,10 @@ class LifeStage:
 class Baby(LifeStage):
 
     def __init__(self):
-        self._stage = "Baby"
+        self.stage = "Baby"
         self._start = 0
         self._end = 3
-        self._span = range(self._start, self._end + 1)
-
-    def __hash__(self):
-        return 1
-
-    def __eq__(self, other):
-        """Override the default Equals behavior"""
-        return self._stage == other._stage
-
-    def __ne__(self, other):
-        """Override the default Unequal behavior"""
-        return self._stage != other._stage
-
-    def __str__(self):
-        return self._stage
+        self._span = list(range(self._start, self._end + 1))
 
     @property
     def next_stage(self):
@@ -53,24 +57,10 @@ class Baby(LifeStage):
 class Child(LifeStage):
 
     def __init__(self):
-        self._stage = "Child"
+        self.stage = "Child"
         self._start = 4
         self._end = 12
-        self._span = range(self._start, self._end + 1)
-
-    def __hash__(self):
-        return 1
-
-    def __eq__(self, other):
-        """Override the default Equals behavior"""
-        return self._stage == other._stage
-
-    def __ne__(self, other):
-        """Override the default Unequal behavior"""
-        return self._stage != other._stage
-
-    def __str__(self):
-        return self._stage
+        self._span = list(range(self._start, self._end + 1))
 
     @property
     def next_stage(self):
@@ -80,24 +70,10 @@ class Child(LifeStage):
 class Teen(LifeStage):
 
     def __init__(self):
-        self._stage = "Teen"
+        self.stage = "Teen"
         self._start = 13
         self._end = 17
-        self._span = range(self._start, self._end + 1)
-
-    def __hash__(self):
-        return 1
-
-    def __eq__(self, other):
-        """Override the default Equals behavior"""
-        return self._stage == other._stage
-
-    def __ne__(self, other):
-        """Override the default Unequal behavior"""
-        return self._stage != other._stage
-
-    def __str__(self):
-        return self._stage
+        self._span = list(range(self._start, self._end + 1))
 
     @property
     def next_stage(self):
@@ -107,24 +83,10 @@ class Teen(LifeStage):
 class YoungAdult(LifeStage):
 
     def __init__(self):
-        self._stage = "Young Adult"
+        self.stage = "Young Adult"
         self._start = 18
         self._end = 39
-        self._span = range(self._start, self._end + 1)
-
-    def __hash__(self):
-        return 1
-
-    def __eq__(self, other):
-        """Override the default Equals behavior"""
-        return self._stage == other._stage
-
-    def __ne__(self, other):
-        """Override the default Unequal behavior"""
-        return self._stage != other._stage
-
-    def __str__(self):
-        return self._stage
+        self._span = list(range(self._start, self._end + 1))
 
     @property
     def next_stage(self):
@@ -134,24 +96,10 @@ class YoungAdult(LifeStage):
 class Adult(LifeStage):
 
     def __init__(self):
-        self._stage = "Adult"
+        self.stage = "Adult"
         self._start = 40
         self._end = 59
-        self._span = range(self._start, self._end + 1)
-
-    def __hash__(self):
-        return 1
-
-    def __eq__(self, other):
-        """Override the default Equals behavior"""
-        return self._stage == other._stage
-
-    def __ne__(self, other):
-        """Override the default Unequal behavior"""
-        return self._stage != other._stage
-
-    def __str__(self):
-        return self._stage
+        self._span = list(range(self._start, self._end + 1))
 
     @property
     def next_stage(self):
@@ -161,24 +109,10 @@ class Adult(LifeStage):
 class Senior(LifeStage):
 
     def __init__(self):
-        self._stage = "Senior"
+        self.stage = "Senior"
         self._start = 60
         self._end = 79
-        self._span = range(self._start, self._end + 1)
-
-    def __hash__(self):
-        return 1
-
-    def __eq__(self, other):
-        """Override the default Equals behavior"""
-        return self._stage == other._stage
-
-    def __ne__(self, other):
-        """Override the default Unequal behavior"""
-        return self._stage != other._stage
-
-    def __str__(self):
-        return self._stage
+        self._span = list(range(self._start, self._end + 1))
 
     @property
     def next_stage(self):
