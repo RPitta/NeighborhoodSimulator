@@ -5,9 +5,8 @@ from traits import Traits
 
 class Statistics:
 
-    def __init__(self, names, professions, stages):
-        self.names = names
-        self.professions = professions
+    def __init__(self, setup, stages):
+        self.setup = setup
         self.stages = stages
         self.randomizer = Randomizer()
 
@@ -16,9 +15,9 @@ class Statistics:
         unique = False
         while not unique:
             if person.is_male:
-                name = self.randomizer.get_random_item(self.names.MALE_NAMES)
+                name = self.randomizer.get_random_item(self.setup.MALE_NAMES)
             else:
-                name = self.randomizer.get_random_item(self.names.FEMALE_NAMES)
+                name = self.randomizer.get_random_item(self.setup.FEMALE_NAMES)
             unique = name not in person.get_siblings_names(
             ) and name not in person.get_cousins_names()
         return name
@@ -26,10 +25,10 @@ class Statistics:
     def get_surname(self, person, unavailable_surnames=None):
         """Returns a surname from provided list that is unique among the population."""
         if unavailable_surnames is None:
-            return self.randomizer.get_random_item(self.names.SURNAMES)
+            return self.randomizer.get_random_item(self.setup.SURNAMES)
         unique = False
         while not unique:
-            surname = self.randomizer.get_random_item(self.names.SURNAMES)
+            surname = self.randomizer.get_random_item(self.setup.SURNAMES)
             unique = surname not in unavailable_surnames
         return surname
 

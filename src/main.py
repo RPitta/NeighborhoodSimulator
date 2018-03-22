@@ -3,7 +3,7 @@
 import sys
 import abc
 from statistics import Statistics
-from traits import Names, Professions, LifeStages
+from traits import Setup, LifeStages
 from baby_generator import BabyGenerator
 from person_developer import PersonDeveloper
 from couple_developer import CoupleDeveloper
@@ -13,16 +13,15 @@ from city import City
 from neighborhood import Neighborhood
 
 # Initialize Names, Professions and LifeStages
-names = Names()
-professions = Professions()
+setup = Setup()
 life_stages = LifeStages()
 
 # Initialize statistics with names, professions, stages
-statistics = Statistics(names, professions, life_stages)
+statistics = Statistics(setup, life_stages)
 
 # Initialize person generator
 baby_generator = BabyGenerator(life_stages, statistics)
-person_developer = PersonDeveloper(names, professions, life_stages, statistics)
+person_developer = PersonDeveloper(setup, life_stages, statistics)
 city_couple_creator = CityCoupleCreator()
 couple_creator = CoupleCreator()
 couple_developer = CoupleDeveloper(statistics)

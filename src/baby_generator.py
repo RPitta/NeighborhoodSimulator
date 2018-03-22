@@ -9,16 +9,15 @@ class BabyGenerator:
         self.statistics = statistics
 
     def create_first_child(self, surnames):
-        """Generates new child without family to populate city.
-        Random surname that is unique among the population."""
+        """Generates new child without family to populate city."""
         child = Person(self.statistics.get_gender(), self.stages.CHILD)
-
         self.set_first_child_traits(child, surnames)
         self.set_baby_essential_traits(child)
 
         return child
 
     def set_first_child_traits(self, child, surnames):
+        """Set statistical social class and random surname that is unique among the population."""
         child.surname = self.statistics.get_surname(child, surnames)
         child.original_surname = child.surname
         child.social_class = self.statistics.get_social_class()
@@ -33,7 +32,6 @@ class BabyGenerator:
     def generate_baby(self, couple):
         """Generates baby from given couple."""
         baby = Person(self.statistics.get_gender(), self.stages.BABY)
-
         self.link_family(baby, couple)
         self.set_baby_essential_traits(baby)
         self.baby_validation(baby)

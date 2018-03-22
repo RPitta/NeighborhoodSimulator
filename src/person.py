@@ -3,7 +3,7 @@ from traits import Traits, LifeStages
 
 class Person(Traits, LifeStages):
     def __init__(self, gender, stage):
-
+        self.gender = gender
         self.stage = stage
         self.age = self.stage.start
 
@@ -13,14 +13,12 @@ class Person(Traits, LifeStages):
         self.original_surname = self.surname  # Depends on surname
 
         # Basics
-        self.apartment_id = -1
-        self.is_neighbor = False
-        self.gender = gender
         self.gender_identity = None  # Linked to gender
         self.sexual_orientation = None
         self.target_gender = []  # Linked to sexual_orientation
         self.relationship_orientation = None
         self.social_class = None
+        self.can_have_bio_children = False
 
         # Default: Alive, not adopted, not a twin or triplet
         # Single, not pregnant or in adoption process
@@ -50,29 +48,30 @@ class Person(Traits, LifeStages):
         self.grandparents = []
         self.grandchildren = []
 
-        # Personality (Defaults all False)
-        self.can_have_bio_children = False
-        self.is_liberal = None  # Not applicable until young adult stage
+        # Death (Default: Old age)
+        self.death_date = False
+        self.death_cause = self.OLD_AGE  # Depends on death_date
+
+        # Will be intitialized once Teen if applicable
+        self.come_out_date = -1
+
+        # Relationship traits -> Will be intitialized once Young Adult
+        self.is_liberal = None
         self.wants_domestic_partnership = False
         self.wants_marriage = False
         self.wants_children = False
         self.in_love_with_family = False
         self.in_love_with_intergenerational = False
         self.in_love_as_throuple = False
-
-        # Relationships and children future dates
         self.in_love_date = -1
-        self.come_out_date = -1
 
         # Professions -> Will be intitialized once Young Adult
         self.occupation = None
         self.employment = None
 
-        # Death (Default: Old age)
-        self.death_date = False
-        self.death_cause = self.OLD_AGE  # Depends on death_date
-
-    # READ ONLY PROPERTIES
+        # Will be intitialized if within Neighborhood
+        self.apartment_id = -1
+        self.is_neighbor = False
 
     def __str__(self):
         return self.fullname
@@ -114,7 +113,7 @@ class Person(Traits, LifeStages):
 
     @property
     def is_asexual(self):
-        return self.sexual_orientation in [self.AROMANTIC_ASEXUAL, self.HETEROROMANTIC_ASEXUAL, self.HOMOROMANTIC_ASEXUAL, self.BIROMANTIC_ASEXUAL]
+        return self.sexual_orientation in self.ASEXUAL_ORIENTATIONS
 
     @property
     def is_trans(self):
@@ -192,16 +191,11 @@ class Person(Traits, LifeStages):
         Poly person has max number of partners, or a spouse + remaining possible number of partners until max."""
         if self.is_mono:
             return self.partner is not None or self.spouse is not None
-        else:
-            if len(self.partners) >= self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS:
-                return True
-            if self.spouse is not None and (1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS:
-                return True
-            return False
+        return len(self.partners) >= self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS or self.spouse is not None and (1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
 
     @property
     def is_romanceable(self):
-        """Returns true if: person is alive, of age, wants partnership, have reached their dateable date, and are not fully partnered."""
+        """Returns true if: person is alive, of age, wants partnership, has reached their dateable date, and is not fully partnered."""
         return self.wants_domestic_partnership and self.is_alive and self.is_of_age and not self.is_fully_partnered and self.in_love_date <= self.age
 
     # FUTURE DATES
@@ -252,7 +246,7 @@ class Person(Traits, LifeStages):
 
     @property
     def living_bio_family(self):
-        """Returns all living family members."""
+        """Returns all living biological family members."""
         return [family_member for family_member in self.bio_family if family_member.is_alive]
 
     @property
@@ -314,4 +308,4 @@ class Person(Traits, LifeStages):
     def get_names_list(self, lst):
         if lst is None or len(lst) == 0:
             return "None"
-        return ', '.join(map(str, [person.name for person in lst]))
+        return ', '.join(map(str, [p.name for p in lst]))

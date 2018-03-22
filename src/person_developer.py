@@ -5,9 +5,8 @@ from utilities.compatibility import Compatibility
 
 class PersonDeveloper:
 
-    def __init__(self, names, professions, life_stages, statistics):
-        self.names = names
-        self.professions = professions
+    def __init__(self, setup, life_stages, statistics):
+        self.setup = setup
         self.stages = life_stages
         self.statistics = statistics
         self.randomizer = Randomizer()
@@ -70,7 +69,7 @@ class PersonDeveloper:
 
         # Set profession
         person.occupation = self.randomizer.get_random_item(
-            self.professions.PROFESSIONS)
+            self.setup.PROFESSIONS)
         person.employment = self.statistics.get_employment_chance(person)
 
         # Set relationship orientation (mono/poly)
