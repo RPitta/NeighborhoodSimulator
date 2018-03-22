@@ -89,11 +89,15 @@ NEIGHBORHOOD
 * Two neighbors from different households who are single and are friends, can choose to live together in the same apartment. They will be added to each other's family list if they remain single and living together throughout the years.
 
 PERSONALITY AND HOBBIES
+
 Personality traits (neighborhood)
+
 * Friendly - persons with this trait will easily befriend other friendly neighbors
 * Loner - persons with this trait will generally stay neutral / not befriend other neighbors (exceptions may occur)
 * Mean - persons with this trait are often nosy and nasty and might have enemies within the neighborhood
+
 Hobbies (neighborhood):
+
 * Tennis
 * Soccer
 * Swimming
