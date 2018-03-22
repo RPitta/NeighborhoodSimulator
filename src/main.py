@@ -43,28 +43,20 @@ neighborhood.populate_neighborhood(city.living_population, city.city_couples)
 # Display their stats (debugging purposes)
 neighborhood.display_households()
 
-print("\nNeighbors:\n")
-for p in neighborhood.neighbors:
-    print(p)
-
-print("\nStats, for debugging purposes:\n")
-for p in neighborhood.neighbors:
-    attrs = vars(p)
-    print(', '.join("%s: %s" % item for item in attrs.items()))
-    print()
-
 print()
 for _ in range(10):
     city.time_jump_city()
     neighborhood.time_jump_neighborhood(city.romanceable_outsiders)
 
-
 for neighbor in neighborhood.neighbors:
     # Update city population with neighborhood newborns
     if neighbor not in city.population:
         city.population.append(neighbor)
-    # Then remove dead neighbors from neighbors list
+    # Then remove dead neighbors from neighbors list and their assigned household
     if neighbor.is_alive is False:
+        for household in neighborhood.households:
+            if neighbor.apartment_id == household.apartment_id:
+                household.remove_member(neighbor)
         neighborhood.neighbors.remove(neighbor)
 
 print("\nStats, for debugging purposes:\n")

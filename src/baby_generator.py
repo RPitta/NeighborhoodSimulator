@@ -46,6 +46,8 @@ class BabyGenerator:
         baby.original_surname = baby.surname
         # FATHER'S SOCIAL CLASS
         baby.social_class = baby.father.social_class
+        # MOTHER'S APARTMENT ID
+        baby.apartment_id = baby.mother.apartment_id
 
         # SIBLINGS
         baby.siblings = [

@@ -13,6 +13,7 @@ class Person(Traits, LifeStages):
         self.original_surname = self.surname  # Depends on surname
 
         # Basics
+        self.apartment_id = -1
         self.is_neighbor = False
         self.gender = gender
         self.gender_identity = None  # Linked to gender

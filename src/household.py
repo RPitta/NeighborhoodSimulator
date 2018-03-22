@@ -15,21 +15,30 @@ class Household:
         return self.pets_list
 
     def add_member(self, person):
+        """Add member and set matching apartment IDs."""
         self.members_list.append(person)
+        person.apartment_id = self.apartment_id
 
     def remove_member(self, person):
+        """Remove member and their apartment id."""
+        person.apartment_id = -1
         self.members_list.remove(person)
 
     def add_pet(self, pet):
+        """Add pet and set matching apartment IDs."""
         self.pets_list.append(pet)
+        pet.apartment_id = self.apartment_id
 
     def remove_pet(self, pet):
+        """Remove pet and its apartment id."""
+        pet.apartment_id = self.apartment_id
         self.pets_list.remove(pet)
 
     def display(self):
         print("\n***** Apartment ID " + str(self.apartment_id) + " ********")
         for person in self.members:
-            desc = "\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nProfession: {}\nEmployment: {}".format(
+            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nProfession: {}\nEmployment: {}".format(
+                person.apartment_id,
                 person.name,
                 person.surname,
                 person.gender,
