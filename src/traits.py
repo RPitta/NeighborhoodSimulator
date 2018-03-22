@@ -13,10 +13,13 @@ class Names:
         self.FEMALE_NAMES = self.get_female_names()
         self.SURNAMES = self.get_surnames()
 
+    def find_file_location(self, file_name):
+        path_file = os.path.dirname(os.path.realpath(__file__))
+        path_full = path_file + '\\files\\' + file_name
+        return path_full
+
     def get_male_names(self):
-        path_males_file = os.path.dirname(os.path.realpath(__file__))
-        path_males_full = path_males_file + '\\files\\male_names.txt'
-        file_males = open(path_males_full, "r")
+        file_males = open(self.find_file_location('male_names.txt'), "r")
         names = set([x.split('\n')[0] for x in file_males.readlines()])
 
         # Validation
@@ -30,9 +33,7 @@ class Names:
         return names
 
     def get_female_names(self):
-        path_females = os.path.dirname(os.path.realpath(__file__))
-        path_males_full = path_females + '\\files\\female_names.txt'
-        file_females = open(path_males_full, "r")
+        file_females = open(self.find_file_location('female_names.txt'), "r")
         names = set([x.split('\n')[0] for x in file_females.readlines()])
 
         # Validation
@@ -46,9 +47,7 @@ class Names:
         return names
 
     def get_surnames(self):
-        path_surnames_file = os.path.dirname(os.path.realpath(__file__))
-        path_surnames_full = path_surnames_file + '\\files\\surnames.txt'
-        file_surnames = open(path_surnames_full, "r")
+        file_surnames = open(self.find_file_location('surnames.txt'), "r")
         surnames = set([x.split('\t')[0]
                         for x in file_surnames.readlines()])
 
@@ -71,10 +70,13 @@ class Professions:
     def __init__(self):
         self.PROFESSIONS = self.get_professions()
 
+    def find_file_location(self, file_name):
+        path_file = os.path.dirname(os.path.realpath(__file__))
+        path_full = path_file + '\\files\\' + file_name
+        return path_full
+
     def get_professions(self):
-        path_professions_file = os.path.dirname(os.path.realpath(__file__))
-        path_professions_full = path_professions_file + '\\files\\professions.txt'
-        file_professions = open(path_professions_full, "r")
+        file_professions = open(self.find_file_location('professions.txt'), "r")
         professions = set([x.split('\n')[0]
                            for x in file_professions.readlines()])
 
