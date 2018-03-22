@@ -2,9 +2,9 @@
 
 Neighborhood Simulator is, as the name suggests, a simulator of a neighborhood (a small-sized apartment building) based on real-life statistics. For example, what'd be the ratio of males/females or heterosexuals/homosexuals or married/divorced people in a neighborhood of 30 people? What are the chances that you'll see a couple give birth to twins? Or that a polyamorous person will date two persons at the same time? What if a teen comes out as transgender, or an adult couple turns out to also be full-siblings? How will the families and neighbors react to one another's life choices and developments? Which neighbors are going to be friends and which will not be able to stand each other? How will they deal with a death in the family / neighborhood, and what are the chances of a newborn dying or a teen committing suicide?
 
-So before the user starts a new game, we first populate the city with a big number of random people, and time jump until the first generation (the one that is born without parents) is dead.
+So before the player starts a new game, we first populate the city with a big number of random people, and time jump until the first generation (the one that is born without parents) is dead.
 Then, we populate the neighborhood by choosing 10 (or whichever number of households the building has) random unrelated adults, and move them and their families to each apartment.
-So now the game can begin for the user. We start by presenting him/her the neighborhood (basic info of who lives in each household) and then the user can time jump at any moment so that he/she can see the neighbors growing up and their life developments year by year.
+So now the game can begin for the player. We start by presenting him/her the neighborhood (basic info of who lives in each household) and then the user can time jump at any moment so that he/she can see the neighbors growing up and their life developments year by year.
 
 **RULES**
 
@@ -25,7 +25,7 @@ BABIES
 
 DEATH
 * Death can happen at any age starting from age 1. Old age set at 80 at the moment, but should be increased.
-* Possible death causes depend on age: if baby/child, it can only be from an illness. Otherwise, it can be from an illness, (road) accident, suicide, overdose, or old age.
+* Possible death causes depend on age: if baby/child, it can only be from an illness. Teens can die from illness or suicide. Adults can die from an illness, (road) accident, suicide, overdose, or old age if seniors.
 * A dead family member can cause their parent/sibling/child/partner to become depressed; they will either recover through therapy, or commit suicide.
 * If one person from an unmarried couple dies, the other one will have a civil status of Single. If married, they will be Widowed.
 * Death in the neighborhood will cause reactions / funeral attendance by the neighbors.
@@ -46,7 +46,7 @@ RELATIONSHIPS
 * Persons can start getting into committed relationships once young adults (18). Teenage "crushes" not implemented (yet?).
 * Persons realize their relationship orientation (monoamorous/polyamorous) at 18+.
 * Poly persons can only date 2 persons at the same time. (Should increase this in the future?)
-* Intergenerational relationships are considered to be relationships with at least a 20-year age difference (youngest must always be of age).
+* Intergenerational relationships are considered to be relationships with at least a 20-year age difference (youngest one must always be of age).
 * Throuples (or triads) are considered to be relationships between three poly persons all romantically involved with each other.
 * Consanguineous relationships are considered to be relationships between adult relatives (by blood or adoption); sibling/sibling or half-sibling/half-sibling, parent/child, cousin/cousin and uncle-aunt/niece-nephew. Grandparent/grandchild not allowed due to its extreme rarity. Romantic relationships between step-relatives and in-laws count as typical straight/gay but may also be subject to family/neighborhood reactions.
 * Who can have committed relationships: everyone except aromantic asexuals (and those who wish to be single, obviously).
@@ -86,17 +86,30 @@ NEIGHBORHOOD
 * If two kids from two different households become friends, there's a good chance that their parents will also become friends.
 * If two households do not stand each other and their kids become friends/lovers, the families may oppose it (and either succeed in breaking them up, or fail and either learn to accept the relationship or watch them move out)
 * Neighbors may attend one another's weddings/funerals and may react to one another's life choices. Neighbors who are friends can do activities together if shared hobbies such as tennis competitions or going to their community-shared swimming pool.
-* Two neighbors from different households who are single and are friends, can choose to live together in the same apartment. They will be added to each other's family list if they remain single and living together throughout the years.
+* Two neighbors from different households who are single (or divorced/widowed) and are friends, can choose to live together in the same apartment. They will be added to each other's family list if they remain single and living together throughout the years.
 
 PERSONALITY AND HOBBIES
 
-Personality traits (neighborhood)
+Personality traits
+
+* Liberal - will be able to date minority groups and be supportive if their children or other relatives are minorities or make atypical life choices.
+* Conservative - will not be able to date minority groups and may be unsupportive of their minority children.
+* Pet lover - will have pets in their apartment
+* Pet hater - will not want pets
+
+Relationship oriented:
+
+* Wants committed partnership / Does not want committed partnership
+* Wants marriage / Does not want marriage
+* Wants children / Does not want children
+
+Personality traits (re:neighborhood)
 
 * Friendly - persons with this trait will easily befriend other friendly neighbors
 * Loner - persons with this trait will generally stay neutral / not befriend other neighbors (exceptions may occur)
 * Mean - persons with this trait are often nosy and nasty and might have enemies within the neighborhood
 
-Hobbies (neighborhood):
+Hobbies (re:neighborhood):
 
 * Tennis
 * Soccer
