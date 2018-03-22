@@ -3,13 +3,12 @@ from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
 
 
 class Names:
-
+    """Initialize names and surnames from files."""
     MALE_NAMES = []
     FEMALE_NAMES = []
     SURNAMES = []
 
     def __init__(self):
-        # Initialize names from files
         self.MALE_NAMES = self.get_male_names()
         self.FEMALE_NAMES = self.get_female_names()
         self.SURNAMES = self.get_surnames()
@@ -66,11 +65,10 @@ class Names:
 
 
 class Professions:
-
+    """Initialize professions from file."""
     PROFESSIONS = []
 
     def __init__(self):
-        # Initialize professions from file
         self.PROFESSIONS = self.get_professions()
 
     def get_professions(self):
@@ -93,7 +91,7 @@ class Professions:
 
 
 class Traits:
-
+    """Global variables for person traits."""
     # Genders
     MALE = "Male"
     FEMALE = "Female"
@@ -187,7 +185,7 @@ class Traits:
 
 
 class LifeStages:
-
+    """Global variables for instantiated life stages."""
     BABY = Baby()
     CHILD = Child()
     TEEN = Teen()
@@ -195,4 +193,4 @@ class LifeStages:
     ADULT = Adult()
     SENIOR = Senior()
     LIFESTAGES = (BABY, CHILD, TEEN, YOUNGADULT, ADULT, SENIOR)
-    LIFESPAN = range(BABY.start, SENIOR.end + 1)
+    LIFESPAN = list(range(BABY.start, SENIOR.end + 1))

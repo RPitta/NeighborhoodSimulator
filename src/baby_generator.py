@@ -9,16 +9,26 @@ class BabyGenerator:
         self.statistics = statistics
 
     def create_first_child(self, surnames):
-        """Generates new child without family to populate world."""
+        """Generates new child without family to populate city.
+        Random surname that is unique among the population."""
         child = Person(self.statistics.get_gender(), self.stages.CHILD)
 
-        # Set random surname that is unique among the population
+        self.set_first_child_traits(child, surnames)
+        self.set_baby_essential_traits(child)
+
+        return child
+
+    def set_first_child_traits(self, child, surnames):
         child.surname = self.statistics.get_surname(child, surnames)
         child.original_surname = child.surname
         child.social_class = self.statistics.get_social_class()
-        # Assign baby traits and return baby. Skip link family.
-        self.set_baby_essential_traits(child)
-        return child
+
+    def set_baby_essential_traits(self, baby):
+        """Gives baby a random name, target gender, death date/cause and fertility."""
+        baby.name = self.statistics.get_name(baby)
+        baby.death_date = self.statistics.get_death_date(baby)
+        baby.death_cause = self.statistics.get_death_cause(baby)
+        baby.can_have_bio_children = self.statistics.get_fertility(baby)
 
     def generate_baby(self, couple):
         """Generates baby from given couple."""
@@ -27,6 +37,7 @@ class BabyGenerator:
         self.link_family(baby, couple)
         self.set_baby_essential_traits(baby)
         self.baby_validation(baby)
+
         return baby
 
     def link_family(self, baby, couple):
@@ -85,13 +96,6 @@ class BabyGenerator:
                 cousin.cousins.append(baby)
                 if cousin not in baby.cousins:
                     baby.cousins.append(cousin)
-
-    def set_baby_essential_traits(self, baby):
-        """Gives baby/person a random name, target gender, death date/cause and fertility."""
-        baby.name = self.statistics.get_name(baby)
-        baby.death_date = self.statistics.get_death_date(baby)
-        baby.death_cause = self.statistics.get_death_cause(baby)
-        baby.can_have_bio_children = self.statistics.get_fertility(baby)
 
     def baby_validation(self, baby):
         """Validates baby's correct traits and family."""
