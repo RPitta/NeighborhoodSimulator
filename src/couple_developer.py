@@ -44,7 +44,7 @@ class CoupleDeveloper:
         return couple
 
     def set_marriage_date(self, couple):
-        marriable_range = range(1, 5)
+        marriable_range = range(1, 8)
         date = couple.oldest.age + \
             self.randomizer.get_random_item(marriable_range)
         if date not in couple.oldest.span_left_till_old_age:

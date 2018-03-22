@@ -8,7 +8,8 @@ from person_generator import PersonGenerator
 from person_developer import PersonDeveloper
 from couple_developer import CoupleDeveloper
 from couple_creator import CoupleCreator
-from world import World
+from city import City
+from neighborhood import Neighborhood
 
 # Initialize Names, Professions and LifeStages
 names = Names()
@@ -24,33 +25,33 @@ person_developer = PersonDeveloper(names, professions, life_stages, statistics)
 couple_creator = CoupleCreator()
 couple_developer = CoupleDeveloper(statistics)
 
-# Initialize world, at last
-world = World(baby_generator, person_developer, couple_creator,
-              life_stages, couple_developer, statistics)
+# Initialize city, at last
+city = City(baby_generator, person_developer, couple_creator,
+            life_stages, couple_developer, statistics)
 
-#  First time jumps to remove first older generation (the one without parents)
-for _ in range(80):
-    world.time_jump()
+# First time jumps to remove first older generation (the one without parents)
+for _ in range(20):
+    city.time_jump()
 
 # Now populate neighboorhood
-world.populate_neighborhood()
+neighborhood = Neighborhood()
+neighborhood.populate_neighborhood(city.living_population)
 
 # Display their stats (debugging purposes)
-for p in world.display_households():
-    print(p)
+neighborhood.display_households()
 
-print("\nlength of population: " + str(len(world.living_population)))
-print("length of couples: " + str(len(world.couples)))
-print("length of neighbors: " + str(len(world.neighbors)))
-print("length of deceased: " + str(len(world.dead_population)))
-print("length of total population: " + str(len(world.population)) + "\n")
+print("\nlength of city population: " + str(len(city.living_population)))
+print("length of couples: " + str(len(city.couples)))
+print("length of neighbors: " + str(len(neighborhood.neighbors)))
+print("length of deceased: " + str(len(city.dead_population)))
+print("length of total city population: " + str(len(city.population)) + "\n")
 
-print("\nNeighbors:")
-for p in world.neighbors:
+print("\nNeighbors:\n")
+for p in neighborhood.neighbors:
     print(p)
 
 print("\nStats, for debugging purposes:\n")
-for p in world.neighbors:
+for p in neighborhood.neighbors:
     attrs = vars(p)
     print(', '.join("%s: %s" % item for item in attrs.items()))
     print()

@@ -25,3 +25,52 @@ class Household:
 
     def remove_pet(self, pet):
         self.pets_list.remove(pet)
+
+    def display(self):
+        print("\n***** Apartment ID " + str(self.apartment_id) + " ********")
+        for person in self.members:
+            desc = "\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nProfession: {}\nEmployment: {}".format(
+                person.name,
+                person.surname,
+                person.gender,
+                person.age,
+                person.social_class,
+                person.relationship_status,
+                person.occupation,
+                person.employment
+            )
+            if person.partner in self.members:
+                desc += "\nPartner: {}".format(person.partner)
+            if person.spouse in self.members:
+                desc += "\nSpouse: {}".format(person.spouse)
+            if len(person.partners) == 1 and person.spouse is None:
+                desc += "\nPartner: {}".format(person.partners[0])
+            for child in person.children:
+                if child in self.members:
+                    desc += "\nChild: {}".format(child)
+            if person.father in self.members:
+                desc += "\nFather: {}".format(person.father)
+            if person.mother in self.members:
+                desc += "\nMother: {}".format(person.mother)
+            for sibling in person.siblings:
+                if sibling in self.members:
+                    desc += "\nSibling: {}".format(sibling)
+            for half_sibling in person.half_siblings:
+                if half_sibling in self.members:
+                    desc += "\nHalf-Sibling: {}".format(half_sibling)
+            for grandchild in person.grandchildren:
+                if grandchild in self.members:
+                    desc += "\nGrandchild: {}".format(grandchild)
+            for uncle in person.uncles:
+                if uncle in self.members:
+                    desc += "\nUncle: {}".format(uncle)
+            for aunt in person.aunts:
+                if aunt in self.members:
+                    desc += "\nAunt: {}".format(aunt)
+            for nephew in person.nephews:
+                if nephew in self.members:
+                    desc += "\nnNephew: {}".format(nephew)
+            for niece in person.nieces:
+                if niece in self.members:
+                    desc += "\nNiece: {}".format(niece)
+            print(desc)
