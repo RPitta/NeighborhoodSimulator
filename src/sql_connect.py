@@ -16,7 +16,7 @@ def city_demographics(city):
 
     # Iterate through the results and print
     for (city, population, crime_rate, birth_rate, divorce_rate) in cur:
-        print("{}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
+        print("{}, {}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
 
     # Clean up and close connection
     cur.close()
