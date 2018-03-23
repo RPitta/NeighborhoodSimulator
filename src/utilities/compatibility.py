@@ -36,39 +36,39 @@ class Compatibility:
         return any(p.is_liberal for p in persons)
 
     def are_sexually_compatible(self, persons):
-        pairs = itertools.permutations(persons, r=2)
+        """Compatible if all persons are in each other's target genders."""
+        pairs = list(itertools.permutations(persons, r=2))
         compatible_rate = 0
         for p in pairs:
             compatible_rate += int(p[0].gender in p[1].target_gender)
-        return compatible_rate == len(list(pairs))
+        return compatible_rate == len(pairs)
 
     def are_consanguinity_compatible(self, persons):
         """Compatible if all or neither want a consanguinamorous relationship and are/are not related."""
         if all(p.in_love_with_family for p in persons):
-            if len(persons) == 2:
-                return persons[0] in persons[1].living_bio_family
-            return persons[0] in persons[1].living_bio_family and persons[0] in persons[2].living_bio_family
+            pairs = list(itertools.permutations(persons, r=2))
+            compatible_rate = 0
+            for p in pairs:
+                compatible_rate += int(p[0] in p[1].living_bio_family)
+            return compatible_rate == len(pairs)
 
-        if any(p.in_love_with_family for p in persons):
-            return False
-
-        return all(persons[0] not in p.living_bio_family for p in persons)
+        return all(p.in_love_with_family is False for p in persons) and all(
+            persons[0] not in p.living_bio_family for p in persons)
 
     def are_age_compatible(self, persons):
         """Compatible if all persons are within desired age range."""
         if all([p.in_love_with_family for p in persons]):
             return True
 
-        if all([p.in_love_with_intergenerational for p in persons]):
-            if len(persons) == 2:
-                return abs(persons[0].age - persons[1].age) >= 20
-            return abs(persons[0].age - persons[1].age) >= 20 and abs(persons[0].age - persons[2].age) >= 20 and abs(
-                persons[1].age - persons[2].age) >= 20
+        pairs = list(itertools.permutations(persons, r=2))
 
-        if any([p.in_love_with_intergenerational for p in persons]):
-            return False
+        if all(p.in_love_with_intergenerational for p in persons):
+            compatible_rate = 0
+            for p in pairs:
+                compatible_rate += int(abs(p[0].age - p[1].age) >= 20)
+            return compatible_rate == len(pairs)
 
-        if len(persons) == 2:
-            return abs(persons[0].age - persons[1].age) < 20
-        return abs(persons[0].age - persons[1].age) < 20 and abs(persons[0].age - persons[2].age) < 20 and abs(
-            persons[1].age - persons[2].age) < 20
+        compatible_rate = 0
+        for p in pairs:
+            compatible_rate += int(abs(p[0].age - p[1].age) < 20)
+        return compatible_rate == len(pairs) and all(p.in_love_with_intergenerational is not True for p in persons)

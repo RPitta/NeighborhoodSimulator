@@ -265,8 +265,7 @@ class PregnancyHandler:
             couple.birth_date = -1
             return couple
 
-        couple.expecting_num_of_children = self.statistics.get_pregnancy_num_of_children(
-            couple)
+        couple.expecting_num_of_children = self.statistics.get_pregnancy_num_of_children()
         couple.woman.is_pregnant = True
 
         # Validation
@@ -291,8 +290,7 @@ class PregnancyHandler:
 
     def start_adoption_process(self, couple):
         """Set adoption process to True and set statistical number of expecting children"""
-        couple.expecting_num_of_children = self.statistics.get_adoption_num_of_children(
-            couple)
+        couple.expecting_num_of_children = self.statistics.get_adoption_num_of_children()
         for person in couple.persons:
             person.is_in_adoption_process = True
 
