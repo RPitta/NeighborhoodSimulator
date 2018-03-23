@@ -58,6 +58,23 @@ class Statistics:
 
         return selected
 
+    def get_race(self):
+
+        options = {
+            Traits.WHITE: 69.5,
+            Traits.BLACK: 12.7,
+            Traits.LATINO: 17.8
+        }
+
+        selected = self.randomizer.get_random_dict_key(options)
+
+        if selected not in Traits.RACES:
+            raise Exception(
+                "Wrong race.")
+
+        return selected
+
+
     def get_social_class(self):
 
         options = {

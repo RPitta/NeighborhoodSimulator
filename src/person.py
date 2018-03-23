@@ -16,6 +16,7 @@ class Person(Traits, LifeStages):
         self.gender_identity = None  # Linked to gender
         self.sexual_orientation = None
         self.target_gender = []  # Linked to sexual_orientation
+        self.race = None
         self.relationship_orientation = None
         self.social_class = None
         self.can_have_bio_children = False

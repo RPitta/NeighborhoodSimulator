@@ -15,7 +15,7 @@ class Compatibility:
 
     def are_different_persons(self, persons):
         """Returns true if all persons are unique and not already set as each other's partners."""
-        return all(persons[0] not in (p.partner, p.spouse, p.partners) for p in persons)
+        return all(p not in (persons[0].partner, persons[0].spouse, persons[0].partners) for p in persons)
 
     def are_all_dating(self, persons):
         """Assumed all persons are romanceable, but check anyway."""

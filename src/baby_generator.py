@@ -20,6 +20,7 @@ class BabyGenerator:
         """Set statistical social class and random surname that is unique among the population."""
         child.surname = self.statistics.get_surname(surnames)
         child.original_surname = child.surname
+        child.race = self.statistics.get_race()
         child.social_class = self.statistics.get_social_class()
 
     def set_baby_essential_traits(self, baby):
@@ -57,6 +58,8 @@ class BabyGenerator:
         baby.social_class = baby.father.social_class
         # MOTHER'S APARTMENT ID
         baby.apartment_id = baby.mother.apartment_id
+        # MOTHER'S RACE
+        baby.race = baby.mother.race
 
         # SIBLINGS
         baby.siblings = [

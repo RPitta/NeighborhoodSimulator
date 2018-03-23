@@ -76,6 +76,12 @@ class Traits:
     TRANSGENDER = "Transgender"
     GENDER_IDENTITIES = (CISGENDER, TRANSGENDER)
 
+    # Race
+    WHITE = "White"
+    BLACK = "Black"
+    LATINO = "Latino"
+    RACES = (WHITE, BLACK, LATINO)
+
     # Social class
     UPPERCLASS = "Upperclass"
     MIDDLECLASS = "Middleclass"
