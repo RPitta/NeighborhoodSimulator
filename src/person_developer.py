@@ -1,6 +1,5 @@
 from traits import Traits
 from utilities.randomizer import Randomizer
-from utilities.compatibility import Compatibility
 
 
 class PersonDeveloper:
@@ -70,7 +69,7 @@ class PersonDeveloper:
         # Set profession
         person.occupation = self.randomizer.get_random_item(
             self.setup.PROFESSIONS)
-        person.employment = self.statistics.get_employment_chance(person)
+        person.employment = self.statistics.get_employment_chance()
 
         # Set relationship orientation (mono/poly)
         person.relationship_orientation = self.statistics.get_relationship_orientation()
@@ -79,7 +78,7 @@ class PersonDeveloper:
         if person.is_lgbta or person.is_poly:
             person.is_liberal = True
         else:
-            person.is_liberal = self.statistics.get_liberalism(person)
+            person.is_liberal = self.statistics.get_liberalism()
 
         if person.is_lgbta and not person.is_bi:
             person.can_have_bio_children = False
@@ -122,18 +121,16 @@ class PersonDeveloper:
             return person
 
         if person.is_poly:
-            person.in_love_as_throuple = self.statistics.get_triad_chance(
-                person)
+            person.in_love_as_throuple = self.statistics.get_triad_chance()
 
         if person.is_liberal:
-            person.wants_domestic_partnership = self.statistics.get_domestic_partnership_desire(
-                person)
-            person.wants_children = self.statistics.get_children_desire(person)
+            person.wants_domestic_partnership = self.statistics.get_domestic_partnership_desire()
+            person.wants_children = self.statistics.get_children_desire()
         else:
             self.set_conservative_traits(person)
 
         if person.is_romanceable:
-            person.wants_marriage = self.statistics.get_marriage_desire(person)
+            person.wants_marriage = self.statistics.get_marriage_desire()
             self.set_new_love_date(person)
         else:
             self.set_aromantic_traits(person)
@@ -151,8 +148,7 @@ class PersonDeveloper:
         if person.in_love_with_family:
             self.set_family_love_traits(person)
         else:
-            person.in_love_with_intergenerational = self.statistics.get_intergenerational_chance(
-                person)
+            person.in_love_with_intergenerational = self.statistics.get_intergenerational_chance()
             if person.in_love_with_intergenerational:
                 person.is_liberal = True
 

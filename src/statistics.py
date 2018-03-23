@@ -1,4 +1,3 @@
-import random
 from utilities.randomizer import Randomizer
 from traits import Traits
 
@@ -14,15 +13,13 @@ class Statistics:
         """Returns a name from provided list that is unique among person's siblings and cousins."""
         unique = False
         while not unique:
-            if person.is_male:
-                name = self.randomizer.get_random_item(self.setup.MALE_NAMES)
-            else:
-                name = self.randomizer.get_random_item(self.setup.FEMALE_NAMES)
-            unique = name not in person.get_siblings_names(
-            ) and name not in person.get_cousins_names()
+            name = self.randomizer.get_random_item(
+                self.setup.MALE_NAMES) if person.is_male else self.randomizer.get_random_item(
+                self.setup.FEMALE_NAMES)
+            unique = name not in (person.get_siblings_names(), person.get_cousins_names())
         return name
 
-    def get_surname(self, person, unavailable_surnames=None):
+    def get_surname(self, unavailable_surnames=None):
         """Returns a surname from provided list that is unique among the population."""
         if unavailable_surnames is None:
             return self.randomizer.get_random_item(self.setup.SURNAMES)
@@ -57,7 +54,7 @@ class Statistics:
 
         if selected not in Traits.GENDER_IDENTITIES:
             raise Exception(
-                "Unexpected error occurred. Wrong gender identity.")
+                "Wrong gender identity.")
 
         return selected
 
@@ -73,11 +70,11 @@ class Statistics:
 
         if selected not in Traits.SOCIAL_CLASSES:
             raise Exception(
-                "Unexpected error occurred. Wrong social class.")
+                "Wrong social class.")
 
         return selected
 
-    def get_employment_chance(self, person):
+    def get_employment_chance(self):
 
         options = {
             Traits.EMPLOYED: 80,
@@ -88,7 +85,7 @@ class Statistics:
 
         if selected not in Traits.EMPLOYMENT:
             raise Exception(
-                "Unexpected error occurred. Wrong employment attribute.")
+                "Wrong employment attribute.")
 
         return selected
 
@@ -123,8 +120,6 @@ class Statistics:
             Traits.ACCIDENT: 10
         }
 
-        if person.death_date in self.stages.CHILD.span:
-            selected = self.randomizer.get_random_dict_key(options_teen)
         if person.death_date in self.stages.TEEN.span:
             selected = self.randomizer.get_random_dict_key(options_teen)
         elif person.death_date in self.stages.YOUNGADULT.span:
@@ -141,7 +136,7 @@ class Statistics:
 
         return selected
 
-    def get_death_date(self, person):
+    def get_death_date(self):
 
         options_general = {
             "before_old_age": 50,
@@ -172,7 +167,7 @@ class Statistics:
 
         return death_date
 
-    def get_fertility(self, person):
+    def get_fertility(self):
 
         options = {
             True: 90,
@@ -181,7 +176,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_domestic_partnership_desire(self, person):
+    def get_domestic_partnership_desire(self):
 
         options = {
             True: 80,
@@ -190,7 +185,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_children_desire(self, person):
+    def get_children_desire(self):
 
         options = {
             True: 60,
@@ -262,15 +257,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_marriage_desire(self, person):
-
-        # If person doesn't want domestic partnership, marriage desire is automatically false
-        if not person.wants_domestic_partnership:
-            return False
-
-        # If person is conservative, a wish (or obligation) to get married is automatically true
-        if not person.is_liberal:
-            return True
+    def get_marriage_desire(self):
 
         options = {
             True: 60,
@@ -279,11 +266,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_liberalism(self, person):
-
-        # If person belongs to a minority group, a liberal ideology is automatically true
-        if person.is_minority:
-            return True
+    def get_liberalism(self):
 
         rates = {
             True: 60,
@@ -292,7 +275,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(rates)
 
-    def get_desired_num_of_children(self, couple):
+    def get_desired_num_of_children(self):
 
         options = {
             Traits.ONE_CHILD: 40,
@@ -303,7 +286,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_pregnancy_num_of_children(self, couple):
+    def get_pregnancy_num_of_children(self):
         """Random number of children for pregnancy: singleton/twins/triplets"""
 
         options = {
@@ -314,7 +297,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_adoption_num_of_children(self, couple):
+    def get_adoption_num_of_children(self):
 
         options = {
             Traits.ONE_CHILD: 70,
@@ -323,7 +306,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_breakup_chance(self, couple):
+    def get_breakup_chance(self):
 
         options = {
             True: 60,
@@ -332,7 +315,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_intergenerational_chance(self, person):
+    def get_intergenerational_chance(self):
         """Returns true if intergenerational relationship. False otherwise."""
 
         options = {
@@ -342,7 +325,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_family_love_chance(self, person):
+    def get_family_love_chance(self):
         """Returns true if person will fall in love with family member. False otherwise."""
 
         options = {
@@ -352,7 +335,7 @@ class Statistics:
 
         return self.randomizer.get_random_dict_key(options)
 
-    def get_triad_chance(self, person):
+    def get_triad_chance(self):
 
         options = {
             True: 30,
@@ -394,6 +377,7 @@ class Statistics:
             return self.randomizer.get_random_item(mid)
         return self.randomizer.get_random_item(late)
 
-    def split_list_in_three(self, lst, n):
+    @staticmethod
+    def split_list_in_three(lst, n):
         k, m = divmod(len(lst), n)
         return (lst[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))

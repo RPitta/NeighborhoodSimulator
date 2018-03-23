@@ -52,10 +52,10 @@ class Person(Traits, LifeStages):
         self.death_date = False
         self.death_cause = self.OLD_AGE  # Depends on death_date
 
-        # Will be intitialized once Teen if applicable
+        # Will be initialized once Teen if applicable
         self.come_out_date = -1
 
-        # Relationship traits -> Will be intitialized once Young Adult
+        # Relationship traits -> Will be initialized once Young Adult
         self.is_liberal = None
         self.wants_domestic_partnership = False
         self.wants_marriage = False
@@ -65,11 +65,11 @@ class Person(Traits, LifeStages):
         self.in_love_as_throuple = False
         self.in_love_date = -1
 
-        # Professions -> Will be intitialized once Young Adult
+        # Professions -> Will be initialized once Young Adult
         self.occupation = None
         self.employment = None
 
-        # Will be intitialized if within Neighborhood
+        # Will be initialized if within Neighborhood
         self.apartment_id = -1
         self.is_neighbor = False
 
@@ -171,7 +171,7 @@ class Person(Traits, LifeStages):
 
     @property
     def is_married_or_remarried(self):
-        return self.relationship_status == self.MARRIED or self.relationship_status == self.REMARRIED
+        return self.relationship_status in (self.MARRIED or self.REMARRIED)
 
     @property
     def is_divorced(self):
@@ -190,13 +190,15 @@ class Person(Traits, LifeStages):
         """Returns true if: Mono person has a partner or a spouse.
         Poly person has max number of partners, or a spouse + remaining possible number of partners until max."""
         if self.is_mono:
-            return self.partner is not None or self.spouse is not None
-        return len(self.partners) >= self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS or self.spouse is not None and (1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
+            return any(so is not None for so in [self.partner, self.spouse])
+        return len(self.partners) >= self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS or self.spouse is not None and (
+                    1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
 
     @property
     def is_romanceable(self):
         """Returns true if: person is alive, of age, wants partnership, has reached their dateable date, and is not fully partnered."""
-        return self.wants_domestic_partnership and self.is_alive and self.is_of_age and not self.is_fully_partnered and self.in_love_date <= self.age
+        return self.wants_domestic_partnership and self.is_alive and self.is_of_age and self.in_love_date in [0,
+                                                                                                              self.age + 1] and not self.is_fully_partnered
 
     # FUTURE DATES
 
@@ -221,13 +223,15 @@ class Person(Traits, LifeStages):
 
     @property
     def can_and_wants_bio_children(self):
-        """Wants children. Has not reached maximum number of children. Is young adult. Can have biological children."""
-        return self.wants_children and self.has_max_num_of_children is False and self.is_young_adult and self.can_have_bio_children
+        """Wants children. Has not reached maximum number of children.
+        Is young adult. Can have biological children."""
+        return self.wants_children and not self.has_max_num_of_children and self.is_young_adult and self.can_have_bio_children
 
     @property
     def cant_but_wants_children(self):
-        """Wants children. Has not reached maximum number of children. Is young adult. Cannot have biological children."""
-        return self.wants_children and self.has_max_num_of_children is False and self.is_young_adult and self.can_have_bio_children is False
+        """Wants children. Has not reached maximum number of children.
+        Is young adult. Cannot have biological children."""
+        return self.wants_children and not self.has_max_num_of_children and self.is_young_adult and not self.can_have_bio_children
 
     @property
     def has_max_num_of_children(self):
@@ -239,7 +243,8 @@ class Person(Traits, LifeStages):
     def bio_family(self):
         """Returns biological family members; Parents, Grandparents, Siblings, Half-Siblings,
         Children, Grandchildren, Cousins, Aunts/Uncles and Nephews/Nieces."""
-        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings, self.half_siblings,
+        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings,
+                          self.half_siblings,
                           self.cousins, self.parents_siblings, self.siblings_children]
         family_2d_filtered_list = list(filter(any, family_2d_list))
         return [family_member for family_1d_list in family_2d_filtered_list for family_member in family_1d_list]
@@ -261,7 +266,8 @@ class Person(Traits, LifeStages):
 
         inlaws_family_2d_filtered_list = list(
             filter(any, inlaws_family_2d_list))
-        return [family_member for inlaws_family_1d_list in inlaws_family_2d_filtered_list for family_member in inlaws_family_1d_list if family_member.is_alive]
+        return [family_member for inlaws_family_1d_list in inlaws_family_2d_filtered_list for family_member in
+                inlaws_family_1d_list if family_member.is_alive]
 
     @property
     def uncles(self):

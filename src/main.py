@@ -34,7 +34,7 @@ city = City(baby_generator, person_developer, city_couple_creator,
 for _ in range(20):
     city.time_jump_city()
 
-# Now populate neighboorhood
+# Now populate neighborhood
 neighborhood = Neighborhood(baby_generator, person_developer, couple_creator,
                             life_stages, couple_developer, statistics)
 neighborhood.populate_neighborhood(city.living_population, city.city_couples)

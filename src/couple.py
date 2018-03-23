@@ -1,5 +1,4 @@
 from abstract_couple import AbstractCouple, AbstractMarriableCouple, AbstractFertileCouple
-from traits import Traits
 
 
 class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCouple):

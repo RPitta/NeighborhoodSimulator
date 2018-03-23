@@ -202,13 +202,13 @@ class PregnancyHandler:
     def get_pregnant(self, couple):
         """Set pregnancy to True and set statistical number of expecting children."""
 
-        # If poly woman has already gotten pregnant / had max children with another man, reset birth date and skip getting pregnant.
+        # If poly woman has already gotten pregnant / had max children with another man ->
+        # Reset birth date and skip getting pregnant.
         if couple.woman.is_pregnant or any(person.has_max_num_of_children for person in couple.persons):
             couple.birth_date = -1
             return couple
 
-        couple.expecting_num_of_children = self.statistics.get_pregnancy_num_of_children(
-            couple)
+        couple.expecting_num_of_children = self.statistics.get_pregnancy_num_of_children()
         couple.woman.is_pregnant = True
 
         # Validation

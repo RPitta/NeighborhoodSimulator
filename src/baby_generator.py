@@ -18,16 +18,16 @@ class BabyGenerator:
 
     def set_first_child_traits(self, child, surnames):
         """Set statistical social class and random surname that is unique among the population."""
-        child.surname = self.statistics.get_surname(child, surnames)
+        child.surname = self.statistics.get_surname(surnames)
         child.original_surname = child.surname
         child.social_class = self.statistics.get_social_class()
 
     def set_baby_essential_traits(self, baby):
         """Gives baby a random name, target gender, death date/cause and fertility."""
         baby.name = self.statistics.get_name(baby)
-        baby.death_date = self.statistics.get_death_date(baby)
+        baby.death_date = self.statistics.get_death_date()
         baby.death_cause = self.statistics.get_death_cause(baby)
-        baby.can_have_bio_children = self.statistics.get_fertility(baby)
+        baby.can_have_bio_children = self.statistics.get_fertility()
 
     def generate_baby(self, couple):
         """Generates baby from given couple."""

@@ -19,7 +19,7 @@ class CoupleDeveloper:
             self.set_marriage_date(couple)
 
         # Statistical break up chance.
-        couple.will_breakup = self.statistics.get_breakup_chance(couple)
+        couple.will_breakup = self.statistics.get_breakup_chance()
 
         # If couple will break up, set break-up date to each person
         if couple.will_breakup:
@@ -28,8 +28,7 @@ class CoupleDeveloper:
         # If couple will have children, set number of desired children and first child pregnancy/adoption date
         if couple.will_have_children:
             # Statistical chance of desired number of children
-            couple.desired_num_of_children = self.statistics.get_desired_num_of_children(
-                couple)
+            couple.desired_num_of_children = self.statistics.get_desired_num_of_children()
             couple.desired_children_left = couple.desired_num_of_children
 
             # Validation
