@@ -41,62 +41,20 @@ class BabyGenerator:
 
     def link_family(self, baby, couple):
         """Assign's baby's family."""
-        mother = couple.woman
-        father = couple.man
+        baby.parents.extend(couple.persons)
+        for parent in baby.parents:
+            parent.children.append(baby)
+        baby.social_class = baby.parents[0].social_class
+        baby.race = baby.parents[0].race  # This must be changed
 
-        # PARENTS AND CHILDREN
-        baby.parents = [father, mother]
-        baby.father = father
-        baby.father.children.append(baby)
-        baby.mother = mother
-        baby.mother.children.append(baby)
+        if couple.is_straight:
+            baby.surname = couple.man.surname
+            baby.apartment_id = couple.woman.apartment_id
+        else:
+            baby.surname = baby.parents[0].surname
+            baby.apartment_id = baby.parents[0].apartment_id
 
-        # FATHER'S SURNAME
-        baby.surname = baby.father.surname
         baby.original_surname = baby.surname
-        # FATHER'S SOCIAL CLASS
-        baby.social_class = baby.father.social_class
-        # MOTHER'S APARTMENT ID
-        baby.apartment_id = baby.mother.apartment_id
-        # MOTHER'S RACE
-        baby.race = baby.mother.race
-
-        # SIBLINGS
-        baby.siblings = [
-            child for child in baby.father.children if child.mother == baby.mother and child != baby]
-        for sibling in baby.siblings:
-            sibling.siblings.append(baby)
-
-        # GRANDPARENTS
-        if baby.father.parents is not None:
-            baby.grandparents.extend(baby.father.parents)
-        if baby.mother.parents is not None:
-            baby.grandparents.extend(baby.mother.parents)
-        for grandparent in baby.grandparents:
-            grandparent.grandchildren.append(baby)
-
-        # HALF-SIBLINGS
-        baby.half_siblings = [child for child in baby.father.children if child.mother !=
-                              baby.mother] + [child for child in baby.mother.children if child.father != baby.father]
-        for sibling in baby.half_siblings:
-            sibling.half_siblings.append(baby)
-
-        # UNCLES/AUNTS
-        for uncle_aunt in baby.father.siblings:
-            uncle_aunt.siblings_children.append(baby)
-            if uncle_aunt not in baby.parents_siblings:
-                baby.parents_siblings.append(uncle_aunt)
-        for uncle_aunt in baby.mother.siblings:
-            uncle_aunt.siblings_children.append(baby)
-            if uncle_aunt not in baby.parents_siblings:
-                baby.parents_siblings.append(uncle_aunt)
-
-        # COUSINS
-        for uncle_aunt in baby.parents_siblings:
-            for cousin in uncle_aunt.children:
-                cousin.cousins.append(baby)
-                if cousin not in baby.cousins:
-                    baby.cousins.append(cousin)
 
     def baby_validation(self, baby):
         """Validates baby's correct traits and family."""
@@ -121,67 +79,9 @@ class BabyGenerator:
             raise Exception("Baby's family is null.")
         if baby in baby.bio_family:
             raise Exception("Baby is inside his relatives list.")
-        if len(set(baby.siblings)) != len(baby.siblings):
-            raise Exception("Baby's siblings list contains duplicates.")
-        if len(set(baby.cousins)) != len(baby.cousins):
-            raise Exception("Baby's cousins list contains duplicates.")
-        if len(set(baby.parents_siblings)) != len(baby.parents_siblings):
-            raise Exception("Baby's uncles/aunts list contains duplicates.")
+        if len(baby.parents) <= 0 and len(baby.adoptive_parents) <= 0:
+            raise Exception("Baby has no parents.")
 
-        # Parents
-        if baby.mother is None or baby.father is None or baby not in baby.mother.children or baby not in baby.father.children:
-            raise Exception("Baby and parents not correctly assigned.")
-        # Full-siblings and siblings on mother's side
-        for child in baby.mother.children:
-            if child != baby:
-                if child.name == baby.name:
-                    raise Exception(
-                        "Baby's name is the same as their sibling.")
-                if child in baby.father.children and child not in baby.siblings:
-                    raise Exception(
-                        "Sibling not assigned to baby.")
-                if child in baby.father.children and baby not in child.siblings:
-                    raise Exception(
-                        "Baby not assigned to sibling.")
-                if child.father != baby.father and child in baby.siblings:
-                    raise Exception("Half sibling assigned as full-sibling.")
-                if child not in baby.father.children and child not in baby.half_siblings:
-                    raise Exception(
-                        "Half-Sibling not assigned to baby.")
-        # Siblings on father's side
-        for child in baby.father.children:
-            if child != baby:
-                if child.mother != baby.mother and child in baby.siblings:
-                    raise Exception("Half sibling assigned as full-sibling.")
-                if child not in baby.mother.children and child not in baby.half_siblings:
-                    raise Exception(
-                        "Half-Sibling not assigned to baby.")
-        # Uncle/Aunt on father's side
-        for sibling in baby.father.siblings:
-            if sibling not in baby.parents_siblings:
-                raise Exception(
-                    "Uncle/Aunt not assigned to baby.")
-            if baby not in sibling.siblings_children:
-                raise Exception("Baby not assigned to Uncle/Aunt.")
-        # Uncle/Aunt on mother's side
-        for sibling in baby.mother.siblings:
-            if sibling not in baby.parents_siblings:
-                raise Exception(
-                    "Uncle/Aunt not assigned to baby.")
-            if baby not in sibling.siblings_children:
-                raise Exception("Baby not assigned to Uncle/Aunt.")
-        # Cousins on father's side
-        for child in baby.father.siblings_children:
-            if child not in baby.cousins:
-                raise Exception("Cousin not assigned to baby.")
-            if baby not in child.cousins:
-                raise Exception("Baby not assigned to cousin.")
-        # Cousins on mother's side
-        for child in baby.mother.siblings_children:
-            if child not in baby.cousins:
-                raise Exception("Cousin not assigned to baby.")
-            if baby not in child.cousins:
-                raise Exception("Baby not assigned to cousin.")
         # Twin and triplets
         if baby.is_twin:
             if len(baby.siblings) == 0:

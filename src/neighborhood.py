@@ -90,14 +90,14 @@ class Neighborhood:
             else:
                 # If person has no partners/spouses, add other family members;
                 # Add mother if alive. Add father only if alive and married/committed to mother.
-                if p.mother is not None and p.mother.is_alive:
+                if p.mother and p.mother.is_alive:
                     household.add_member(p.mother)
                     if p.father is not None:
                         if p.father.is_alive and (p.mother.spouse == p.father or p.mother.partner == p.father):
                             household.add_member(p.father)
                             self.neighbors.append(p.father)
                 # If father is alive and mother is not, add father.
-                elif p.father is not None and p.father.is_alive:
+                elif p.father and p.father.is_alive:
                     household.add_member(p.father)
                     self.neighbors.append(p.father)
                 # Add single or underage siblings / half-siblings.
@@ -132,7 +132,11 @@ class Neighborhood:
                 if all(parent.is_alive is False for parent in grandchild.parents):
                     household.add_member(grandchild)
                     self.neighbors.append(grandchild)
-            for nephew_niece in p.siblings_children:
+            for nephew_niece in p.uncles:
+                if all(parent.is_alive is False for parent in nephew_niece.parents):
+                    household.add_member(nephew_niece)
+                    self.neighbors.append(nephew_niece)
+            for nephew_niece in p.aunts:
                 if all(parent.is_alive is False for parent in nephew_niece.parents):
                     household.add_member(nephew_niece)
                     self.neighbors.append(nephew_niece)

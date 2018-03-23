@@ -33,21 +33,14 @@ class Person(Traits, LifeStages):
 
         # Family
         self.parents = []
-        self.father = None
-        self.mother = None
-        self.siblings = []
-        self.half_siblings = []
-        self.parents_siblings = []
-        self.siblings_children = []
-        self.cousins = []
+        self.children = []
+        self.adoptive_parents = []
+        self.adoptive_children = []
         self.partner = None
-        self.spouse = None
-        self.ex_spouses = []
         self.partners = []
         self.ex_partners = []
-        self.children = []
-        self.grandparents = []
-        self.grandchildren = []
+        self.spouse = None
+        self.ex_spouses = []
 
         # Death (Default: Old age)
         self.death_date = False
@@ -193,7 +186,7 @@ class Person(Traits, LifeStages):
         if self.is_mono:
             return any(so is not None for so in [self.partner, self.spouse])
         return len(self.partners) >= self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS or self.spouse is not None and (
-                    1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
+                1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
 
     @property
     def is_romanceable(self):
@@ -245,8 +238,7 @@ class Person(Traits, LifeStages):
         """Returns biological family members; Parents, Grandparents, Siblings, Half-Siblings,
         Children, Grandchildren, Cousins, Aunts/Uncles and Nephews/Nieces."""
         family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings,
-                          self.half_siblings,
-                          self.cousins, self.parents_siblings, self.siblings_children]
+                          self.half_siblings, self.cousins, self.uncles, self.aunts, self.nephews, self.nieces]
         family_2d_filtered_list = list(filter(any, family_2d_list))
         return [family_member for family_1d_list in family_2d_filtered_list for family_member in family_1d_list]
 
@@ -271,20 +263,66 @@ class Person(Traits, LifeStages):
                 inlaws_family_1d_list if family_member.is_alive]
 
     @property
+    def parents_ids(self):
+        return [id(parent) for parent in self.parents]
+
+    @property
+    def adoptive_parents_ids(self):
+        return [id(parent) for parent in self.adoptive_parents]
+
+    @property
+    def mother(self):
+        if all(parent.is_male for parent in self.parents) or all(parent.is_female for parent in self.parents):
+            return False
+        return next(parent for parent in self.parents if parent.is_female)
+
+    @property
+    def father(self):
+        if all(parent.is_male for parent in self.parents) or all(parent.is_female for parent in self.parents):
+            return False
+        return next(parent for parent in self.parents if parent.is_male)
+
+    @property
+    def grandparents(self):
+        return [grandparent for parent in self.parents for grandparent in parent.parents]
+
+    @property
+    def grandchildren(self):
+        return [grandchild for child in self.children for grandchild in child.children]
+
+    @property
+    def siblings(self):
+        return [sibling for parent in self.parents for sibling in parent.children if
+                sibling != self and set(sibling.parents_ids) == set(self.parents_ids)]
+
+    @property
+    def half_siblings(self):
+        return [half_sib for parent in self.parents for half_sib in parent.children if
+                half_sib != self and half_sib not in self.siblings]
+
+    @property
     def uncles(self):
-        return [uncle for uncle in self.parents_siblings if uncle.is_male]
+        return [uncle for grandparent in self.grandparents for uncle in grandparent.children if
+                uncle not in self.parents and uncle.is_male]
 
     @property
     def aunts(self):
-        return [aunt for aunt in self.parents_siblings if aunt.is_female]
+        return [aunt for grandparent in self.grandparents for aunt in grandparent.children if
+                aunt not in self.parents and aunt.is_female]
 
     @property
     def nephews(self):
-        return [nephew for nephew in self.siblings_children if nephew.is_male]
+        return [nephew for sibling in self.siblings for nephew in sibling.children if nephew.is_male]
 
     @property
     def nieces(self):
-        return [niece for niece in self.siblings_children if niece.is_female]
+        return [niece for sibling in self.siblings for niece in sibling.children if niece.is_female]
+
+    @property
+    def cousins(self):
+        c = [cousin for uncle in self.uncles for cousin in uncle.children]
+        c += [cousin for uncle in self.aunts for cousin in uncle.children]
+        return c
 
     # FAMILY NAMES
 
