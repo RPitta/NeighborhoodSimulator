@@ -23,6 +23,6 @@ def city_demographics(city):
     ns.close()
 
 
-city_demographics("Sydney")
+city_demographics("Madrid")
 
 

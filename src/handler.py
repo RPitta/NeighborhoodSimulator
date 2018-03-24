@@ -49,8 +49,47 @@ class PersonalHandler:
             self.display_sexual_orientation_message(teen, "bisexual")
         if teen.is_asexual:
             self.display_sexual_orientation_message(teen, "asexual")
-
         return teen
+
+    def become_an_addict(self, person):
+        """Become a drug or alcohol addict."""
+        if person.will_become_drug_addict:
+            person.is_drug_addict = True
+        elif person.will_become_alcohol_addict:
+            person.is_alcohol_addict = True
+        else:
+            raise Exception("Cannot become an addict if no drugs/alcohol addiction set.")
+
+        self.person_developer.set_addiction_consequences(person)
+        return person
+
+    def get_sober(self, person):
+        """Recover from addiction if an addict."""
+        if person.is_drug_addict:
+            person.is_drug_addict = False
+            person.was_drug_addict = True
+            print("\n{} has spent some time in a rehabilitation centre and is no longer a drug addict.".format(person))
+        elif person.is_alcohol_addict:
+            person.is_alcohol_addict = False
+            person.was_alcohol_addict = True
+            print("\n{} has spent some time in a rehabilitation centre and is no longer an alcohol addict.".format(person))
+        else:
+            raise Exception("Cannot get sober if not an addict.")
+        return person
+
+    def relapse(self, person):
+        """Become an addict again if an ex-addict."""
+        if person.was_drug_addict:
+            person.is_drug_addict = True
+            print("\n{} has relapsed and has become a drug addict again.".format(person))
+        elif person.was_alcohol_addict:
+            person.is_alcohol_addict = True
+            print("\n{} has relapsed and has become an alcohol addict again.".format(person))
+        else:
+            raise Exception("Cannot relapse if not previously an addict.")
+
+        self.person_developer.set_addiction_consequences(person)
+        return person
 
     def set_transgenders_new_traits(self, person):
         """Switch transgender's gender, assign new name."""
@@ -252,15 +291,17 @@ class DivorceHandler:
 
 class PregnancyHandler:
 
-    def __init__(self, person_generator, statistics):
+    def __init__(self, person_generator, statistics, foster_care_system):
         self.person_generator = person_generator
         self.statistics = statistics
+        self.foster_care_system = foster_care_system
         self.randomizer = Randomizer()
 
     def get_pregnant(self, couple):
         """Set pregnancy to True and set statistical number of expecting children."""
 
-        # If poly woman has already gotten pregnant / had max children with another man, reset birth date and skip getting pregnant.
+        # If poly woman has already gotten pregnant / had max children with another man:
+        #  reset birth date and skip getting pregnant.
         if couple.woman.is_pregnant or any(person.has_max_num_of_children for person in couple.persons):
             couple.birth_date = -1
             return couple
@@ -305,8 +346,8 @@ class PregnancyHandler:
         if couple.expecting_num_of_children == Traits.ONE_CHILD:
             print("\n{} and {} have began the process to adopt a child.".format(
                 couple.person1, couple.person2))
-        elif couple.expecting_num_of_children == Traits.TWO_CHILDREN:
-            print("\n{} and {} have began the process to adopt two children.".format(
+        elif couple.expecting_num_of_children in Traits.SIBLING_SET:
+            print("\n{} and {} have began the process to adopt a sibling set.".format(
                 couple.person1, couple.person2))
         else:
             raise Exception("Number of adoptions is not permitted.")
@@ -328,16 +369,12 @@ class PregnancyHandler:
                 raise Exception(
                     "Couple cannot have biological children yet they are getting pregnant.")
         if couple.will_adopt:
-            if couple.expecting_num_of_children not in Traits.ALLOWED_NUM_OF_ADOPTIONS:
-                raise Exception(
-                    "Couple's expecting number of adoptions is not permitted.")
             if all([person.can_have_bio_children for person in couple.persons]):
                 raise Exception(
-                    "Couple can have biological children yet they are adopting.")
+                     "Couple can have biological children yet they are adopting.")
 
     def give_birth(self, couple):
         """Returns newborns from given pregnant couple."""
-        # Validation
         if couple.is_pregnant is False:
             raise Exception("Cannot give birth if not pregnant.")
 
@@ -387,23 +424,23 @@ class PregnancyHandler:
 
     def adopt(self, couple):
         """Returns adoptions from given couple."""
-        # Validation
         if not all([p.is_in_adoption_process for p in couple.persons]):
             raise Exception("Couple cannot adopt if not in adoption process.")
 
-        babies = []
-        for _ in range(couple.expecting_num_of_children):
-            new_baby = self.person_generator.generate_baby(couple)
-            new_baby.is_adopted = True
-            babies.append(new_baby)
-            print("\n{} and {} have adopted a baby {}: {}.".format(
-                couple.person1, couple.person2, new_baby.baby_gender, new_baby.name))
-
-        # Validation
-        if babies is None or len(babies) <= 0:
-            raise Exception("Babies list is null.")
-
-        return babies
+        if couple.expecting_num_of_children == Traits.ONE_CHILD:
+            child = self.foster_care_system.adopt_child(couple)
+            print("\n{} and {} have adopted a {} aged {}: {}.".format(
+                couple.person1, couple.person2, child.baby_gender, child.age, child.name))
+            return [child]
+        elif couple.expecting_num_of_children in Traits.SIBLING_SET:
+            children = self.foster_care_system.adopt_sibling_set(couple)
+            num_of_children = len(children)
+            print("\n{} and {} have adopted a sibling set:".format(couple.person1, couple.person2))
+            for child in children:
+                print("{} ({}, age {})".format(child.name, child.baby_gender, child.age))
+            return children
+        else:
+            raise Exception("Wrong number of adoptions.")
 
     def reset_adoption(self, couple):
         """Set couple's adoption process to false and substract adoptions from desired num of children."""

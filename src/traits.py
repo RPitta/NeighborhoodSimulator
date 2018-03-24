@@ -148,9 +148,8 @@ class Traits:
     FOUR_CHILDREN = 4
     ALLOWED_NUM_OF_CHILDREN_PER_COUPLE = (
         ONE_CHILD, TWO_CHILDREN, THREE_CHILDREN, FOUR_CHILDREN)
-
-    # Number of adopted children per couple
-    ALLOWED_NUM_OF_ADOPTIONS = (ONE_CHILD, TWO_CHILDREN)
+    SIBLING_SET = (TWO_CHILDREN, THREE_CHILDREN, FOUR_CHILDREN)
+    MAX_AGE_FOR_ADOPTION = 15
 
     # Number of children per pregnancy
     SINGLETON = 1
@@ -163,6 +162,8 @@ class Traits:
     SUICIDE = "Suicide"
     ILLNESS = "Illness"
     ACCIDENT = "Accident"
+    DRUG_OVERDOSE = "Drug overdose"
+    ALCOHOL_OVERDOSE = "Alcohol overdose"
     DEATH_CAUSES = (OLD_AGE, SUICIDE, ILLNESS, ACCIDENT)
 
 

@@ -2,10 +2,10 @@ from traits import Traits, LifeStages
 
 
 class Person(Traits, LifeStages):
-    def __init__(self, gender, stage):
+    def __init__(self, gender, age):
         self.gender = gender
-        self.stage = stage
-        self.age = self.stage.start
+        self.age = age
+        self.stage = next(stage for stage in self.LIFESTAGES if age in stage.span)
 
         # Names
         self.name = None  # May depend on family
@@ -37,9 +37,9 @@ class Person(Traits, LifeStages):
         self.adoptive_parents = []
         self.adoptive_children = []
         self.partner = None
+        self.spouse = None
         self.partners = []
         self.ex_partners = []
-        self.spouse = None
         self.ex_spouses = []
 
         # Death (Default: Old age)
@@ -62,6 +62,19 @@ class Person(Traits, LifeStages):
         # Professions -> Will be initialized once Young Adult
         self.occupation = None
         self.employment = None
+
+        # Addiction attributes -> Will be initialized once Young Adult
+        self.will_become_drug_addict = False
+        self.will_become_alcohol_addict = False
+        self.addiction_date = -1
+        self.is_drug_addict = False
+        self.is_alcohol_addict = False
+        self.will_recover = False
+        self.will_overdose = False
+        self.was_drug_addict = False
+        self.was_alcohol_addict = False
+        self.rehabilitation_date = -1
+        self.relapse_date = -1
 
         # Will be initialized if within Neighborhood
         self.apartment_id = -1
@@ -189,6 +202,14 @@ class Person(Traits, LifeStages):
                 1 + (len(self.partners))) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
 
     @property
+    def is_not_partnered(self):
+        return self.is_single or self.is_separated or self.is_divorced or self.is_widowed
+
+    @property
+    def is_single_and_unemployed_adult(self):
+        return self.is_of_age and self.is_not_partnered and self.employment is False
+
+    @property
     def is_romanceable(self):
         """Returns true if: person is alive, of age, wants partnership, has reached their dateable date, and is not fully partnered."""
         return self.wants_domestic_partnership and self.is_alive and self.is_of_age and self.in_love_date in [0,
@@ -228,8 +249,47 @@ class Person(Traits, LifeStages):
         return self.wants_children and not self.has_max_num_of_children and self.is_young_adult and not self.can_have_bio_children
 
     @property
+    def must_place_children_up_for_adoption(self):
+        """Person will give up their children up for adoption if they are within the system's adoption age,
+        he/she is an addict and either has no partners or partner(s) is also an addict."""
+        return self.has_children_within_adoption_age and self.is_addict and (
+                self.is_not_partnered or self.has_addict_partner)
+
+    @property
+    def has_addict_partner(self):
+        if self.partner is not None and self.partner.is_addict:
+            return True
+        if self.spouse is not None and self.spouse.is_addict:
+            return True
+        if len(self.partners) is not None and all(partner.is_addict for partner in self.partners):
+            return True
+        return False
+
+    @property
+    def has_children_within_adoption_age(self):
+        return len(self.children) > 0 and all(child.age <= self.MAX_AGE_FOR_ADOPTION for child in self.children)
+
+    @property
     def has_max_num_of_children(self):
         return len(self.children) >= len(self.ALLOWED_NUM_OF_CHILDREN_PER_COUPLE)
+
+    # ADDICTION
+
+    @property
+    def is_addict(self):
+        return self.is_drug_addict or self.is_alcohol_addict
+
+    @property
+    def is_addiction_date(self):
+        return self.age == self.addiction_date
+
+    @property
+    def is_rehabilitation_date(self):
+        return self.age == self.rehabilitation_date
+
+    @property
+    def is_relapse_date(self):
+        return self.age == self.relapse_date
 
     # FAMILY
 
@@ -237,7 +297,7 @@ class Person(Traits, LifeStages):
     def bio_family(self):
         """Returns biological family members; Parents, Grandparents, Siblings, Half-Siblings,
         Children, Grandchildren, Cousins, Aunts/Uncles and Nephews/Nieces."""
-        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings,
+        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.full_siblings,
                           self.half_siblings, self.cousins, self.uncles, self.aunts, self.nephews, self.nieces]
         family_2d_filtered_list = list(filter(any, family_2d_list))
         return [family_member for family_1d_list in family_2d_filtered_list for family_member in family_1d_list]
@@ -272,15 +332,27 @@ class Person(Traits, LifeStages):
 
     @property
     def mother(self):
-        if all(parent.is_male for parent in self.parents) or all(parent.is_female for parent in self.parents):
-            return False
-        return next(parent for parent in self.parents if parent.is_female)
+        """Returns mother, or returns False if no straight parents."""
+        if len(self.parents) > 0:
+            if all(p.is_male for p in self.parents) or all(p.is_female for p in self.parents):
+                return False
+            return next(p for p in self.parents if p.is_female)
+        else:
+            if all(p.is_male for p in self.adoptive_parents) or all(p.is_female for p in self.adoptive_parents):
+                return False
+            return next(p for p in self.adoptive_parents if p.is_female)
 
     @property
     def father(self):
-        if all(parent.is_male for parent in self.parents) or all(parent.is_female for parent in self.parents):
-            return False
-        return next(parent for parent in self.parents if parent.is_male)
+        """Returns father, or returns False if no straight parents."""
+        if len(self.parents) > 0:
+            if all(p.is_male for p in self.parents) or all(p.is_female for p in self.parents):
+                return False
+            return next(p for p in self.parents if p.is_male)
+        else:
+            if all(p.is_male for p in self.adoptive_parents) or all(p.is_female for p in self.adoptive_parents):
+                return False
+            return next(p for p in self.adoptive_parents if p.is_male)
 
     @property
     def grandparents(self):
@@ -291,37 +363,63 @@ class Person(Traits, LifeStages):
         return [grandchild for child in self.children for grandchild in child.children]
 
     @property
+    def step_parents(self):
+        return [step_parent for parent in self.parents for step_parent in parent.partner if
+                parent.partner not in self.parents]
+
+    @property
+    def step_children(self):
+        if self.partner is not None:
+            return [step_child for step_child in self.partner.children if step_child not in self.children]
+        return []
+
+    @property
     def siblings(self):
-        return [sibling for parent in self.parents for sibling in parent.children if
-                sibling != self and set(sibling.parents_ids) == set(self.parents_ids)]
+        return self.full_siblings | self.half_siblings | self.step_siblings | self.adoptive_siblings
+
+    @property
+    def full_siblings(self):
+        return set([sibling for parent in self.parents for sibling in parent.children if sibling != self and sibling.parents_ids == self.parents_ids])
+
 
     @property
     def half_siblings(self):
-        return [half_sib for parent in self.parents for half_sib in parent.children if
-                half_sib != self and half_sib not in self.siblings]
+        return set([half_sib for parent in self.parents for half_sib in parent.children if
+                half_sib != self and half_sib not in self.full_siblings])
+
+    @property
+    def step_siblings(self):
+        if any(parent.step_children is not None for parent in self.parents):
+            return set([step_sib for parent in self.parents for step_sib in parent.step_children])
+        return set()
+
+    @property
+    def adoptive_siblings(self):
+        return set([sibling for parent in self.adoptive_parents for sibling in parent.children if
+                sibling != self and set(sibling.adoptive_parents_ids) == set(self.adoptive_parents_ids)])
 
     @property
     def uncles(self):
-        return [uncle for grandparent in self.grandparents for uncle in grandparent.children if
-                uncle not in self.parents and uncle.is_male]
+        return set([uncle for grandparent in self.grandparents for uncle in grandparent.children if
+                uncle not in self.parents and uncle.is_male])
 
     @property
     def aunts(self):
-        return [aunt for grandparent in self.grandparents for aunt in grandparent.children if
-                aunt not in self.parents and aunt.is_female]
+        return set([aunt for grandparent in self.grandparents for aunt in grandparent.children if
+                aunt not in self.parents and aunt.is_female])
 
     @property
     def nephews(self):
-        return [nephew for sibling in self.siblings for nephew in sibling.children if nephew.is_male]
+        return set([nephew for sibling in self.siblings for nephew in sibling.children if nephew.is_male])
 
     @property
     def nieces(self):
-        return [niece for sibling in self.siblings for niece in sibling.children if niece.is_female]
+        return set([niece for sibling in self.siblings for niece in sibling.children if niece.is_female])
 
     @property
     def cousins(self):
-        c = [cousin for uncle in self.uncles for cousin in uncle.children]
-        c += [cousin for uncle in self.aunts for cousin in uncle.children]
+        c = set([cousin for uncle in self.uncles for cousin in uncle.children])
+        c | set([cousin for uncle in self.aunts for cousin in uncle.children])
         return c
 
     # FAMILY NAMES

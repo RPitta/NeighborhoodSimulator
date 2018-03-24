@@ -62,14 +62,15 @@ class CoupleDeveloper:
     def set_new_pregnancy_or_adoption_process_date(self, couple):
         """Sets pregnancy or adoption date and birth date. Cannot be the same as breakup date or marriage date."""
         date = couple.breakup_date
-        while date == couple.breakup_date - 1 or date == couple.breakup_date or date == couple.breakup_date + 1:
+        while date in list(range(couple.breakup_date - 1, couple.breakup_date + 2)):
             date = self.statistics.get_oldest_pregnancy_date(couple)
+
         if couple.will_get_pregnant:
             couple.pregnancy_date = date
             couple.birth_date = date + 1
         elif couple.will_adopt:
             couple.adoption_process_date = date
-            couple.adoption_date = date + 1
+            couple.adoption_date = date + 2
         else:
             raise Exception(
                 "Couple is set on having a child but won't get pregnant nor adopt.")

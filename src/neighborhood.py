@@ -6,10 +6,10 @@ from handler import *
 
 
 class Neighborhood:
-
     NEIGHBORHOOD_APARTMENTS = 10
 
-    def __init__(self, baby_generator, person_developer, couple_creator, stages, couple_developer, statistics):
+    def __init__(self, baby_generator, person_developer, couple_creator, couple_developer, statistics,
+                 foster_care_system):
         self.households = []
         self.neighbors = []
         self.neighbor_couples = []
@@ -20,7 +20,7 @@ class Neighborhood:
         self.marriage_handler = MarriageHandler()
         self.divorce_handler = DivorceHandler()
         self.personal_handler = PersonalHandler(statistics, person_developer)
-        self.pregnancy_handler = PregnancyHandler(baby_generator, statistics)
+        self.pregnancy_handler = PregnancyHandler(baby_generator, statistics, foster_care_system)
 
         # Essential classes
         self.person_developer = person_developer
@@ -29,6 +29,11 @@ class Neighborhood:
 
         # Automatically create given number of apartments/households
         self.create_households()
+
+    @property
+    def all_households_members_lists(self):
+        """Returns all members from all households."""
+        return [members for h in self.households for members in h.members_list]
 
     def create_households(self):
         """Creates X number of households and adds them to list of households."""
@@ -42,6 +47,7 @@ class Neighborhood:
         self.choose_first_neighbors(city_population, city_couples)
         self.add_neighbors_families()
         self.set_neighbor_status()
+        self.neighborhood_validation()
 
     def choose_first_neighbors(self, city_population, city_couples):
         for i in range(len(self.households)):
@@ -92,6 +98,7 @@ class Neighborhood:
                 # Add mother if alive. Add father only if alive and married/committed to mother.
                 if p.mother and p.mother.is_alive:
                     household.add_member(p.mother)
+                    self.neighbors.append(p.mother)
                     if p.father is not None:
                         if p.father.is_alive and (p.mother.spouse == p.father or p.mother.partner == p.father):
                             household.add_member(p.father)
@@ -101,25 +108,25 @@ class Neighborhood:
                     household.add_member(p.father)
                     self.neighbors.append(p.father)
                 # Add single or underage siblings / half-siblings.
-                for sibling in p.siblings:
-                    if sibling.is_single or sibling.is_of_age is False:
+                for sibling in p.full_siblings:
+                    if sibling.is_single_and_unemployed_adult or sibling.is_of_age is False:
                         household.add_member(sibling)
                         self.neighbors.append(sibling)
                 for half_sib in p.half_siblings:
-                    if half_sib.is_single or half_sib.is_of_age is False:
+                    if half_sib.is_single_and_unemployed_adult or half_sib.is_of_age is False:
                         household.add_member(half_sib)
                         self.neighbors.append(half_sib)
 
             # Children
             for child in p.children:
-                if child.is_alive is False:
+                if child.is_alive is False or child in household.members_list:
                     continue
-                # Automatically add underage / single children if person is their mother
-                if p.is_female and (child.is_of_age is False or child.is_single):
+                # Automatically add mother's underage and/or single and unemployed children
+                if p.is_female and (child.is_of_age is False or child.is_single_and_unemployed_adult):
                     household.add_member(child)
                     self.neighbors.append(child)
-                # If person is their father, add his children if mother is dead or he is still married/committed to their mother
-                elif p.is_male and (child.is_of_age is False or child.is_single):
+                # Add father's children if mother is dead or he is still married/committed to their mother
+                elif p.is_male and (child.is_of_age is False or child.is_single_and_unemployed_adult):
                     if child.mother.is_alive is False or child.mother == p.spouse or child.mother == p.partner:
                         household.add_member(child)
                         self.neighbors.append(child)
@@ -169,22 +176,34 @@ class Neighborhood:
         self.remove_dead_and_brokenup_couples()
 
     def do_person_action(self, person, romanceable_outsiders):
+        """Personal actions for each person."""
         # Age up neighborhood
         person = self.personal_handler.age_up(person)
 
         # Come out if applicable
         if person.is_come_out_date:
-            self.personal_handler.come_out(person)
+            person = self.personal_handler.come_out(person)
 
+        # Become an addict if applicable
+        if person.is_addiction_date:
+            person = self.personal_handler.become_an_addict(person)
+
+        # Recover from addiction if applicable
+        if person.is_rehabilitation_date:
+            person = self.personal_handler.get_sober(person)
+
+        # Relapse if applicable
+        if person.is_relapse_date:
+            person = self.personal_handler.relapse(person)
+
+        # Get into a committed relationship if applicable
         if person.is_romanceable:
             # Create new couple if successful match
             couple = self.couple_creator.create_couple(
                 person, romanceable_outsiders)
 
-            if couple is False:
-                pass
-            else:
-                # Else, set couple traits
+            if couple is not False:
+                # Set couple traits
                 couple = self.couple_developer.set_new_couple_traits(
                     couple)
                 # Set new love date for polys
@@ -194,7 +213,7 @@ class Neighborhood:
                 self.neighbor_couples.append(couple)
 
     def do_couple_action(self, couple):
-
+        """Couple actions for each couple."""
         # Pregnancy handler first so that baby can be correctly linked to family.
         if couple.is_birth_date and couple.is_pregnant and couple.expecting_num_of_children >= 1:
             self.neighbors.extend(self.pregnancy_handler.give_birth(couple))
@@ -232,3 +251,25 @@ class Neighborhood:
         if self.neighbor_couples is not None and len(self.neighbor_couples) > 0:
             self.neighbor_couples = [couple for couple in self.neighbor_couples if all(
                 p.is_alive and (p.is_committed or p.is_married_or_remarried) for p in couple.persons)]
+
+    def neighborhood_validation(self):
+        # Individual household validation
+        for household in self.households:
+            household.household_validation()
+        # Neighborhood validation
+        if len(self.neighbors) == 0:
+            raise Exception("There are no neighbors.")
+        if len(set(self.neighbors)) != len(self.neighbors):
+            raise Exception("Neighbor list contains duplicates.")
+        if sum(len(h.members_list) for h in self.households) != len(self.neighbors):
+            raise Exception("Number of neighbors is not the same as the sum of members of all households.")
+        if any(n.apartment_id not in range(1, self.NEIGHBORHOOD_APARTMENTS + 1) for n in self.neighbors):
+            raise Exception("Not all neighbors are assigned to an apartment ID.")
+        if any(n not in self.all_households_members_lists for n in self.neighbors):
+            raise Exception("Not all neighbors are members of a household.")
+        if any(n.apartment_id == h.apartment_id and n not in h.members_list for h in self.households for n in
+               self.neighbors):
+            raise Exception(
+                "Neighbor has an apartment ID assigned to them but is not a member of its household.")
+        if any(n.is_neighbor is False for n in self.neighbors):
+            raise Exception("Not all neighbors have neighbor status.")

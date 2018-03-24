@@ -3,20 +3,20 @@ from city_handler import *
 
 class City:
 
-    def __init__(self, generator, developer, couple_creator, stages, relationship_developer, statistics):
+    def __init__(self, generator, developer, couple_creator, stages, relationship_developer, statistics, foster_care_system):
         self.generator = generator
         self.person_developer = developer
         self.couple_creator = couple_creator
         self.stages = stages
         self.relationship_developer = relationship_developer
         self.statistics = statistics
-        self.randomizer = Randomizer()
+        self.foster_care_system = foster_care_system
 
+        self.randomizer = Randomizer()
         self.personal_handler = PersonalHandler(
             self.statistics, self.person_developer)
         self.pregnancy_handler = PregnancyHandler(
-            self.generator, self.statistics)
-
+            self.generator, self.statistics, self.foster_care_system)
         self.marriage_handler = MarriageHandler()
         self.divorce_handler = DivorceHandler()
         self.death_handler = DeathHandler()
@@ -45,7 +45,7 @@ class City:
 
     @property
     def romanceable_outsiders(self):
-        """Returns all city inhabitats that are dating and do not live in the neighborhood."""
+        """Returns all city inhabitants that are dating and do not live in the neighborhood."""
         return [person for person in self.living_population if person.is_romanceable and person.is_neighbor is False]
 
     # ACTIONS
@@ -53,7 +53,7 @@ class City:
     def populate_city(self):
         """Populate the city with X number of random people.
         Starting at the Child stage so that they can be set with essential traits once they reach the teen stage."""
-        for _ in (number+1 for number in range(20)):
+        for _ in (number+1 for number in range(50)):
             person = self.generator.create_first_child(
                 self.population_surnames)
             # Add each person to city's population.
@@ -80,20 +80,37 @@ class City:
                 p.is_alive and (p.is_committed or p.is_married_or_remarried) and p.is_neighbor is False for p in couple.persons)]
 
     def do_person_action(self, person):
-        person = self.personal_handler.age_up(person)
+        """Personal actions for each person."""
+        # Age up neighborhood
+        person = self.personal_handler.age_up_city(person)
 
+        # Add / Remove children in foster care
+        self.foster_care_system.check_foster_care_system(self.living_outsiders)
+
+        # Come out if applicable
         if person.is_come_out_date:
-            self.personal_handler.come_out(person)
+            person = self.personal_handler.come_out(person)
 
+        # Become an addict if applicable
+        if person.is_addiction_date:
+            person = self.personal_handler.become_an_addict(person)
+
+        # Recover from addiction if applicable
+        if person.is_rehabilitation_date:
+            person = self.personal_handler.get_sober(person)
+
+        # Relapse if applicable
+        if person.is_relapse_date:
+            person = self.personal_handler.relapse(person)
+
+        # Get into a committed relationship if applicable
         if person.is_romanceable:
             # Create new couple if successful match
             couple = self.couple_creator.create_couple(
                 person, self.romanceable_outsiders)
 
-            if couple is False:
-                pass
-            else:
-                # Else, set couple traits
+            if couple is not False:
+                # Set couple traits
                 couple = self.relationship_developer.set_new_couple_traits(
                     couple)
                 # Set new love date for polys
@@ -135,4 +152,4 @@ class City:
             else:
                 couple = self.divorce_handler.get_separated(couple)
             for person in couple.persons:
-                person = self.person_developer.set_love_traits(person)
+                self.person_developer.set_love_traits(person)

@@ -17,16 +17,25 @@ class Statistics:
                 self.setup.MALE_NAMES) if person.is_male else self.randomizer.get_random_item(
                 self.setup.FEMALE_NAMES)
             unique = name not in (person.get_siblings_names(), person.get_cousins_names())
+
+        if name is None:
+            raise Exception("Name is null.")
+
         return name
 
     def get_surname(self, unavailable_surnames=None):
         """Returns a surname from provided list that is unique among the population."""
         if unavailable_surnames is None:
             return self.randomizer.get_random_item(self.setup.SURNAMES)
+
         unique = False
         while not unique:
             surname = self.randomizer.get_random_item(self.setup.SURNAMES)
             unique = surname not in unavailable_surnames
+
+        if surname is None:
+            raise Exception("Surname is null.")
+
         return surname
 
     def get_gender(self):
@@ -39,7 +48,7 @@ class Statistics:
         selected = self.randomizer.get_random_dict_key(options)
 
         if selected not in Traits.GENDERS:
-            raise Exception("Unexpected error occurred. Wrong gender.")
+            raise Exception("Wrong gender.")
 
         return selected
 
@@ -53,8 +62,7 @@ class Statistics:
         selected = self.randomizer.get_random_dict_key(options)
 
         if selected not in Traits.GENDER_IDENTITIES:
-            raise Exception(
-                "Wrong gender identity.")
+            raise Exception("Wrong gender identity.")
 
         return selected
 
@@ -69,11 +77,9 @@ class Statistics:
         selected = self.randomizer.get_random_dict_key(options)
 
         if selected not in Traits.RACES:
-            raise Exception(
-                "Wrong race.")
+            raise Exception("Wrong race.")
 
         return selected
-
 
     def get_social_class(self):
 
@@ -86,8 +92,7 @@ class Statistics:
         selected = self.randomizer.get_random_dict_key(options)
 
         if selected not in Traits.SOCIAL_CLASSES:
-            raise Exception(
-                "Wrong social class.")
+            raise Exception("Wrong social class.")
 
         return selected
 
@@ -101,8 +106,7 @@ class Statistics:
         selected = self.randomizer.get_random_dict_key(options)
 
         if selected not in Traits.EMPLOYMENT:
-            raise Exception(
-                "Wrong employment attribute.")
+            raise Exception("Wrong employment attribute.")
 
         return selected
 
@@ -187,8 +191,8 @@ class Statistics:
     def get_fertility(self):
 
         options = {
-            True: 90,
-            False: 10
+            True: 10,
+            False: 90
         }
 
         return self.randomizer.get_random_dict_key(options)
@@ -318,10 +322,31 @@ class Statistics:
 
         options = {
             Traits.ONE_CHILD: 70,
-            Traits.TWO_CHILDREN: 30
+            Traits.SIBLING_SET: 30
         }
 
         return self.randomizer.get_random_dict_key(options)
+
+    def get_age_of_adoptive_children(self):
+
+        options = {
+            "five_or_younger": 46.4,
+            "between_six_and_ten": 27.4,
+            "between_eleven_and_fifteen": 26.1
+        }
+
+        selected = self.randomizer.get_random_dict_key(options)
+
+        if selected == "five_or_younger":
+            return [0, 5]
+        elif selected == "between_six_and_ten":
+            return [6, 10]
+        elif selected == "between_eleven_and_fifteen":
+            return [11, 15]
+        else:
+            raise Exception("Wrong age.")
+
+        return selected
 
     def get_breakup_chance(self):
 
@@ -357,6 +382,51 @@ class Statistics:
         options = {
             True: 30,
             False: 70
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_drug_addiction_chance(self):
+
+        options = {
+            True: 5.3,
+            False: 94.7
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_alcohol_addiction_chance(self):
+
+        options = {
+            True: 12.7,
+            False: 87.3
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_rehabilitation_chance(self):
+
+        options = {
+            True: 10.0,
+            False: 90.0
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_overdose_chance(self):
+
+        options = {
+            True: 10.0,
+            False: 90.0
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_relapse_chance(self):
+
+        options = {
+            True: 10.0,
+            False: 90.0
         }
 
         return self.randomizer.get_random_dict_key(options)

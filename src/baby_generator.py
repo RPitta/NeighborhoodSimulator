@@ -10,7 +10,7 @@ class BabyGenerator:
 
     def create_first_child(self, surnames):
         """Generates new child without family to populate city."""
-        child = Person(self.statistics.get_gender(), self.stages.CHILD)
+        child = Person(self.statistics.get_gender(), self.stages.CHILD.end)
         self.set_first_child_traits(child, surnames)
         self.set_baby_essential_traits(child)
 
@@ -32,7 +32,7 @@ class BabyGenerator:
 
     def generate_baby(self, couple):
         """Generates baby from given couple."""
-        baby = Person(self.statistics.get_gender(), self.stages.BABY)
+        baby = Person(self.statistics.get_gender(), self.stages.BABY.start)
         self.link_family(baby, couple)
         self.set_baby_essential_traits(baby)
         self.baby_validation(baby)
@@ -75,13 +75,32 @@ class BabyGenerator:
             raise Exception("Person's death date is wrong.")
 
         # Family
-        if baby.bio_family is None:
+        if len(baby.bio_family) == 0:
             raise Exception("Baby's family is null.")
         if baby in baby.bio_family:
             raise Exception("Baby is inside his relatives list.")
         if len(baby.parents) <= 0 and len(baby.adoptive_parents) <= 0:
             raise Exception("Baby has no parents.")
-
+        if len(set(baby.parents)) != len(baby.parents):
+            raise Exception("List of parents contains duplicates.")
+        for parent in baby.parents:
+            if len(set(parent.children)) != len(parent.children):
+                raise Exception("List of children contains duplicates.")
+        # Siblings
+        if len(set(baby.full_siblings)) != len(baby.full_siblings):
+            raise Exception("List of siblings contains duplicates.")
+        for sibling in baby.full_siblings:
+            if sibling in [baby.half_siblings,  baby.step_siblings, baby.adoptive_siblings]:
+                raise Exception("Full-sibling inside list of half/step/adoptive siblings.")
+        for half_sib in baby.half_siblings:
+            if half_sib in [baby.full_siblings,  baby.step_siblings, baby.adoptive_siblings]:
+                raise Exception("Half-sibling inside list of full/step/adoptive siblings.")
+        for step_sib in baby.half_siblings:
+            if step_sib in [baby.full_siblings,  baby.half_siblings, baby.adoptive_siblings]:
+                raise Exception("Step-sibling inside list of full/half/adoptive siblings.")
+        for adoptive_sib in baby.half_siblings:
+            if adoptive_sib in [baby.full_siblings,  baby.half_siblings, baby.step_siblings]:
+                raise Exception("Adoptive sibling inside list of full/half/step siblings.")
         # Twin and triplets
         if baby.is_twin:
             if len(baby.siblings) == 0:

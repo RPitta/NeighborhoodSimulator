@@ -21,8 +21,11 @@ class Household:
 
     def remove_member(self, person):
         """Remove member and their apartment id."""
+        if person not in self.members_list:
+            raise Exception("Can't remove a person who wasn't a household member.")
+
         person.apartment_id = -1
-        self.members_list.remove(person)
+        self.members_list = [member for member in self.members_list if member != person]
 
     def add_pet(self, pet):
         """Add pet and set matching apartment IDs."""
@@ -61,7 +64,7 @@ class Household:
                 desc += "\nFather: {}".format(person.father)
             if person.mother in self.members:
                 desc += "\nMother: {}".format(person.mother)
-            for sibling in person.siblings:
+            for sibling in person.full_siblings:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
             for half_sibling in person.half_siblings:
@@ -83,3 +86,7 @@ class Household:
                 if niece in self.members:
                     desc += "\nNiece: {}".format(niece)
             print(desc)
+
+    def household_validation(self):
+        if len(set(self.members)) != len(self.members):
+            raise Exception("List of household members contains duplicates.")
