@@ -211,9 +211,7 @@ class Person(Traits, LifeStages):
 
     @property
     def is_romanceable(self):
-        """Returns true if: person is alive, of age, wants partnership, has reached their dateable date, and is not fully partnered."""
-        return self.wants_domestic_partnership and self.is_alive and self.is_of_age and self.in_love_date in [0,
-                                                                                                              self.age + 1] and not self.is_fully_partnered
+        return self.wants_domestic_partnership and self.is_love_date and not self.is_fully_partnered
 
     # FUTURE DATES
 
@@ -223,7 +221,7 @@ class Person(Traits, LifeStages):
 
     @property
     def is_love_date(self):
-        return self.age == self.in_love_date
+        return self.in_love_date in [self.YOUNGADULT.start, self.age]
 
     @property
     def is_come_out_date(self):
@@ -314,7 +312,7 @@ class Person(Traits, LifeStages):
             inlaws_family_2d_list.extend([self.partner.living_bio_family])
         elif self.spouse is not None:
             inlaws_family_2d_list.extend([self.spouse.living_bio_family])
-        elif len(self.partners) == 1:
+        elif len(self.partners) >= 1:
             inlaws_family_2d_list.extend([self.partners[0].living_bio_family])
 
         inlaws_family_2d_filtered_list = list(
@@ -379,13 +377,13 @@ class Person(Traits, LifeStages):
 
     @property
     def full_siblings(self):
-        return set([sibling for parent in self.parents for sibling in parent.children if sibling != self and sibling.parents_ids == self.parents_ids])
-
+        return set([sibling for parent in self.parents for sibling in parent.children if
+                    sibling != self and sibling.parents_ids == self.parents_ids])
 
     @property
     def half_siblings(self):
         return set([half_sib for parent in self.parents for half_sib in parent.children if
-                half_sib != self and half_sib not in self.full_siblings])
+                    half_sib != self and half_sib not in self.full_siblings])
 
     @property
     def step_siblings(self):
@@ -396,17 +394,17 @@ class Person(Traits, LifeStages):
     @property
     def adoptive_siblings(self):
         return set([sibling for parent in self.adoptive_parents for sibling in parent.children if
-                sibling != self and set(sibling.adoptive_parents_ids) == set(self.adoptive_parents_ids)])
+                    sibling != self and set(sibling.adoptive_parents_ids) == set(self.adoptive_parents_ids)])
 
     @property
     def uncles(self):
         return set([uncle for grandparent in self.grandparents for uncle in grandparent.children if
-                uncle not in self.parents and uncle.is_male])
+                    uncle not in self.parents and uncle.is_male])
 
     @property
     def aunts(self):
         return set([aunt for grandparent in self.grandparents for aunt in grandparent.children if
-                aunt not in self.parents and aunt.is_female])
+                    aunt not in self.parents and aunt.is_female])
 
     @property
     def nephews(self):
@@ -424,27 +422,35 @@ class Person(Traits, LifeStages):
 
     # FAMILY NAMES
 
+    @property
     def get_nephews_names(self):
         return self.get_names_list(self.nephews)
 
+    @property
     def get_nieces_names(self):
         return self.get_names_list(self.nieces)
 
+    @property
     def get_aunts_names(self):
         return self.get_names_list(self.aunts)
 
+    @property
     def get_uncles_names(self):
         return self.get_names_list(self.uncles)
 
+    @property
     def get_siblings_names(self):
         return self.get_names_list(self.siblings)
 
+    @property
     def get_childrens_names(self):
         return self.get_names_list(self.children)
 
+    @property
     def get_cousins_names(self):
         return self.get_names_list(self.cousins)
 
+    @property
     def get_grandparents_names(self):
         return self.get_names_list(self.grandparents)
 

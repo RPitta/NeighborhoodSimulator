@@ -16,8 +16,8 @@ class Household:
 
     def add_member(self, person):
         """Add member and set matching apartment IDs."""
-        self.members_list.append(person)
         person.apartment_id = self.apartment_id
+        self.members_list.append(person)
 
     def remove_member(self, person):
         """Remove member and their apartment id."""
@@ -25,7 +25,7 @@ class Household:
             raise Exception("Can't remove a person who wasn't a household member.")
 
         person.apartment_id = -1
-        self.members_list = [member for member in self.members_list if member != person]
+        self.members_list = [member for member in self.members if member != person]
 
     def add_pet(self, pet):
         """Add pet and set matching apartment IDs."""

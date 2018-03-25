@@ -4,9 +4,10 @@ from person import Person
 
 class BabyGenerator:
 
-    def __init__(self, stages, statistics):
+    def __init__(self, stages, statistics, names):
         self.stages = stages
         self.statistics = statistics
+        self.names = names
 
     def create_first_child(self, surnames):
         """Generates new child without family to populate city."""
@@ -18,14 +19,14 @@ class BabyGenerator:
 
     def set_first_child_traits(self, child, surnames):
         """Set statistical social class and random surname that is unique among the population."""
-        child.surname = self.statistics.get_surname(surnames)
+        child.surname = self.names.get_surname(surnames)
         child.original_surname = child.surname
         child.race = self.statistics.get_race()
         child.social_class = self.statistics.get_social_class()
 
     def set_baby_essential_traits(self, baby):
         """Gives baby a random name, target gender, death date/cause and fertility."""
-        baby.name = self.statistics.get_name(baby)
+        baby.name = self.names.get_name(baby)
         baby.death_date = self.statistics.get_death_date()
         baby.death_cause = self.statistics.get_death_cause(baby)
         baby.can_have_bio_children = self.statistics.get_fertility()

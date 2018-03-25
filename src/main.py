@@ -1,27 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import abc
 from statistics import Statistics
-from traits import Setup, LifeStages
+from traits import Setup, Names, LifeStages
 from baby_generator import BabyGenerator
 from person_developer import PersonDeveloper
 from couple_developer import CoupleDeveloper
 from couple_creator import CoupleCreator
-from city_couple_creator import CityCoupleCreator
+from couple_creator import CityCoupleCreator
 from city import City
 from neighborhood import Neighborhood
 from foster_care_system import FosterCareSystem
 
 # Initialize Names, Professions and LifeStages
 setup = Setup()
+names = Names(setup)
 life_stages = LifeStages()
 
 # Initialize statistics with names, professions, stages
-statistics = Statistics(setup, life_stages)
+statistics = Statistics(life_stages)
 
 # Initialize person generator
-baby_generator = BabyGenerator(life_stages, statistics)
+baby_generator = BabyGenerator(life_stages, statistics, names)
 person_developer = PersonDeveloper(setup, life_stages, statistics)
 city_couple_creator = CityCoupleCreator()
 couple_creator = CoupleCreator()
@@ -30,14 +29,14 @@ foster_care_system = FosterCareSystem(statistics)
 
 # Initialize city, at last
 city = City(baby_generator, person_developer, city_couple_creator,
-            life_stages, couple_developer, statistics, foster_care_system)
+            life_stages, names, couple_developer, statistics, foster_care_system)
 
 # First time jumps to remove first older generation (the one without parents)
 for _ in range(20):
     city.time_jump_city()
 
 # Now populate neighborhood
-neighborhood = Neighborhood(baby_generator, person_developer, couple_creator,
+neighborhood = Neighborhood(names, baby_generator, person_developer, couple_creator,
                             couple_developer, statistics, foster_care_system)
 neighborhood.populate_neighborhood(city.living_population, city.city_couples)
 

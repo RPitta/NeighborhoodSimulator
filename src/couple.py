@@ -33,7 +33,8 @@ class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCou
 
     @property
     def will_have_children(self):
-        """Returns true if all persons want children and their expected pregnancy/adoption date is within young adult stage."""
+        """Returns true if all persons want children and
+        their expected pregnancy/adoption date is within young adult stage."""
         if any([person.has_max_num_of_children for person in self.persons]) or self.has_desired_children:
             return False
         if self.is_pregnant or self.birth_date > self.oldest.age or self.pregnancy_date > self.oldest.age:
@@ -56,7 +57,7 @@ class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCou
 
     @property
     def is_pregnancy_date(self):
-        """Overriden in Straight Couple"""
+        """Overridden in Straight Couple"""
         return self.oldest.age == self.pregnancy_date
 
     @property

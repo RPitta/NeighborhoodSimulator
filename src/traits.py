@@ -1,5 +1,6 @@
 import os
 
+from utilities.randomizer import Randomizer
 from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
 
 
@@ -62,6 +63,52 @@ class Setup:
     def validate_list(self, lst):
         if lst is None or len(lst) < self.MIN_WORDS:
             raise Exception("Given list from file is empty or less than the minimum.")
+
+
+class Names:
+
+    def __init__(self, setup):
+        self.setup = setup
+        self.randomizer = Randomizer()
+
+    def get_name(self, person):
+        """Returns a name from provided list that is unique among person's siblings and cousins."""
+        unique = False
+        while not unique:
+            name = self.randomizer.get_random_item(
+                self.setup.MALE_NAMES) if person.is_male else self.randomizer.get_random_item(
+                self.setup.FEMALE_NAMES)
+            unique = name not in (person.get_siblings_names, person.get_cousins_names)
+
+        self.validate_name(person, name)
+        return name
+
+    def get_surname(self, unavailable_surnames=None):
+        """Returns a surname from provided list that is unique among the population."""
+        if unavailable_surnames is None:
+            surname = self.randomizer.get_random_item(self.setup.SURNAMES)
+            self.validate_surname(surname)
+            return surname
+
+        unique = False
+        while not unique:
+            surname = self.randomizer.get_random_item(self.setup.SURNAMES)
+            unique = surname not in unavailable_surnames
+
+        self.validate_surname(surname, unavailable_surnames)
+        return surname
+
+    @classmethod
+    def validate_name(cls, person, name):
+        if name is None:
+            raise Exception("Name is null.")
+
+    @classmethod
+    def validate_surname(cls, surname, unavailable_surnames=None):
+        if surname is None:
+            raise Exception("Surname is null.")
+        if unavailable_surnames is not None and surname in unavailable_surnames:
+            raise Exception("Surname is not unique.")
 
 
 class Traits:

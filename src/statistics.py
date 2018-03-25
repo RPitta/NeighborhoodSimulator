@@ -4,39 +4,9 @@ from traits import Traits
 
 class Statistics:
 
-    def __init__(self, setup, stages):
-        self.setup = setup
+    def __init__(self, stages):
         self.stages = stages
         self.randomizer = Randomizer()
-
-    def get_name(self, person):
-        """Returns a name from provided list that is unique among person's siblings and cousins."""
-        unique = False
-        while not unique:
-            name = self.randomizer.get_random_item(
-                self.setup.MALE_NAMES) if person.is_male else self.randomizer.get_random_item(
-                self.setup.FEMALE_NAMES)
-            unique = name not in (person.get_siblings_names(), person.get_cousins_names())
-
-        if name is None:
-            raise Exception("Name is null.")
-
-        return name
-
-    def get_surname(self, unavailable_surnames=None):
-        """Returns a surname from provided list that is unique among the population."""
-        if unavailable_surnames is None:
-            return self.randomizer.get_random_item(self.setup.SURNAMES)
-
-        unique = False
-        while not unique:
-            surname = self.randomizer.get_random_item(self.setup.SURNAMES)
-            unique = surname not in unavailable_surnames
-
-        if surname is None:
-            raise Exception("Surname is null.")
-
-        return surname
 
     def get_gender(self):
 

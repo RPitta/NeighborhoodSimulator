@@ -119,7 +119,7 @@ class PersonDeveloper:
         # If in love with family member -> Cannot have bio children, cannot get married, intergenerational not applicable, liberal.
         # If person does not want partnership -> Does not want marriage either, intergenerational not applicable, liberal.
         if len(person.span_left_till_old_age) <= 1:
-            return
+            return person
 
         if person.is_poly:
             person.in_love_as_throuple = self.statistics.get_triad_chance()
@@ -130,11 +130,13 @@ class PersonDeveloper:
         else:
             self.set_conservative_traits(person)
 
-        if person.is_romanceable:
+        if person.wants_domestic_partnership:
             person.wants_marriage = self.statistics.get_marriage_desire()
             self.set_new_love_date(person)
         else:
             self.set_aromantic_traits(person)
+
+        return person
 
     def set_new_love_date(self, person):
         """Sets in_love_date within person's age and X.
@@ -211,22 +213,15 @@ class PersonDeveloper:
     def set_addiction_consequences(self, person):
         """Chance for rehabilitation / overdose / left untreated if addict."""
         self.rehabilitation_vs_overdose_chance(person)
-
-        range_for_overdose = list(range(1, 20))
-        range_for_rehabilitation = list(range(1, 20))
-        range_for_relapse = list(range(1, 10))  # X years after rehabilitation
-
         # Set dates for rehabilitation / overdose.
         if person.will_overdose:
+            range_for_overdose = list(range(1, 20))
             person.death_date = person.age + self.randomizer.get_random_item(range_for_overdose)
             self.set_type_of_addiction_for_death_cause(person)
         elif person.will_recover:
+            range_for_rehabilitation = list(range(1, 20))
             person.rehabilitation_date = person.age + self.randomizer.get_random_item(range_for_rehabilitation)
-
-            # Relapse chance
-            person.will_relapse = self.statistics.get_relapse_chance()
-            if person.will_relapse:
-                person.relapse_date = person.rehabilitation_date + self.randomizer.get_random_item(range_for_relapse)
+        return person
 
     def rehabilitation_vs_overdose_chance(self, person):
         """Rehabilitation vs Overdose chances"""
@@ -234,9 +229,19 @@ class PersonDeveloper:
         if not person.will_recover:
             person.will_overdose = self.statistics.get_alcohol_addiction_chance()
 
-    def set_type_of_addiction_for_death_cause(self, person):
+    @classmethod
+    def set_type_of_addiction_for_death_cause(cls, person):
         """Death by drug overdose or alcohol overdose."""
         if person.is_drug_addict:
             person.death_cause = Traits.DRUG_OVERDOSE
         else:
             person.death_cause = Traits.ALCOHOL_OVERDOSE
+
+    def relapse_chance(self, person):
+        """Chance of relapsing and relapse date if so."""
+        person.will_relapse = self.statistics.get_relapse_chance()
+        # Set relapse date if applicable
+        if person.will_relapse:
+            range_for_relapse = list(range(1, 10))
+            person.relapse_date = person.age + self.randomizer.get_random_item(range_for_relapse)
+        return person
