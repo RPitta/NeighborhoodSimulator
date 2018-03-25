@@ -3,9 +3,9 @@ import mysql.connector
 
 class DbCon(object):
 
-    def __init__(self):
+    def __init__(self, db):
         # Create connection to our server
-        self.ns = mysql.connector.connect(host='178.62.1.222', database='NeighborhoodSimulator', user='ns',
+        self.ns = mysql.connector.connect(host='178.62.1.222', database=db, user='ns',
                                           password='Nsim1234!')
 
         self.cur = self.ns.cursor()
@@ -38,9 +38,3 @@ class DbCon(object):
         # Iterate through the results and print
         for (city, population, crime_rate, birth_rate, divorce_rate) in self.cur:
             print("{}, {}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
-
-
-
-
-
-
