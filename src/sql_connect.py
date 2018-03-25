@@ -1,28 +1,46 @@
 import mysql.connector
 
 
-def city_demographics(city):
-    # Create connection to our server
-    ns = mysql.connector.connect(host='178.62.1.222', database='NeighborhoodSimulator', user='ns', password='Nsim1234!')
+class DbCon(object):
 
-    # Create a cursor to query the database and navigate through results
-    cur = ns.cursor()
+    def __init__(self):
+        # Create connection to our server
+        self.ns = mysql.connector.connect(host='178.62.1.222', database='NeighborhoodSimulator', user='ns',
+                                          password='Nsim1234!')
 
-    # Form the query
-    query = ("SELECT city, population, crime_rate, birth_rate, divorce_rate FROM Demo_demo WHERE city = %s")
+        self.cur = self.ns.cursor()
 
-    # Execute the query, including the 'city' variable which gets passed into the function.
-    cur.execute(query, (city,))
+    def query(self, query):
+        try:
+            self.cur.execute(query)
+            desc = self.cur.description
+            column_names = [col[0] for col in desc]
+            data = [dict(zip(column_names, row))
+                    for row in self.cur.fetchall()]
+        except Exception as error:
+            print('error executing query "{}", error: {}'.format(query, error))
+            return None
+        else:
+            return data
 
-    # Iterate through the results and print
-    for (city, population, crime_rate, birth_rate, divorce_rate) in cur:
-        print("{}, {}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
+    def __del__(self):
+        self.ns.close()
 
-    # Clean up and close connection
-    cur.close()
-    ns.close()
+    def city_demographics(self, city):
+
+        # Form the query
+        query = ("SELECT city, population, crime_rate, birth_rate, divorce_rate FROM NeighborhoodSimulator.Demo_demo "
+                 "WHERE city = %s")
+
+        # Execute the query, including the 'city' variable which gets passed into the function.
+        self.cur.execute(query, (city,))
+
+        # Iterate through the results and print
+        for (city, population, crime_rate, birth_rate, divorce_rate) in self.cur:
+            print("{}, {}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
 
 
-city_demographics("Madrid")
+
+
 
 
