@@ -1,28 +1,54 @@
-import mysql.connector
+import sqlite3
 
 
-def city_demographics(city):
-    # Create connection to our server
-    ns = mysql.connector.connect(host='178.62.1.222', database='NeighborhoodSimulator', user='ns', password='Nsim1234!')
+class DatabaseManager(object):
+    """Creates the connection"""
+    def __init__(self, db):
+        self.conn = sqlite3.connect(db)
+        self.conn.execute('pragma foreign_keys = on')
+        self.conn.commit()
+        self.cur = self.conn.cursor()
 
-    # Create a cursor to query the database and navigate through results
-    cur = ns.cursor()
+    """Allows any query to be passed in, and the cursor will be returned"""
+    def query(self, arg):
+        self.cur.execute(arg)
+        self.conn.commit()
+        return self.cur
 
-    # Form the query
-    query = ("SELECT city, population, crime_rate, birth_rate, divorce_rate FROM Demo_demo WHERE city = %s")
+    """Returns the race stats for whichever city is passed as an argument"""
+    def demo_data(self, city, table):
+        try:
+            query = "SELECT * FROM {idf} WHERE city_name = '{city}'".format(idf=table, city=city)
+            self.cur.execute(query)
+            desc = self.cur.description
+            column_names = [col[0] for col in desc]
+            data = [dict(zip(column_names, row))
+                    for row in self.cur.fetchall()]
+        except Exception as error:
+            print('error executing query "{}", error: {}'.format(query, error))
+            return None
+        else:
+            return data
 
-    # Execute the query, including the 'city' variable which gets passed into the function.
-    cur.execute(query, (city,))
-
-    # Iterate through the results and print
-    for (city, population, crime_rate, birth_rate, divorce_rate) in cur:
-        print("{}, {}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
-
-    # Clean up and close connection
-    cur.close()
-    ns.close()
+    """Closes the connection at the end"""
+    def __del__(self):
+        self.conn.close()
 
 
-city_demographics("Madrid")
+"""Example create table query"""
+# dbmgr.query("CREATE TABLE IF NOT EXISTS social_class ( city_name text PRIMARY KEY, country text NOT NULL, "
+#            "lower_class number, middle_class number, upper_class number);")
+
+"""Example INSERT queries"""
+# dbmgr.query("INSERT INTO social_class VALUES ('London', 'UK', 20, 60, 20);")
+# dbmgr.query("INSERT INTO race VALUES ('London', 'UK', 59.79, 13.32, 8.4, 18.49)")
+
+
+"""Example usage if you want to use this as a standalone script"""
+# dbmgr = DatabaseManager("testdb.db")
+# returned_data = dbmgr.demo_data("default", "race")
+# print(returned_data)
+
+
 
 

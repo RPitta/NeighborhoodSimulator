@@ -1,6 +1,6 @@
 from utilities.randomizer import Randomizer
 from traits import Traits
-
+import sql_connect
 
 class Statistics:
 
@@ -37,11 +37,12 @@ class Statistics:
         return selected
 
     def get_race(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        race_data = dbmgr.demo_data("default", "race")
         options = {
-            Traits.WHITE: 69.5,
-            Traits.BLACK: 12.7,
-            Traits.LATINO: 17.8
+            Traits.WHITE: race_data[0]['white'],
+            Traits.BLACK: race_data[0]['black'],
+            Traits.LATINO: race_data[0]['latino']
         }
 
         selected = self.randomizer.get_random_dict_key(options)
@@ -52,11 +53,21 @@ class Statistics:
         return selected
 
     def get_social_class(self):
+        # The database connection, and the city variable probably need doing somewhere once rather than for
+        # every function, every time
+        # Start the db connection
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+
+        # Get the data, passing the city
+        social_class_data = dbmgr.demo_data("default", "social_class")
+
+        # Close the connection
+        dbmgr.__del__()
 
         options = {
-            Traits.LOWERCLASS: 10,
-            Traits.MIDDLECLASS: 80,
-            Traits.UPPERCLASS: 10
+            Traits.LOWERCLASS: social_class_data[0]['lower_class'],
+            Traits.MIDDLECLASS: social_class_data[0]['middle_class'],
+            Traits.UPPERCLASS: social_class_data[0]['upper_class']
         }
 
         selected = self.randomizer.get_random_dict_key(options)
