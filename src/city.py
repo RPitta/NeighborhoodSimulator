@@ -114,7 +114,6 @@ class City:
                 # Create new couple if successful match
                 couple = self.couple_creator.create_couple(
                     person, self.romanceable_outsiders)
-
                 if couple is not False:
                     # Set couple traits
                     couple = self.relationship_developer.set_new_couple_traits(

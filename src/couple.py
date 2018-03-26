@@ -23,11 +23,7 @@ class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCou
     @property
     def will_get_married(self):
         """Returns true if all persons want marriage, haven't married yet and are able to."""
-        if self.is_married:
-            return False
-        if any([p.is_married_or_remarried or p.spouse is not None for p in self.persons]):
-            return False
-        if len(self.oldest.span_left_till_old_age) <= 0:
+        if self.is_married or any([p.is_married_or_remarried for p in self.persons]) or len(self.oldest.span_left_till_old_age) <= 1:
             return False
         return self.can_get_married and all([p.wants_marriage for p in self.persons])
 
@@ -77,7 +73,7 @@ class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCou
     @property
     def is_married(self):
         """Returns true if all persons are married to each other."""
-        return all([p.is_married_or_remarried for p in self.persons]) and self.person1.spouse == self.person2
+        return all([p.is_married_or_remarried for p in self.persons]) and self.person2 in self.person1.spouses
 
     @property
     def is_pregnant(self):
@@ -123,11 +119,7 @@ class GayCouple(AbstractMarriableCouple, AbstractCouple):
     @property
     def will_get_married(self):
         """Returns true if all persons want marriage, haven't married yet and are able to."""
-        if self.is_married:
-            return False
-        if any([p.is_married_or_remarried or p.spouse is not None for p in self.persons]):
-            return False
-        if len(self.oldest.span_left_till_old_age) <= 0:
+        if self.is_married or any([p.is_married_or_remarried for p in self.persons]) or len(self.oldest.span_left_till_old_age) <= 1:
             return False
         return self.can_get_married and all([p.wants_marriage for p in self.persons])
 
@@ -138,7 +130,7 @@ class GayCouple(AbstractMarriableCouple, AbstractCouple):
     @property
     def is_married(self):
         """Returns true if all persons are married to each other."""
-        return all([p.is_married_or_remarried for p in self.persons]) and self.person1.spouse == self.person2
+        return all([p.is_married_or_remarried for p in self.persons]) and self.person2 in self.person1.spouses
 
 
 class ConsangCouple(AbstractCouple):

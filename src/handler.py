@@ -105,24 +105,19 @@ class CityDeathHandler:
         """Set person's status to not alive and remove partners."""
         person.is_alive = False
 
-        # Remove person from their partner(s) / spouse
-        if person.partner is not None:
-            person.partner.relationship_status = Traits.SINGLE
-            person.partner.in_love_date = -1
-            person.partner.partner = None
-        if person.spouse is not None:
-            person.spouse.relationship_status = Traits.WIDOWED
-            person.spouse.in_love_date = -1
-            person.spouse.spouse = None
-
-        if person.partners is not None and len(person.partners) > 0:
+        # Remove person from their partners / spouses
+        if len(person.partners) > 0:
+            if len(person.spouses) > 0:
+                for spouse in person.spouses:
+                    spouse.relationship_status = Traits.WIDOWED
+                    spouse.ex_spouses.append(person)
+                    spouse.spouses = [spouse for spouse in spouse.spouses if spouse != person]
             for partner in person.partners:
-                partner.partner = None
-                partner.partners = [p for p in partner.partners if p != person]
-                if len(partner.partners) == 0 and partner.spouse is None:
+                if partner not in person.spouses and not partner.is_married_or_remarried:
                     partner.relationship_status = Traits.SINGLE
+                    partner.ex_partners.append(person)
+                    partner.spouses = [partner for partner in partner.partners if partner != person]
         return person
-
 
 class DeathHandler(CityDeathHandler):
 
@@ -245,17 +240,8 @@ class CityMarriageHandler:
     @classmethod
     def replace_partners_with_spouses(cls, couple):
         """Set each other as spouses."""
-        couple.person1.spouse = couple.person2
-        couple.person2.spouse = couple.person1
-        # Remove partner if mono
-        for person in couple.persons:
-            person.partner = None
-        # Remove person2 from person1's partners if poly
-        if couple.person2 in couple.person1.partners:
-            couple.person1.partners.remove(couple.person2)
-        # Remove person1 from person2's partners if poly
-        if couple.person1 in couple.person2.partners:
-            couple.person2.partners.remove(couple.person1)
+        couple.person1.spouses.append(couple.person2)
+        couple.person2.spouses.append(couple.person1)
 
     def set_shared_surname(self, couple):
         """If person is female and is married to a male, take male's surname. Else, 50/50 chance."""
@@ -272,7 +258,7 @@ class CityMarriageHandler:
         if not all([p.is_married_or_remarried for p in couple.persons]):
             raise Exception(
                 "Married couple is not set as married.")
-        if any([p.spouse is None for p in couple.persons]):
+        if any([len(p.spouses) == 0 for p in couple.persons]):
             raise Exception("Married couple has no assigned spouse.")
         if couple.marriage_date > couple.oldest.age:
             raise Exception(
@@ -316,7 +302,7 @@ class CityDivorceHandler:
     @classmethod
     def remove_spouses(cls, couple):
         for person in couple.persons:
-            person.spouse = None
+            person.spouses = []
 
     @classmethod
     def add_to_exspouses(cls, couple):
@@ -344,9 +330,7 @@ class CityDivorceHandler:
     @classmethod
     def remove_partners(cls, couple):
         for person in couple.persons:
-            person.partner = None
-            if len(person.partners) > 1:
-                person.partners = [p for p in person.partners if p != person]
+            person.partners = [p for p in person.partners if p != person]
 
     @classmethod
     def add_to_expartners(cls, couple):
