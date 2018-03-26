@@ -43,7 +43,8 @@ class Statistics:
         options = {
             Traits.WHITE: race_data[0]['white'],
             Traits.BLACK: race_data[0]['black'],
-            Traits.LATINO: race_data[0]['latino']
+            Traits.LATINO: race_data[0]['latino'],
+            Traits.ASIAN: race_data[0]['asian']
         }
 
         selected = self.randomizer.get_random_dict_key(options)

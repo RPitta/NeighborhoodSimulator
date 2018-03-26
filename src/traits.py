@@ -127,7 +127,8 @@ class Traits:
     WHITE = "White"
     BLACK = "Black"
     LATINO = "Latino"
-    RACES = (WHITE, BLACK, LATINO)
+    ASIAN = "Asian"
+    RACES = (WHITE, BLACK, LATINO, ASIAN)
 
     # Social class
     UPPERCLASS = "Upperclass"
