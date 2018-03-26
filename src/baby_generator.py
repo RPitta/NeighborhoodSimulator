@@ -91,16 +91,16 @@ class BabyGenerator:
         if len(set(baby.full_siblings)) != len(baby.full_siblings):
             raise Exception("List of siblings contains duplicates.")
         for sibling in baby.full_siblings:
-            if sibling in [baby.half_siblings,  baby.step_siblings, baby.adoptive_siblings]:
+            if sibling in [baby.half_siblings, baby.step_siblings, baby.adoptive_full_siblings]:
                 raise Exception("Full-sibling inside list of half/step/adoptive siblings.")
         for half_sib in baby.half_siblings:
-            if half_sib in [baby.full_siblings,  baby.step_siblings, baby.adoptive_siblings]:
+            if half_sib in [baby.full_siblings, baby.step_siblings, baby.adoptive_full_siblings]:
                 raise Exception("Half-sibling inside list of full/step/adoptive siblings.")
         for step_sib in baby.half_siblings:
-            if step_sib in [baby.full_siblings,  baby.half_siblings, baby.adoptive_siblings]:
+            if step_sib in [baby.full_siblings, baby.half_siblings, baby.adoptive_full_siblings]:
                 raise Exception("Step-sibling inside list of full/half/adoptive siblings.")
         for adoptive_sib in baby.half_siblings:
-            if adoptive_sib in [baby.full_siblings,  baby.half_siblings, baby.step_siblings]:
+            if adoptive_sib in [baby.full_siblings, baby.half_siblings, baby.step_siblings]:
                 raise Exception("Adoptive sibling inside list of full/half/step siblings.")
         # Twin and triplets
         if baby.is_twin:

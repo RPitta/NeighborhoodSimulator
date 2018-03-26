@@ -61,15 +61,8 @@ class CityCoupleCreator:
     @classmethod
     def set_as_partner(cls, person, found_person, found_person2=None):
         if found_person2 is None:
-            if person.is_mono:
-                person.partner = found_person
-            else:
-                person.partners.append(found_person)
-
-            if found_person.is_mono:
-                found_person.partner = person
-            else:
-                found_person.partners.append(person)
+            person.partners.append(found_person)
+            found_person.partners.append(person)
         else:
             person.partners.append(found_person)
             person.partners.append(found_person2)

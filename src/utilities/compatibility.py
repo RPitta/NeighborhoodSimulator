@@ -20,7 +20,7 @@ class Compatibility:
     @classmethod
     def are_different_persons(cls, persons):
         """Returns true if all persons are unique and not already set as each other's partners."""
-        return all(p not in (persons[0].partner, persons[0].spouse, persons[0].partners) for p in persons)
+        return all(p not in persons[0].partners for p in persons)
 
     @classmethod
     def are_all_dating(cls, persons):

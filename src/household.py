@@ -1,4 +1,3 @@
-
 class Household:
 
     def __init__(self, apartment_id):
@@ -51,42 +50,34 @@ class Household:
                 person.occupation,
                 person.employment
             )
-            if person.partner in self.members:
-                desc += "\nPartner: {}".format(person.partner)
-            if person.spouse in self.members:
-                desc += "\nSpouse: {}".format(person.spouse)
-            if len(person.partners) == 1 and person.spouse is None:
-                desc += "\nPartner: {}".format(person.partners[0])
+            for spouse in person.spouses:
+                desc += "\nSpouse: {}".format(spouse)
+            for partner in person.partners:
+                if partner not in person.spouses and partner in self.members:
+                    desc += "\nPartner: {}".format(partner)
             for child in person.children:
                 if child in self.members:
                     desc += "\nChild: {}".format(child)
-            if person.father in self.members:
-                desc += "\nFather: {}".format(person.father)
-            if person.mother in self.members:
-                desc += "\nMother: {}".format(person.mother)
-            for sibling in person.full_siblings:
+            for child in person.adoptive_children:
+                if child in self.members:
+                    desc += "\nChild: {}".format(child)
+            for parent in person.parents:
+                if parent in self.members:
+                    desc += "\nParent: {}".format(child)
+            for parent in person.adoptive_parents:
+                if parent in self.members:
+                    desc += "\nParent: {}".format(child)
+            for step_parent in person.step_parents:
+                if step_parent in self.members:
+                    desc += "\nStep-parent: {}".format(child)
+            for sibling in person.siblings:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
-            for half_sibling in person.half_siblings:
-                if half_sibling in self.members:
-                    desc += "\nHalf-Sibling: {}".format(half_sibling)
-            for grandchild in person.grandchildren:
-                if grandchild in self.members:
-                    desc += "\nGrandchild: {}".format(grandchild)
-            for uncle in person.uncles:
-                if uncle in self.members:
-                    desc += "\nUncle: {}".format(uncle)
-            for aunt in person.aunts:
-                if aunt in self.members:
-                    desc += "\nAunt: {}".format(aunt)
-            for nephew in person.nephews:
-                if nephew in self.members:
-                    desc += "\nnNephew: {}".format(nephew)
-            for niece in person.nieces:
-                if niece in self.members:
-                    desc += "\nNiece: {}".format(niece)
             print(desc)
 
     def household_validation(self):
+        """Validation of household members."""
+        for member in self.members:
+            print(member)
         if len(set(self.members)) != len(self.members):
             raise Exception("List of household members contains duplicates.")

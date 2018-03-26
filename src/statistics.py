@@ -39,10 +39,12 @@ class Statistics:
     def get_race(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         race_data = dbmgr.demo_data("default", "race")
+        dbmgr.__del__()
         options = {
             Traits.WHITE: race_data[0]['white'],
             Traits.BLACK: race_data[0]['black'],
-            Traits.LATINO: race_data[0]['latino']
+            Traits.LATINO: race_data[0]['latino'],
+            Traits.ASIAN: race_data[0]['asian']
         }
 
         selected = self.randomizer.get_random_dict_key(options)
@@ -78,10 +80,12 @@ class Statistics:
         return selected
 
     def get_employment_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        employment_data = dbmgr.demo_data("default", "employment")
+        dbmgr.__del__()
         options = {
-            Traits.EMPLOYED: 80,
-            Traits.UNEMPLOYED: 20
+            Traits.EMPLOYED: employment_data[0]['employed'],
+            Traits.UNEMPLOYED: employment_data[0]['unemployed']
         }
 
         selected = self.randomizer.get_random_dict_key(options)
@@ -92,7 +96,9 @@ class Statistics:
         return selected
 
     def get_death_cause(self, person):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        death_cause_data = dbmgr.demo_data("default", "death_cause")
+        dbmgr.__del__()
         if person.death_date is False:
             return Traits.OLD_AGE
 
@@ -100,26 +106,26 @@ class Statistics:
             return Traits.ILLNESS
 
         options_teen = {
-            Traits.ILLNESS: 30,
-            Traits.SUICIDE: 70
+            Traits.ILLNESS: death_cause_data[0]['teen_illness'],
+            Traits.SUICIDE: death_cause_data[0]['teen_suicide']
         }
 
         options_young_adult = {
-            Traits.ILLNESS: 30,
-            Traits.SUICIDE: 10,
-            Traits.ACCIDENT: 60
+            Traits.ILLNESS: death_cause_data[0]['young_adult_illness'],
+            Traits.SUICIDE: death_cause_data[0]['young_adult_suicide'],
+            Traits.ACCIDENT: death_cause_data[0]['young_adult_accident']
         }
 
         options_adult = {
-            Traits.ILLNESS: 45,
-            Traits.SUICIDE: 10,
-            Traits.ACCIDENT: 45
+            Traits.ILLNESS: death_cause_data[0]['adult_illness'],
+            Traits.SUICIDE: death_cause_data[0]['adult_suicide'],
+            Traits.ACCIDENT: death_cause_data[0]['adult_accident']
         }
 
         options_senior = {
-            Traits.ILLNESS: 80,
-            Traits.SUICIDE: 10,
-            Traits.ACCIDENT: 10
+            Traits.ILLNESS: death_cause_data[0]['senior_illness'],
+            Traits.SUICIDE: death_cause_data[0]['senior_suicide'],
+            Traits.ACCIDENT: death_cause_data[0]['senior_accident']
         }
 
         if person.death_date in self.stages.TEEN.span:
@@ -278,23 +284,27 @@ class Statistics:
         return self.randomizer.get_random_dict_key(rates)
 
     def get_desired_num_of_children(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        children_data = dbmgr.demo_data("default", "desired_num_of_children")
+        dbmgr.__del__()
         options = {
-            Traits.ONE_CHILD: 40,
-            Traits.TWO_CHILDREN: 30,
-            Traits.THREE_CHILDREN: 20,
-            Traits.FOUR_CHILDREN: 10
+            Traits.ONE_CHILD: children_data[0]['one_child'],
+            Traits.TWO_CHILDREN: children_data[0]['two_children'],
+            Traits.THREE_CHILDREN: children_data[0]['three_children'],
+            Traits.FOUR_CHILDREN: children_data[0]['four_children']
         }
 
         return self.randomizer.get_random_dict_key(options)
 
     def get_pregnancy_num_of_children(self):
         """Random number of children for pregnancy: singleton/twins/triplets"""
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        pregnancy_data = dbmgr.demo_data("default", "pregnancy")
+        dbmgr.__del__()
         options = {
-            Traits.SINGLETON: 96,
-            Traits.TWINS: 3,
-            Traits.TRIPLETS: 1
+            Traits.SINGLETON: pregnancy_data[0]['singlton'],
+            Traits.TWINS: pregnancy_data[0]['twins'],
+            Traits.TRIPLETS: pregnancy_data[0]['triplets']
         }
 
         return self.randomizer.get_random_dict_key(options)
@@ -330,10 +340,12 @@ class Statistics:
         return selected
 
     def get_breakup_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        breakup_data = dbmgr.demo_data("default", "breakup")
+        dbmgr.__del__()
         options = {
-            True: 60,
-            False: 40
+            True: breakup_data[0]['breakup_true'],
+            False: breakup_data[0]['breakup_false']
         }
 
         return self.randomizer.get_random_dict_key(options)
@@ -368,46 +380,56 @@ class Statistics:
         return self.randomizer.get_random_dict_key(options)
 
     def get_drug_addiction_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        drug_addiction_data = dbmgr.demo_data("default", "drug_addiction")
+        dbmgr.__del__()
         options = {
-            True: 5.3,
-            False: 94.7
+            True: drug_addiction_data[0]['addict_true'],
+            False: drug_addiction_data[0]['addict_false']
         }
 
         return self.randomizer.get_random_dict_key(options)
 
     def get_alcohol_addiction_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        alcohol_addiction_data = dbmgr.demo_data("default", "alcohol_addiction")
+        dbmgr.__del__()
         options = {
-            True: 12.7,
-            False: 87.3
+            True: alcohol_addiction_data[0]['addict_true'],
+            False: alcohol_addiction_data[0]['addict_false']
         }
 
         return self.randomizer.get_random_dict_key(options)
 
     def get_rehabilitation_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        rehabilitation_data = dbmgr.demo_data("default", "rehabilitation")
+        dbmgr.__del__()
         options = {
-            True: 10.0,
-            False: 90.0
+            True: rehabilitation_data[0]['rehabilitation_true'],
+            False: rehabilitation_data[0]['rehabilitation_false']
         }
 
         return self.randomizer.get_random_dict_key(options)
 
     def get_overdose_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        overdose_data = dbmgr.demo_data("default", "overdose")
+        dbmgr.__del__()
         options = {
-            True: 10.0,
-            False: 90.0
+            True: overdose_data[0]['overdose_true'],
+            False: overdose_data[0]['overdose_false']
         }
 
         return self.randomizer.get_random_dict_key(options)
 
     def get_relapse_chance(self):
-
+        dbmgr = sql_connect.DatabaseManager("testdb.db")
+        relapse_data = dbmgr.demo_data("default", "relapse")
+        dbmgr.__del__()
         options = {
-            True: 10.0,
-            False: 90.0
+            True: relapse_data[0]['relapse_true'],
+            False: relapse_data[0]['relapse_false']
         }
 
         return self.randomizer.get_random_dict_key(options)

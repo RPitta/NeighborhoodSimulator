@@ -34,15 +34,16 @@ class DatabaseManager(object):
     def __del__(self):
         self.conn.close()
 
-
+#dbmgr = DatabaseManager("testdb.db")
 """Example create table query"""
-# dbmgr.query("CREATE TABLE IF NOT EXISTS social_class ( city_name text PRIMARY KEY, country text NOT NULL, "
-#            "lower_class number, middle_class number, upper_class number);")
+# dbmgr.query("CREATE TABLE IF NOT EXISTS death_cause ( city_name text PRIMARY KEY, country text NOT NULL, "
+#             "teen_illness number, teen_suicide number, young_adult_illness number, young_adult_suicide, "
+#             "young_adult_accident number, adult_illness number, adult_suicide number, adult_accident number,"
+#             "senior_illness number, senior_suicide number, senior_accident number);")
 
 """Example INSERT queries"""
-# dbmgr.query("INSERT INTO social_class VALUES ('London', 'UK', 20, 60, 20);")
+#dbmgr.query("INSERT INTO death_cause VALUES ('default', 'default', 30, 70, 30, 10, 60, 45, 10, 45, 80, 10, 10);")
 # dbmgr.query("INSERT INTO race VALUES ('London', 'UK', 59.79, 13.32, 8.4, 18.49)")
-
 
 """Example usage if you want to use this as a standalone script"""
 # dbmgr = DatabaseManager("testdb.db")
