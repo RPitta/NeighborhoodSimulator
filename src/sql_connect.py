@@ -18,8 +18,8 @@ class DatabaseManager(object):
     """Returns the race stats for whichever city is passed as an argument"""
     def demo_data(self, city, table):
         try:
-            query = "SELECT * FROM " + table + " WHERE city_name = ?"
-            self.cur.execute(query, (city,))
+            query = "SELECT * FROM {idf} WHERE city_name = '{city}'".format(idf=table, city=city)
+            self.cur.execute(query)
             desc = self.cur.description
             column_names = [col[0] for col in desc]
             data = [dict(zip(column_names, row))
