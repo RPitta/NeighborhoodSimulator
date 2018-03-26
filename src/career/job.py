@@ -16,7 +16,7 @@ class JobHistory :
 			return 1
 
 class Job :
-
+	# title will be received from organized professions.txt
 	title = None
 	profession_category = None
 	job_level = None
