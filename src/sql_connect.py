@@ -1,18 +1,25 @@
-import mysql.connector
+import sqlite3
 
 
-class DbCon(object):
-
+class DatabaseManager(object):
+    """Creates the connection"""
     def __init__(self, db):
-        # Create connection to our server
-        self.ns = mysql.connector.connect(host='178.62.1.222', database=db, user='ns',
-                                          password='Nsim1234!')
+        self.conn = sqlite3.connect(db)
+        self.conn.execute('pragma foreign_keys = on')
+        self.conn.commit()
+        self.cur = self.conn.cursor()
 
-        self.cur = self.ns.cursor()
+    """Allows any query to be passed in, and the cursor will be returned"""
+    def query(self, arg):
+        self.cur.execute(arg)
+        self.conn.commit()
+        return self.cur
 
-    def query(self, query):
+    """Returns the race stats for whichever city is passed as an argument"""
+    def demo_data(self, city, table):
         try:
-            self.cur.execute(query)
+            query = "SELECT * FROM " + table + " WHERE city_name = ?"
+            self.cur.execute(query, (city,))
             desc = self.cur.description
             column_names = [col[0] for col in desc]
             data = [dict(zip(column_names, row))
@@ -23,18 +30,25 @@ class DbCon(object):
         else:
             return data
 
+    """Closes the connection at the end"""
     def __del__(self):
-        self.ns.close()
+        self.conn.close()
 
-    def city_demographics(self, city):
 
-        # Form the query
-        query = ("SELECT city, population, crime_rate, birth_rate, divorce_rate FROM NeighborhoodSimulator.Demo_demo "
-                 "WHERE city = %s")
+"""Example create table query"""
+# dbmgr.query("CREATE TABLE IF NOT EXISTS social_class ( city_name text PRIMARY KEY, country text NOT NULL, "
+#            "lower_class number, middle_class number, upper_class number);")
 
-        # Execute the query, including the 'city' variable which gets passed into the function.
-        self.cur.execute(query, (city,))
+"""Example INSERT queries"""
+# dbmgr.query("INSERT INTO social_class VALUES ('London', 'UK', 20, 60, 20);")
+# dbmgr.query("INSERT INTO race VALUES ('London', 'UK', 59.79, 13.32, 8.4, 18.49)")
 
-        # Iterate through the results and print
-        for (city, population, crime_rate, birth_rate, divorce_rate) in self.cur:
-            print("{}, {}, {}, {}, {}".format(city, population, crime_rate, birth_rate, divorce_rate))
+
+"""Example usage if you want to use this as a standalone script"""
+# dbmgr = DatabaseManager("testdb.db")
+# returned_data = dbmgr.demo_data("default", "race")
+# print(returned_data)
+
+
+
+
