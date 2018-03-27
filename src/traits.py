@@ -19,6 +19,7 @@ class Setup:
         self.PROFESSIONS = self.get_professions()
 
     def get_male_names(self):
+        """Add all male names from file to list."""
         with open(self.find_file_location("male_names.txt"), "r") as file_males:
             names = set([x.split('\n')[0] for x in file_males.readlines()])
             self.validate_list(names)
@@ -27,6 +28,7 @@ class Setup:
             return names
 
     def get_female_names(self):
+        """Add all female names from file to list."""
         with open(self.find_file_location("female_names.txt"), "r") as file_females:
             names = set([x.split('\n')[0] for x in file_females.readlines()])
             self.validate_list(names)
@@ -35,6 +37,7 @@ class Setup:
             return names
 
     def get_surnames(self):
+        """Add all surnames from file to list."""
         with open(self.find_file_location("surnames.txt"), "r") as file_surnames:
             surnames = set([x.split('\t')[0] for x in file_surnames.readlines()])
             self.validate_list(surnames)
@@ -43,6 +46,7 @@ class Setup:
             return surnames
 
     def get_professions(self):
+        """Add all professions from file to list."""
         with open(self.find_file_location("professions.txt"), "r") as file_professions:
             professions = set([x.split('\n')[0] for x in file_professions.readlines()])
             self.validate_list(professions)
@@ -99,7 +103,7 @@ class Names:
         return surname
 
     @classmethod
-    def validate_name(cls, person, name):
+    def validate_name(cls, name):
         if name is None:
             raise Exception("Name is null.")
 

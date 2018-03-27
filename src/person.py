@@ -61,6 +61,8 @@ class Person(Traits, LifeStages):
         # Professions -> Will be initialized once Young Adult
         self.occupation = None
         self.employment = None
+        self.current_job = None
+        self.job_history = []
 
         # Addiction attributes -> Will be initialized once Young Adult
         self.will_become_drug_addict = False

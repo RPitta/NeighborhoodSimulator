@@ -119,6 +119,7 @@ class CityDeathHandler:
                     partner.spouses = [partner for partner in partner.partners if partner != person]
         return person
 
+
 class DeathHandler(CityDeathHandler):
 
     def die(self, person):
@@ -140,6 +141,67 @@ class DeathHandler(CityDeathHandler):
             print("\n{} has died from alcohol overdose.".format(person))
         if person.death_cause is False:
             print("\n{} has died of old age.".format(person))
+
+
+class CityJobHandler:
+    """Handles job and employment activity."""
+
+    def add_job(self, person, job):
+        """Add new job."""
+        if person.current_job is not None:
+            person.job_history.append(person.current_job)
+        person.current_job = job
+        self.update_employment_status(person, Traits.EMPLOYED)
+        return person
+
+    def get_fired(self, person):
+        """Remove current job."""
+        if person.current_job is None or person.employment == Traits.UNEMPLOYED:
+            raise Exception("Cannot get fired if unemployed.")
+
+        person.job_history.append(person.current_job)
+        person.current_job = None
+        self.update_employment_status(person, Traits.UNEMPLOYED)
+        return person
+
+    @classmethod
+    def update_employment_status(cls, person, status):
+        """Replace unemployed status with employed."""
+        person.employment = status
+
+    @classmethod
+    def get_promotion(cls, person):
+        """Job promotion."""
+        person.current_job.promotion(1000, True)  # Example only
+        return person
+
+    @classmethod
+    def get_demotion(cls, person):
+        """Job demotion."""
+        person.current_job.demotion(1000, True)  # Example only
+        return person
+
+
+class JobHandler(CityJobHandler):
+    """Adds print messages to city job handler class."""
+
+    def add_job(self, person, job):
+        print("{} has found a job as a {}.".format(person, job.title))
+        return super().add_job(person, job)
+
+    def get_fired(self, person):
+        print("{} has been fired.".format(person))
+        return super().get_fired(person)
+
+    @classmethod
+    def get_promotion(cls, person):
+        print("{} has been promoted.")
+        return super().get_promotion(person)
+
+    @classmethod
+    def get_demotion(cls, person):
+        print("{} has been demoted.")
+        return super().get_demotion(person)
 
 
 class CityAddictionHandler:
