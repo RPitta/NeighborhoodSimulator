@@ -84,7 +84,7 @@ class Names:
                 self.setup.FEMALE_NAMES)
             unique = name not in (person.get_siblings_names, person.get_cousins_names)
 
-        self.validate_name(person, name)
+        self.validate_name(name)
         return name
 
     def get_surname(self, unavailable_surnames=None):
@@ -96,7 +96,7 @@ class Names:
 
         unique = False
         while not unique:
-            surname = self.randomizer.get_random_item(self.setup.SURNAMES)
+            surname i= self.randomizer.get_random_item(self.setup.SURNAMES)
             unique = surname not in unavailable_surnames
 
         self.validate_surname(surname, unavailable_surnames)
