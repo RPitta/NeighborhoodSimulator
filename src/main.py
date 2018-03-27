@@ -83,3 +83,9 @@ for p in city.living_outsiders:
     attrs = vars(p)
     print(', '.join("%s: %s" % item for item in attrs.items()))
     print()
+
+print("\nStats, for debugging purposes:\n")
+for p in neighborhood.neighbor_couples:
+    attrs = vars(p)
+    print(', '.join("%s: %s" % item for item in attrs.items()))
+    print()

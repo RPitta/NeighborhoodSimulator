@@ -105,11 +105,8 @@ class Neighborhood:
     def add_child(self, p, child, household):
         """Helper method to add person's bio or adoptive children."""
         if child.is_alive and child not in household.members:
-            if p.is_female and (child.is_single_and_unemployed_adult or not child.is_of_age):
+            if child.is_single_and_unemployed_adult or not child.is_of_age:
                 self.add_to_neighbors_and_household(household, child)
-            elif p.is_male and (child.is_single_and_unemployed_adult or not child.is_of_age):
-                if not child.mother.is_alive or child.mother in p.partners:
-                    self.add_to_neighbors_and_household(household, child)
 
     def add_partners(self, p, household):
         """Add spouse or 1 partner if unmarried"""

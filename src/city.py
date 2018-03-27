@@ -62,7 +62,7 @@ class City:
     def populate_city(self):
         """Populate the city with X number of random people.
         Starting at the Child stage so that they can be set with essential traits once they reach the teen stage."""
-        for _ in (number + 1 for number in range(50)):
+        for _ in (number + 1 for number in range(100)):
             person = self.generator.create_first_child(
                 self.population_surnames)
             self.population.append(person)

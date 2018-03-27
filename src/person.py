@@ -179,7 +179,7 @@ class Person(Traits, LifeStages):
 
     @property
     def is_married_or_remarried(self):
-        return self.relationship_status in (self.MARRIED or self.REMARRIED)
+        return self.relationship_status == self.MARRIED or self.relationship_status == self.REMARRIED
 
     @property
     def is_divorced(self):
