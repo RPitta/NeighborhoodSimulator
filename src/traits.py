@@ -96,7 +96,7 @@ class Names:
 
         unique = False
         while not unique:
-            surname i= self.randomizer.get_random_item(self.setup.SURNAMES)
+            surname = self.randomizer.get_random_item(self.setup.SURNAMES)
             unique = surname not in unavailable_surnames
 
         self.validate_surname(surname, unavailable_surnames)

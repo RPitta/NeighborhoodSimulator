@@ -194,16 +194,21 @@ class Person(Traits, LifeStages):
         return self.relationship_status == self.WIDOWED
 
     @property
-    def is_fully_partnered(self):
-        """Returns true if: Mono person has 1 partner, poly partner has max number of partners."""
-        return len(self.partners) == 1 if self.is_mono else len(self.partners) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
+    def is_partnered(self):
+        return self.is_married_or_remarried or self.is_committed
 
     @property
     def is_not_partnered(self):
         return self.is_single or self.is_separated or self.is_divorced or self.is_widowed
 
     @property
+    def is_fully_partnered(self):
+        """Returns true if: Mono person has 1 partner, or poly partner has max number of partners."""
+        return len(self.partners) == 1 if self.is_mono else len(self.partners) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
+
+    @property
     def is_single_and_unemployed_adult(self):
+        """Returns true if person has no partner and is unemployed."""
         return self.is_of_age and self.is_not_partnered and self.employment is False
 
     @property
@@ -285,10 +290,11 @@ class Person(Traits, LifeStages):
 
     @property
     def bio_family(self):
-        """Returns biological family members; Parents, Grandparents, Siblings, Half-Siblings,
-        Children, Grandchildren, Cousins, Aunts/Uncles and Nephews/Nieces."""
-        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.full_siblings,
-                          self.half_siblings, self.full_cousins, self.uncles, self.aunts, self.nephews, self.nieces]
+        """Returns biological family members."""
+        family_2d_list = [self.parents, self.children, self.full_grandparents, self.full_grandchildren,
+                          self.full_siblings, self.half_siblings, self.full_cousins, self.half_cousins, self.full_uncles,
+                          self.half_uncles, self.full_aunts, self.half_aunts, self.full_nephews, self.half_nephews,
+                          self.full_nieces, self.half_nieces]
         family_2d_filtered_list = list(filter(any, family_2d_list))
         return [family_member for family_1d_list in family_2d_filtered_list for family_member in family_1d_list]
 
@@ -298,10 +304,25 @@ class Person(Traits, LifeStages):
         return [family_member for family_member in self.bio_family if family_member.is_alive]
 
     @property
+    def all_family(self):
+        """Returns all family members; adoptive and step family included."""
+        family_2d_list = [self.parents, self.children, self.grandparents, self.grandchildren, self.siblings,
+                          self.cousins, self.uncles, self.aunts, self.nephews, self.nieces, self.adoptive_parents,
+                          self.adoptive_children]
+        family_2d_filtered_list = list(filter(any, family_2d_list))
+        return [family_member for family_1d_list in family_2d_filtered_list for family_member in family_1d_list]
+
+    @property
+    def living_family(self):
+        """Returns all living family members."""
+        return [family_member for family_member in self.all_family if family_member.is_alive]
+
+    @property
     def living_inlaws_family(self):
+        """Returns list of partners' family; in-laws."""
         inlaws_family = []
         for partner in self.partners:
-            inlaws_family.extend([partner.living_bio_family])
+            inlaws_family.extend([partner.living_family])
         filtered_inlaws_family = list(filter(any, inlaws_family))
         return [family_member for inlaws_family_lst in filtered_inlaws_family for family_member in inlaws_family_lst if
                 family_member.is_alive]
@@ -386,7 +407,8 @@ class Person(Traits, LifeStages):
 
     @property
     def bio_step_parents(self):
-        return set([step_parent for parent in self.parents for step_parent in parent.partners if step_parent not in self.parents])
+        return set([step_parent for parent in self.parents for step_parent in parent.partners if
+                    step_parent not in self.parents])
 
     @property
     def adoptive_step_parents(self):
