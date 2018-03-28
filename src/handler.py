@@ -72,6 +72,7 @@ class PersonalHandler(CityPersonalHandler):
             self.display_sexual_orientation_message(teen, "bisexual")
         if teen.is_asexual:
             self.display_sexual_orientation_message(teen, "asexual")
+        self.person_developer.set_coming_out_consequences(teen)
 
     def set_new_name(self, person):
         new_name = self.names.get_name(person)
@@ -90,6 +91,47 @@ class PersonalHandler(CityPersonalHandler):
     @classmethod
     def display_sexual_orientation_message(cls, person, orientation):
         print("\n{} has come out as {}.".format(person, orientation))
+
+    def get_thrown_out(self, person):
+        """Person is thrown out of their home."""
+        self.display_thrown_out_message(person)
+        return self.get_id_from_neighborhood_friends(person)
+
+    @classmethod
+    def display_thrown_out_message(cls, person):
+        """Prints person's thrown out consequence for coming out in a conservative family."""
+        if person.is_male:
+            print("\n{} has been thrown out of his home by his unsupportive family.".format(person))
+        else:
+            print("\n{} has been thrown out of her home by her unsupportive family.".format(person))
+
+    def move_out(self, person):
+        """Person moves out of their home."""
+        self.display_move_out_message(person)
+        return self.get_id_from_neighborhood_friends(person)
+
+    @classmethod
+    def display_move_out_message(cls, person):
+        """Prints person's decision to move out for coming out in a conservative family."""
+        if person.is_male:
+            print("\n{} has moved out of his home due to his unsupportive family.".format(person))
+        else:
+            print("\n{} has moved out of her home due to her unsupportive family.".format(person))
+
+    def get_id_from_neighborhood_friends(self, person):
+        """Returns None if person has no neighborhood friends, or liberal friend's apartment ID if so."""
+        if len(person.neighbor_friends) == 0:
+            self.display_left_neighborhood_message(person)
+            return None
+        else:
+            return next(friend.apartment_id for friend in person.neighbor_friends if friend.is_liberal)
+
+    @classmethod
+    def display_left_neighborhood_message(cls, person):
+        if person.is_male:
+            print("He no longer lives in the neighborhood.")
+        else:
+            print("She no longer lives in the neighborhood.")
 
 
 class CityDeathHandler:

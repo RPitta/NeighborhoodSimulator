@@ -55,6 +55,36 @@ class PersonDeveloper:
         if teen.sexual_orientation == Traits.AROMANTIC_ASEXUAL:
             yield None
 
+    def set_coming_out_consequences(self, teen):
+        """Chance of teen moving out / being thrown out / committing suicide if conservative family."""
+        if teen.has_conservative_parents:
+            if not self.suicide_consequence(teen):
+                if not self.thrown_out_consequence(teen):
+                    teen.will_move_out = True
+                    teen.move_out_date = Traits.YOUNGADULT.start
+
+    def suicide_consequence(self, teen):
+        """Determine chance of suicide as coming out in conservative family consequence."""
+        if self.statistics.get_suicide_chance():
+            teen.death_date = teen.age + 1 if teen.span_left_till_next_stage < 1 else self.randomizer.get_random_item(teen.span_left_till_next_stage)
+            teen.death_cause = Traits.SUICIDE
+            return True
+        return False
+
+    def thrown_out_consequence(self, teen):
+        if self.statistics.get_thrown_out_chance():
+            teen.will_be_thrown_out = True
+            teen.thrown_out_date = Traits.YOUNGADULT.start
+            return True
+        return False
+
+    @classmethod
+    def display_family_nonsupport_message(cls, teen):
+        if teen.is_male:
+            print("His conservative family is having a hard time coping with it.")
+        else:
+            print("Her conservative family is having a hard time coping with it.")
+
     def set_youngadult_traits(self, person):
         """Young adult traits."""
         person.occupation = self.randomizer.get_random_item(

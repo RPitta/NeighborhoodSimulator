@@ -69,7 +69,8 @@ class FosterCareSystem:
 
         return children
 
-    def link_adoptive_family(self, couple, children):
+    @classmethod
+    def link_adoptive_family(cls, couple, children):
         """Link adopted children to their adoptive family."""
         for child in children:
             child.adoptive_parents.extend(couple.persons)

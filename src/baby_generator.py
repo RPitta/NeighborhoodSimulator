@@ -13,7 +13,6 @@ class BabyGenerator:
         child = Person(self.statistics.get_gender(), Traits.CHILD.end)
         self.set_first_child_traits(child, surnames)
         self.set_baby_essential_traits(child)
-
         return child
 
     def set_first_child_traits(self, child, surnames):
@@ -36,10 +35,10 @@ class BabyGenerator:
         self.link_family(baby, couple)
         self.set_baby_essential_traits(baby)
         self.baby_validation(baby)
-
         return baby
 
-    def link_family(self, baby, couple):
+    @classmethod
+    def link_family(cls, baby, couple):
         """Assign's baby's family."""
         baby.parents.extend(couple.persons)
         for parent in baby.parents:
@@ -53,7 +52,6 @@ class BabyGenerator:
         else:
             baby.surname = baby.parents[0].surname
             baby.apartment_id = baby.parents[0].apartment_id
-
         baby.original_surname = baby.surname
 
     @classmethod

@@ -48,7 +48,6 @@ class Neighborhood:
         Each person and their family are added to each household and to neighbors list."""
         self.choose_first_neighbors(city_population, city_couples)
         self.add_neighbors_families()
-        self.set_neighbor_status()
         self.neighborhood_validation()
 
     def choose_first_neighbors(self, city_population, city_couples):
@@ -141,13 +140,6 @@ class Neighborhood:
         self.neighbors.append(person)
         household.add_member(person)
 
-    # NEIGHBOR STATUS
-
-    def set_neighbor_status(self):
-        """Set neighbor status to True for each neighbor."""
-        for neighbor in self.neighbors:
-            neighbor.is_neighbor = True
-
     # DISPLAY HOUSEHOLDS
 
     def display_households(self):
@@ -167,9 +159,6 @@ class Neighborhood:
         for couple in self.neighbor_couples:
             self.do_couple_action(couple)
 
-        # Set neighbor status for newborns
-        self.set_neighbor_status()
-
         # Remove broken-up couples
         self.remove_dead_and_brokenup_couples()
 
@@ -181,11 +170,23 @@ class Neighborhood:
 
             if person.is_death_date:
                 self.death_handler.die(person)
+                self.remove_from_household(person)
+                self.remove_from_neighborhood(person)
                 continue
 
             # Come out if applicable
             if person.is_come_out_date:
                 self.personal_handler.come_out(person)
+
+            # Get thrown out of the household / neighborhood
+            if person.is_thrown_out_date:
+                new_apartment_id = self.personal_handler.get_thrown_out(person)
+                self.out_of_household(person, new_apartment_id)
+
+            # Move out of the household / neighborhood
+            if person.is_move_out_date:
+                new_apartment_id = self.personal_handler.move_out(person)
+                self.out_of_household(person, new_apartment_id)
 
             # Become an addict if applicable
             if person.is_addiction_date:
@@ -214,28 +215,31 @@ class Neighborhood:
                     # Add couple to couples list
                     self.neighbor_couples.append(couple)
 
+    def remove_from_household(self, person):
+        household = next(h for h in self.households if h.apartment_id == person.apartment_id)
+        household.remove_member(person)
+
+    def remove_from_neighborhood(self, person):
+        self.neighbors = [n for n in self.neighbors if n != person]
+
+    def out_of_household(self, person, new_apartment_id=None):
+        """Removes person from household. May add them to new household or move out of neighborhood."""
+        self.remove_from_household(person)
+        if new_apartment_id is None:
+            self.remove_from_neighborhood(person)
+        else:
+            new_household = next(h for h in self.households if h.apartment_id == new_apartment_id)
+            new_household.add_member(person)
+
     def do_couple_action(self, couple):
         """Couple actions for each couple."""
-        # Pregnancy handler first so that baby can be correctly linked to family.
         if couple.is_birth_date and couple.is_pregnant and couple.expecting_num_of_children >= 1:
             new_babies = self.pregnancy_handler.give_birth(couple)
-            household = next(h for h in self.households if new_babies[0].apartment_id == h.apartment_id)
-            for baby in new_babies:
-                self.add_to_neighbors_and_household(household, baby)
-            self.pregnancy_handler.reset_pregnancy(couple)
-
-            if couple.will_have_children:
-                self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
+            self.handle_new_babies(new_babies, couple)
 
         if couple.is_adoption_date:
             children = self.pregnancy_handler.adopt(couple)
-            household = next([h for h in self.households if children[0].apartment_id == h.apartment_id])
-            for child in children:
-                self.add_to_neighbors_and_household(household, child)
-            couple = self.pregnancy_handler.reset_adoption(couple)
-
-            if couple.will_have_children:
-                self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
+            self.handle_new_babies(children, couple)
 
         if couple.is_marriage_date and couple.will_get_married:
             self.marriage_handler.get_married(couple)
@@ -251,6 +255,17 @@ class Neighborhood:
                 couple)
             for person in couple.persons:
                 self.person_developer.set_new_love_date(person)
+
+    def handle_new_babies(self, new_babies, couple):
+        # Add baby/babies to household and neighborhood
+        household = next(h for h in self.households if new_babies[0].apartment_id == h.apartment_id)
+        for baby in new_babies:
+            self.add_to_neighbors_and_household(household, baby)
+        # Reset vars
+        self.pregnancy_handler.reset_pregnancy(couple)
+        # New pregnancy / adoption date
+        if couple.will_have_children:
+            self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
     def remove_dead_and_brokenup_couples(self):
         if len(self.neighbor_couples) > 0:

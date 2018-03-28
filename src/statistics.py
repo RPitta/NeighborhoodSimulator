@@ -80,6 +80,24 @@ class Statistics:
 
         return selected
 
+    def get_suicide_chance(self):
+
+        options = {
+            True: 10,
+            False: 90
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_thrown_out_chance(self):
+
+        options = {
+            True: 20,
+            False: 80
+        }
+
+        return self.randomizer.get_random_dict_key(options)
+
     def get_employment_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         employment_data = dbmgr.demo_data(self.city_data, "employment")
@@ -278,8 +296,8 @@ class Statistics:
     def get_liberalism(self):
 
         rates = {
-            True: 60,
-            False: 40
+            True: 50,
+            False: 50
         }
 
         return self.randomizer.get_random_dict_key(rates)

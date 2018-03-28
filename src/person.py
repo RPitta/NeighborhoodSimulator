@@ -41,12 +41,17 @@ class Person(Traits):
         self.ex_partners = []
         self.ex_spouses = []
 
+        # Neighborhood
+        self.neighbor_friends = []
+
         # Death (Default: Old age)
         self.death_date = False
         self.death_cause = self.OLD_AGE  # Depends on death_date
 
         # Will be initialized once Teen if applicable
         self.come_out_date = -1
+        self.move_out_date = -1
+        self.thrown_out_date = -1
 
         # Relationship traits -> Will be initialized once Young Adult
         self.is_liberal = None
@@ -229,6 +234,14 @@ class Person(Traits):
     def is_come_out_date(self):
         return self.age == self.come_out_date
 
+    @property
+    def is_move_out_date(self):
+        return self.age == self.move_out_date
+
+    @property
+    def is_thrown_out_date(self):
+        return self.age == self.thrown_out_date
+
     # CHILDREN
 
     @property
@@ -287,6 +300,16 @@ class Person(Traits):
         return self.age == self.relapse_date
 
     # FAMILY
+
+    @property
+    def has_conservative_parents(self):
+        """Returns true if parents are conservative."""
+        if len(self.adoptive_parents) > 0:
+            return all(parent.is_liberal is False for parent in self.adoptive_parents)
+        elif len(self.parents) > 0:
+            return all(parent.is_liberal is False for parent in self.parents)
+        elif len(self.step_parents) > 0:
+            return all(parent.is_liberal is False for parent in self.step_parents)
 
     @property
     def bio_family(self):
