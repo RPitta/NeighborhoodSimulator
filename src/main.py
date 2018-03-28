@@ -16,8 +16,11 @@ setup = Setup()
 names = Names(setup)
 life_stages = LifeStages()
 
+# Set city to obtain statistics from database
+city_data = 'default'
+
 # Initialize statistics with names, professions, stages
-statistics = Statistics(life_stages)
+statistics = Statistics(life_stages, city_data)
 
 # Initialize person generator
 baby_generator = BabyGenerator(life_stages, statistics, names)
