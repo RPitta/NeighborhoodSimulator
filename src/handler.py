@@ -7,21 +7,16 @@ class CityPersonalHandler:
     def __init__(self, names, person_developer):
         self.names = names
         self.person_developer = person_developer
-        self.death_handler = CityDeathHandler()
 
     def age_up(self, person):
         """Returns aged up person. May be dead."""
         if person.age == person.stage.end:
             if person.stage.next_stage is False:
-                person = self.death_handler.die(person)
+                person.death_date = self.age
             else:
                 self.set_new_stage(person)
         else:
             person.age += 1
-
-        if person.is_death_date:
-            person = self.death_handler.die(person)
-        return person
 
     def set_new_stage(self, person):
         """Set up new stage if reached."""
@@ -34,7 +29,6 @@ class CityPersonalHandler:
         """Lgbta persons come out."""
         if teen.is_trans:
             self.set_transgenders_new_traits(teen)
-        return teen
 
     def set_transgenders_new_traits(self, person):
         """Switch transgender's gender, assign new name."""
@@ -78,7 +72,6 @@ class PersonalHandler(CityPersonalHandler):
             self.display_sexual_orientation_message(teen, "bisexual")
         if teen.is_asexual:
             self.display_sexual_orientation_message(teen, "asexual")
-        return teen
 
     def set_new_name(self, person):
         new_name = self.names.get_name(person)
@@ -101,30 +94,35 @@ class PersonalHandler(CityPersonalHandler):
 
 class CityDeathHandler:
 
+    def __init__(self, person_developer):
+        self.person_developer = person_developer
+
     def die(self, person):
         """Set person's status to not alive and remove partners."""
         person.is_alive = False
 
         # Remove person from their partners / spouses
-        if len(person.partners) > 0:
-            if len(person.spouses) > 0:
-                for spouse in person.spouses:
-                    spouse.relationship_status = Traits.WIDOWED
-                    spouse.ex_spouses.append(person)
-                    spouse.spouses = [spouse for spouse in spouse.spouses if spouse != person]
-            for partner in person.partners:
-                if partner not in person.spouses and not partner.is_married_or_remarried:
-                    partner.relationship_status = Traits.SINGLE
-                    partner.ex_partners.append(person)
-                    partner.spouses = [partner for partner in partner.partners if partner != person]
-        return person
+        for spouse in person.spouses:
+            spouse.relationship_status = Traits.WIDOWED
+            spouse.ex_spouses.append(person)
+            spouse.spouses = [s for s in spouse.spouses if s != person]
+            spouse.partners = [p for p in spouse.partners if p != person]
+            # New love date
+            self.person_developer.set_new_love_date(spouse)
+        for partner in person.partners:
+            partner.ex_partners.append(person)
+            partner.partners = [partner for partner in partner.partners if partner != person]
+            # New love date
+            self.person_developer.set_new_love_date(partner)
+            if not partner.is_married_or_remarried:
+                partner.relationship_status = Traits.SINGLE
+
 
 class DeathHandler(CityDeathHandler):
 
     def die(self, person):
         super().die(person)
         self.display_death_message(person)
-        return person
 
     @classmethod
     def display_death_message(cls, person):
@@ -142,6 +140,63 @@ class DeathHandler(CityDeathHandler):
             print("\n{} has died of old age.".format(person))
 
 
+class CityJobHandler:
+    """Handles job and employment activity."""
+
+    def add_job(self, person, job):
+        """Add new job."""
+        if person.current_job is not None:
+            person.job_history.append(person.current_job)
+        person.current_job = job
+        self.update_employment_status(person, Traits.EMPLOYED)
+
+    def get_fired(self, person):
+        """Remove current job."""
+        if person.current_job is None or person.employment == Traits.UNEMPLOYED:
+            raise Exception("Cannot get fired if unemployed.")
+
+        person.job_history.append(person.current_job)
+        person.current_job = None
+        self.update_employment_status(person, Traits.UNEMPLOYED)
+
+    @classmethod
+    def update_employment_status(cls, person, status):
+        """Replace unemployed status with employed."""
+        person.employment = status
+
+    @classmethod
+    def get_promotion(cls, person):
+        """Job promotion."""
+        person.current_job.promotion(1000, True)  # Example only
+
+    @classmethod
+    def get_demotion(cls, person):
+        """Job demotion."""
+        person.current_job.demotion(1000, True)  # Example only
+
+
+class JobHandler(CityJobHandler):
+    """Adds print messages to city job handler class."""
+
+    def add_job(self, person, job):
+        print("{} has found a job as a {}.".format(person, job.title))
+        super().add_job(person, job)
+
+    def get_fired(self, person):
+        print("{} has been fired.".format(person))
+        super().get_fired(person)
+
+    @classmethod
+    def get_promotion(cls, person):
+        print("{} has been promoted.")
+        super().get_promotion(person)
+
+    @classmethod
+    def get_demotion(cls, person):
+        print("{} has been demoted.")
+        super().get_demotion(person)
+
+
 class CityAddictionHandler:
     """Handles addiction."""
 
@@ -157,7 +212,7 @@ class CityAddictionHandler:
         else:
             raise Exception("Cannot become an addict if no drugs/alcohol addiction set.")
         # Set possible consequences (overdose / rehab)
-        return self.person_developer.set_addiction_consequences(person)
+        self.person_developer.set_addiction_consequences(person)
 
     def get_sober(self, person):
         """Recover from addiction if an addict."""
@@ -170,7 +225,7 @@ class CityAddictionHandler:
         else:
             raise Exception("Cannot get sober if not an addict.")
         # Set relapse date if applicable
-        return self.person_developer.relapse_chance(person)
+        self.person_developer.relapse_chance(person)
 
     def relapse(self, person):
         """Become an addict again if an ex-addict."""
@@ -181,7 +236,7 @@ class CityAddictionHandler:
         else:
             raise Exception("Cannot relapse if not previously an addict.")
         # Set possible consequences (overdose / rehab)
-        return self.person_developer.set_addiction_consequences(person)
+        self.person_developer.set_addiction_consequences(person)
 
 
 class AddictionHandler(CityAddictionHandler):
@@ -195,7 +250,7 @@ class AddictionHandler(CityAddictionHandler):
             print("\n{} has become a drug addict.".format(person))
         elif person.will_become_alcohol_addict:
             print("\n{} has become an alcohol addict.".format(person))
-        return super().become_an_addict(person)
+        super().become_an_addict(person)
 
     def get_sober(self, person):
         if person.is_drug_addict:
@@ -203,14 +258,14 @@ class AddictionHandler(CityAddictionHandler):
         elif person.is_alcohol_addict:
             print("\n{} has spent some time in a rehabilitation centre and is no longer an alcohol addict.".format(
                 person))
-        return super().get_sober(person)
+        super().get_sober(person)
 
     def relapse(self, person):
         if person.was_drug_addict:
             print("\n{} has relapsed and has become a drug addict again.".format(person))
         elif person.was_alcohol_addict:
             print("\n{} has relapsed and has become an alcohol addict again.".format(person))
-        return super().relapse(person)
+        super().relapse(person)
 
 
 class CityMarriageHandler:
@@ -222,12 +277,11 @@ class CityMarriageHandler:
     def get_married(self, couple):
         """Marriage."""
         if any(p.is_married_or_remarried for p in couple.persons):  # Skip if poly person is already married
-            return couple
+            return
         self.set_married_status(couple)
-        self.replace_partners_with_spouses(couple)
+        self.set_as_spouses(couple)
         self.set_shared_surname(couple)
         self.marriage_validation(couple)
-        return couple
 
     @classmethod
     def set_married_status(cls, couple):
@@ -238,26 +292,29 @@ class CityMarriageHandler:
                 person.relationship_status = Traits.MARRIED
 
     @classmethod
-    def replace_partners_with_spouses(cls, couple):
+    def set_as_spouses(cls, couple):
         """Set each other as spouses."""
-        couple.person1.spouses.append(couple.person2)
-        couple.person2.spouses.append(couple.person1)
+        for person in couple.persons:
+            spouses = [p for p in couple.persons if p != person]
+            for spouse in spouses:
+                person.spouses.append(spouse)
 
     def set_shared_surname(self, couple):
         """If person is female and is married to a male, take male's surname. Else, 50/50 chance."""
         if couple.is_straight:
             couple.woman.surname = couple.man.surname
         else:
-            chosen = self.randomizer.get_random_item(
-                [couple.person1.surname, couple.person2.surname])
+            surnames = []
+            for p in couple.persons:
+                surnames.append(p.surname)
+            chosen = self.randomizer.get_random_item(surnames)
             for person in couple.persons:
                 person.surname = chosen
 
     @classmethod
     def marriage_validation(cls, couple):
-        if not all([p.is_married_or_remarried for p in couple.persons]):
-            raise Exception(
-                "Married couple is not set as married.")
+        if any([p.is_married_or_remarried is False for p in couple.persons]):
+            raise Exception("Married couple is not set as married.")
         if any([len(p.spouses) == 0 for p in couple.persons]):
             raise Exception("Married couple has no assigned spouse.")
         if couple.marriage_date > couple.oldest.age:
@@ -274,7 +331,6 @@ class MarriageHandler(CityMarriageHandler):
     def get_married(self, couple):
         super().get_married(couple)
         self.display_new_marriage_message(couple)
-        return couple
 
     @classmethod
     def display_new_marriage_message(cls, couple):
@@ -292,7 +348,6 @@ class CityDivorceHandler:
         self.remove_spouses(couple)
         self.add_to_exspouses(couple)
         self.revert_username(couple)
-        return couple
 
     @classmethod
     def set_divorced_status(cls, couple):
@@ -302,12 +357,15 @@ class CityDivorceHandler:
     @classmethod
     def remove_spouses(cls, couple):
         for person in couple.persons:
-            person.spouses = []
+            person.spouses = [spouse for spouse in person.spouses if spouse not in couple.persons]
+            person.partners = [partner for partner in person.partners if partner not in couple.persons]
 
     @classmethod
     def add_to_exspouses(cls, couple):
-        couple.person1.ex_spouses.append(couple.person2)
-        couple.person2.ex_spouses.append(couple.person1)
+        for person in couple.persons:
+            exes = [ex for ex in couple.persons if ex != person]
+            for ex in exes:
+                person.ex_spouses.append(ex)
 
     @classmethod
     def revert_username(cls, couple):
@@ -319,7 +377,6 @@ class CityDivorceHandler:
         self.set_separated_status(couple)
         self.remove_partners(couple)
         self.add_to_expartners(couple)
-        return couple
 
     @classmethod
     def set_separated_status(cls, couple):
@@ -330,12 +387,14 @@ class CityDivorceHandler:
     @classmethod
     def remove_partners(cls, couple):
         for person in couple.persons:
-            person.partners = [p for p in person.partners if p != person]
+            person.partners = [partner for partner in person.partners if partner not in couple.persons]
 
     @classmethod
     def add_to_expartners(cls, couple):
-        couple.person1.ex_partners.append(couple.person2)
-        couple.person2.ex_partners.append(couple.person1)
+        for person in couple.persons:
+            exes = [ex for ex in couple.persons if ex != person]
+            for ex in exes:
+                person.ex_partners.append(ex)
 
 
 class DivorceHandler(CityDivorceHandler):
@@ -343,7 +402,7 @@ class DivorceHandler(CityDivorceHandler):
 
     def get_divorced(self, couple):
         self.display_divorce_message(couple)
-        return super().get_divorced(couple)
+        super().get_divorced(couple)
 
     @classmethod
     def display_divorce_message(cls, couple):
@@ -352,7 +411,7 @@ class DivorceHandler(CityDivorceHandler):
 
     def get_separated(self, couple):
         self.display_separation_message(couple)
-        return super().get_separated(couple)
+        super().get_separated(couple)
 
     @classmethod
     def display_separation_message(cls, couple):
@@ -372,11 +431,10 @@ class CityPregnancyHandler:
         """Set pregnancy to True and set statistical number of expecting children."""
         if couple.woman.is_pregnant or any(person.has_max_num_of_children for person in couple.persons):
             couple.birth_date = -1
-            return couple
+            return
         couple.expecting_num_of_children = self.statistics.get_pregnancy_num_of_children()
         couple.woman.is_pregnant = True
         self.pregnancy_and_adoption_validation(couple)
-        return couple
 
     def start_adoption_process(self, couple):
         """Set adoption process to True and set statistical number of expecting children"""
@@ -384,7 +442,6 @@ class CityPregnancyHandler:
         for person in couple.persons:
             person.is_in_adoption_process = True
         self.pregnancy_and_adoption_validation(couple)
-        return couple
 
     @classmethod
     def pregnancy_and_adoption_validation(cls, couple):
@@ -437,7 +494,6 @@ class CityPregnancyHandler:
         couple.woman.is_pregnant = False
         couple.desired_children_left -= couple.expecting_num_of_children
         couple.expecting_num_of_children = 0
-        return couple
 
     def adopt(self, couple):
         """Returns adoptions from given couple."""
@@ -458,7 +514,6 @@ class CityPregnancyHandler:
             person.is_in_adoption_process = False
         couple.desired_children_left -= couple.expecting_num_of_children
         couple.expecting_num_of_children = 0
-        return couple
 
 
 class PregnancyHandler(CityPregnancyHandler):
@@ -468,7 +523,6 @@ class PregnancyHandler(CityPregnancyHandler):
     def get_pregnant(self, couple):
         super().get_pregnant(couple)
         self.print_expecting_num_of_bio_children(couple)
-        return couple
 
     @classmethod
     def print_expecting_num_of_bio_children(cls, couple):
@@ -488,7 +542,6 @@ class PregnancyHandler(CityPregnancyHandler):
     def start_adoption_process(self, couple):
         super().start_adoption_process(couple)
         self.print_expecting_num_of_adoptions(couple)
-        return couple
 
     @classmethod
     def print_expecting_num_of_adoptions(cls, couple):

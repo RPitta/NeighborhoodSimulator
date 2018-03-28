@@ -50,17 +50,16 @@ print()
 for _ in range(30):
     city.time_jump_city()
     neighborhood.time_jump_neighborhood(city.romanceable_outsiders)
-
-for neighbor in neighborhood.neighbors:
-    # Update city population with neighborhood newborns
-    if neighbor not in city.population:
-        city.population.append(neighbor)
-    # Then remove dead neighbors from neighbors list and their assigned household
-    if neighbor.is_alive is False:
-        for household in neighborhood.households:
-            if neighbor.apartment_id == household.apartment_id:
-                household.remove_member(neighbor)
-        neighborhood.neighbors.remove(neighbor)
+    for neighbor in neighborhood.neighbors:
+        # Update city population with neighborhood newborns
+        if neighbor not in city.population:
+            city.population.append(neighbor)
+        # Then remove dead neighbors from neighbors list and their assigned household
+        if neighbor.is_alive is False:
+            for household in neighborhood.households:
+                if neighbor.apartment_id == household.apartment_id:
+                    household.remove_member(neighbor)
+            neighborhood.neighbors.remove(neighbor)
 
 print("\nStats, for debugging purposes:\n")
 for p in neighborhood.neighbors:
@@ -81,3 +80,15 @@ print("length of deceased: " + str(len(city.dead_population)))
 print("length of total living+dead population: " +
       str(len(city.population)))
 print("length of children up for adoption: " + str(len(foster_care_system.children)))
+
+print("\nStats of outsiders, for debugging purposes:\n")
+for p in city.living_outsiders:
+    attrs = vars(p)
+    print(', '.join("%s: %s" % item for item in attrs.items()))
+    print()
+
+print("\nStats, for debugging purposes:\n")
+for p in neighborhood.neighbor_couples:
+    attrs = vars(p)
+    print(', '.join("%s: %s" % item for item in attrs.items()))
+    print()

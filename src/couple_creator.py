@@ -97,30 +97,12 @@ class CityCoupleCreator:
 class CoupleCreator(CityCoupleCreator):
     """Adds print messages to city couple creator class."""
 
-    def get_couple(self, person, candidates):
-        """Override the get couple method to include print message."""
-        found_person = self.get_random_candidate(candidates)
-        self.set_as_partner(person, found_person)
-        self.update_relationship_status_to_committed(person, found_person)
-        self.display_new_relationship_message(person, found_person)
-        return self.create_new_relationship(person, found_person)
-
-    def get_throuple(self, person, candidates):
-        """Override the get throuple method to include print message."""
-        found_persons = self.get_random_candidate(candidates)
-        found_person1 = found_persons[0]
-        found_person2 = found_persons[1]
-        self.set_as_partner(person, found_person1, found_person2)
-        self.update_relationship_status_to_committed(
-            person, found_person1, found_person2)
-        self.display_new_relationship_message(
-            person, found_person1, found_person2)
-        return self.create_new_relationship(person, found_person1, found_person2)
-
     @classmethod
-    def display_new_relationship_message(cls, person, found_person, found_person2=None):
-        if found_person2 is None:
-            print("\n{} has started dating {}.\n".format(person, found_person))
+    def display_new_relationship_message(cls, person, couple):
+        second = next(p for p in couple.persons if p != person)
+        if len(couple.persons) == 2:
+            print("\n{} has started dating {}.\n".format(person, second))
         else:
+            third = next(p for p in couple.persons if p != person and p != second)
             print("\n{} has started dating {} and {}.\n".format(
-                person, found_person, found_person2))
+                person, second, third))

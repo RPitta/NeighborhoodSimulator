@@ -63,13 +63,13 @@ class Household:
                     desc += "\nChild: {}".format(child)
             for parent in person.parents:
                 if parent in self.members:
-                    desc += "\nParent: {}".format(child)
+                    desc += "\nParent: {}".format(parent)
             for parent in person.adoptive_parents:
                 if parent in self.members:
-                    desc += "\nParent: {}".format(child)
+                    desc += "\nParent: {}".format(parent)
             for step_parent in person.step_parents:
                 if step_parent in self.members:
-                    desc += "\nStep-parent: {}".format(child)
+                    desc += "\nStep-parent: {}".format(step_parent)
             for sibling in person.siblings:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
