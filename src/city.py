@@ -4,12 +4,11 @@ from handler import CityPregnancyHandler, CityPersonalHandler, CityAddictionHand
 
 class City:
 
-    def __init__(self, generator, developer, couple_creator, stages, names, relationship_developer, statistics,
+    def __init__(self, generator, developer, couple_creator, names, relationship_developer, statistics,
                  foster_care_system):
         self.generator = generator
         self.person_developer = developer
         self.couple_creator = couple_creator
-        self.stages = stages
         self.names = names
         self.relationship_developer = relationship_developer
         self.statistics = statistics

@@ -1,7 +1,7 @@
-from traits import Traits, LifeStages
+from traits import Traits
 
 
-class Person(Traits, LifeStages):
+class Person(Traits):
     def __init__(self, gender, age):
         self.gender = gender
         self.age = age

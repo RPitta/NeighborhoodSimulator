@@ -4,23 +4,22 @@ from utilities.randomizer import Randomizer
 
 class PersonDeveloper:
 
-    def __init__(self, setup, life_stages, statistics):
+    def __init__(self, setup, statistics):
         self.setup = setup
-        self.stages = life_stages
         self.statistics = statistics
         self.randomizer = Randomizer()
 
     def set_new_stage_traits(self, person):
         """Link each new stage to their methods for setting new traits."""
-        if person.stage == self.stages.BABY or person.stage == self.stages.CHILD:
+        if person.stage == Traits.BABY or person.stage == Traits.CHILD:
             pass
-        elif person.stage == self.stages.TEEN:
+        elif person.stage == Traits.TEEN:
             person = self.set_teen_traits(person)
-        elif person.stage == self.stages.ADULT:
+        elif person.stage == Traits.ADULT:
             person = self.set_adult_traits(person)
-        elif person.stage == self.stages.YOUNGADULT:
+        elif person.stage == Traits.YOUNGADULT:
             person = self.set_youngadult_traits(person)
-        elif person.stage == self.stages.SENIOR:
+        elif person.stage == Traits.SENIOR:
             person = self.set_senior_traits(person)
         else:
             raise Exception("Person's stage is wrong.")

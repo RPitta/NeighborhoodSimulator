@@ -1,7 +1,8 @@
 import os
 
 from utilities.randomizer import Randomizer
-from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
+from life_stage import *
+from social_class import *
 
 
 class Setup:
@@ -134,12 +135,6 @@ class Traits:
     ASIAN = "Asian"
     RACES = (WHITE, BLACK, LATINO, ASIAN)
 
-    # Social class
-    UPPERCLASS = "Upperclass"
-    MIDDLECLASS = "Middleclass"
-    LOWERCLASS = "Lowerclass"
-    SOCIAL_CLASSES = (UPPERCLASS, MIDDLECLASS, LOWERCLASS)
-
     # Sexual orientations
     HETEROSEXUAL = "Heterosexual"
     HOMOSEXUAL = "Homosexual"
@@ -218,9 +213,6 @@ class Traits:
     ALCOHOL_OVERDOSE = "Alcohol overdose"
     DEATH_CAUSES = (OLD_AGE, SUICIDE, ILLNESS, ACCIDENT)
 
-
-class LifeStages:
-    """Global variables for instantiated life stages."""
     BABY = Baby()
     CHILD = Child()
     TEEN = Teen()
@@ -229,3 +221,8 @@ class LifeStages:
     SENIOR = Senior()
     LIFESTAGES = (BABY, CHILD, TEEN, YOUNGADULT, ADULT, SENIOR)
     LIFESPAN = list(range(BABY.start, SENIOR.end + 1))
+
+    UPPER_CLASS = UpperClass()
+    MIDDLE_CLASS = MiddleClass()
+    LOWER_CLASS = LowerClass()
+    SOCIAL_CLASSES = (UPPER_CLASS, MIDDLE_CLASS, LOWER_CLASS)

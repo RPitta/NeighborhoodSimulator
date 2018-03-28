@@ -2,10 +2,10 @@ from utilities.randomizer import Randomizer
 from traits import Traits
 import sql_connect
 
+
 class Statistics:
 
-    def __init__(self, stages, city_data):
-        self.stages = stages
+    def __init__(self, city_data):
         self.randomizer = Randomizer()
         self.city_data = city_data
 
@@ -68,9 +68,9 @@ class Statistics:
         dbmgr.__del__()
 
         options = {
-            Traits.LOWERCLASS: social_class_data[0]['lower_class'],
-            Traits.MIDDLECLASS: social_class_data[0]['middle_class'],
-            Traits.UPPERCLASS: social_class_data[0]['upper_class']
+            Traits.UPPER_CLASS: social_class_data[0]['lower_class'],
+            Traits.MIDDLE_CLASS: social_class_data[0]['middle_class'],
+            Traits.LOWER_CLASS: social_class_data[0]['upper_class']
         }
 
         selected = self.randomizer.get_random_dict_key(options)
@@ -103,7 +103,7 @@ class Statistics:
         if person.death_date is False:
             return Traits.OLD_AGE
 
-        if person.death_date < self.stages.TEEN.start:
+        if person.death_date < Traits.TEEN.start:
             return Traits.ILLNESS
 
         options_teen = {
@@ -129,13 +129,13 @@ class Statistics:
             Traits.ACCIDENT: death_cause_data[0]['senior_accident']
         }
 
-        if person.death_date in self.stages.TEEN.span:
+        if person.death_date in Traits.TEEN.span:
             selected = self.randomizer.get_random_dict_key(options_teen)
-        elif person.death_date in self.stages.YOUNGADULT.span:
+        elif person.death_date in Traits.YOUNGADULT.span:
             selected = self.randomizer.get_random_dict_key(options_young_adult)
-        elif person.death_date in self.stages.ADULT.span:
+        elif person.death_date in Traits.ADULT.span:
             selected = self.randomizer.get_random_dict_key(options_adult)
-        elif person.death_date in self.stages.SENIOR.span:
+        elif person.death_date in Traits.SENIOR.span:
             selected = self.randomizer.get_random_dict_key(options_senior)
         else:
             raise Exception("Wrong death date.")
@@ -153,12 +153,12 @@ class Statistics:
         }
 
         options_before_old_age = {
-            self.stages.BABY: 1,
-            self.stages.CHILD: 2,
-            self.stages.TEEN: 3,
-            self.stages.YOUNGADULT: 4,
-            self.stages.ADULT: 10,
-            self.stages.SENIOR: 80
+            Traits.BABY: 1,
+            Traits.CHILD: 2,
+            Traits.TEEN: 3,
+            Traits.YOUNGADULT: 4,
+            Traits.ADULT: 10,
+            Traits.SENIOR: 80
         }
 
         selected = self.randomizer.get_random_dict_key(options_general)
@@ -171,7 +171,7 @@ class Statistics:
 
         death_date = self.randomizer.get_random_item(random_life_stage.span)
 
-        if death_date not in self.stages.LIFESPAN:
+        if death_date not in Traits.LIFESPAN:
             raise Exception("Wrong death date.")
 
         return death_date

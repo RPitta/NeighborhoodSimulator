@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from statistics import Statistics
-from traits import Setup, Names, LifeStages
+from traits import Setup, Names
 from baby_generator import BabyGenerator
 from person_developer import PersonDeveloper
 from couple_developer import CoupleDeveloper
@@ -14,17 +14,16 @@ from foster_care_system import FosterCareSystem
 # Initialize Names, Professions and LifeStages
 setup = Setup()
 names = Names(setup)
-life_stages = LifeStages()
 
 # Set city to obtain statistics from database
 city_data = 'default'
 
 # Initialize statistics with names, professions, stages
-statistics = Statistics(life_stages, city_data)
+statistics = Statistics(city_data)
 
 # Initialize person generator
-baby_generator = BabyGenerator(life_stages, statistics, names)
-person_developer = PersonDeveloper(setup, life_stages, statistics)
+baby_generator = BabyGenerator(statistics, names)
+person_developer = PersonDeveloper(setup, statistics)
 city_couple_creator = CityCoupleCreator()
 couple_creator = CoupleCreator()
 couple_developer = CoupleDeveloper(statistics)
@@ -32,7 +31,7 @@ foster_care_system = FosterCareSystem(statistics)
 
 # Initialize city, at last
 city = City(baby_generator, person_developer, city_couple_creator,
-            life_stages, names, couple_developer, statistics, foster_care_system)
+            names, couple_developer, statistics, foster_care_system)
 
 # First time jumps to remove first older generation (the one without parents)
 for _ in range(20):
