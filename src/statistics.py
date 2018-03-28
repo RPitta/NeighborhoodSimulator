@@ -4,9 +4,10 @@ import sql_connect
 
 class Statistics:
 
-    def __init__(self, stages):
+    def __init__(self, stages, city_data):
         self.stages = stages
         self.randomizer = Randomizer()
+        self.city_data = city_data
 
     def get_gender(self):
 
@@ -38,7 +39,7 @@ class Statistics:
 
     def get_race(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        race_data = dbmgr.demo_data("default", "race")
+        race_data = dbmgr.demo_data(self.city_data, "race")
         dbmgr.__del__()
         options = {
             Traits.WHITE: race_data[0]['white'],
@@ -61,7 +62,7 @@ class Statistics:
         dbmgr = sql_connect.DatabaseManager("testdb.db")
 
         # Get the data, passing the city
-        social_class_data = dbmgr.demo_data("default", "social_class")
+        social_class_data = dbmgr.demo_data(self.city_data, "social_class")
 
         # Close the connection
         dbmgr.__del__()
@@ -81,7 +82,7 @@ class Statistics:
 
     def get_employment_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        employment_data = dbmgr.demo_data("default", "employment")
+        employment_data = dbmgr.demo_data(self.city_data, "employment")
         dbmgr.__del__()
         options = {
             Traits.EMPLOYED: employment_data[0]['employed'],
@@ -97,7 +98,7 @@ class Statistics:
 
     def get_death_cause(self, person):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        death_cause_data = dbmgr.demo_data("default", "death_cause")
+        death_cause_data = dbmgr.demo_data(self.city_data, "death_cause")
         dbmgr.__del__()
         if person.death_date is False:
             return Traits.OLD_AGE
@@ -285,7 +286,7 @@ class Statistics:
 
     def get_desired_num_of_children(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        children_data = dbmgr.demo_data("default", "desired_num_of_children")
+        children_data = dbmgr.demo_data(self.city_data, "desired_num_of_children")
         dbmgr.__del__()
         options = {
             Traits.ONE_CHILD: children_data[0]['one_child'],
@@ -299,7 +300,7 @@ class Statistics:
     def get_pregnancy_num_of_children(self):
         """Random number of children for pregnancy: singleton/twins/triplets"""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        pregnancy_data = dbmgr.demo_data("default", "pregnancy")
+        pregnancy_data = dbmgr.demo_data(self.city_data, "pregnancy")
         dbmgr.__del__()
         options = {
             Traits.SINGLETON: pregnancy_data[0]['singlton'],
@@ -341,7 +342,7 @@ class Statistics:
 
     def get_breakup_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        breakup_data = dbmgr.demo_data("default", "breakup")
+        breakup_data = dbmgr.demo_data(self.city_data, "breakup")
         dbmgr.__del__()
         options = {
             True: breakup_data[0]['breakup_true'],
@@ -381,7 +382,7 @@ class Statistics:
 
     def get_drug_addiction_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        drug_addiction_data = dbmgr.demo_data("default", "drug_addiction")
+        drug_addiction_data = dbmgr.demo_data(self.city_data, "drug_addiction")
         dbmgr.__del__()
         options = {
             True: drug_addiction_data[0]['addict_true'],
@@ -392,7 +393,7 @@ class Statistics:
 
     def get_alcohol_addiction_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        alcohol_addiction_data = dbmgr.demo_data("default", "alcohol_addiction")
+        alcohol_addiction_data = dbmgr.demo_data(self.city_data, "alcohol_addiction")
         dbmgr.__del__()
         options = {
             True: alcohol_addiction_data[0]['addict_true'],
@@ -403,7 +404,7 @@ class Statistics:
 
     def get_rehabilitation_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        rehabilitation_data = dbmgr.demo_data("default", "rehabilitation")
+        rehabilitation_data = dbmgr.demo_data(self.city_data, "rehabilitation")
         dbmgr.__del__()
         options = {
             True: rehabilitation_data[0]['rehabilitation_true'],
@@ -414,7 +415,7 @@ class Statistics:
 
     def get_overdose_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        overdose_data = dbmgr.demo_data("default", "overdose")
+        overdose_data = dbmgr.demo_data(self.city_data, "overdose")
         dbmgr.__del__()
         options = {
             True: overdose_data[0]['overdose_true'],
@@ -425,7 +426,7 @@ class Statistics:
 
     def get_relapse_chance(self):
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        relapse_data = dbmgr.demo_data("default", "relapse")
+        relapse_data = dbmgr.demo_data(self.city_data, "relapse")
         dbmgr.__del__()
         options = {
             True: relapse_data[0]['relapse_true'],
