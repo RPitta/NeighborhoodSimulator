@@ -65,7 +65,7 @@ class PersonDeveloper:
 
     def suicide_consequence(self, teen):
         """Determine chance of suicide as coming out in conservative family consequence."""
-        if self.statistics.get_suicide_chance():
+        if self.statistics.get_suicide_chance_as_coming_out_consequence():
             teen.death_date = teen.age + 1 if teen.span_left_till_next_stage < 1 else self.randomizer.get_random_item(teen.span_left_till_next_stage)
             teen.death_cause = Traits.SUICIDE
             return True
@@ -172,7 +172,6 @@ class PersonDeveloper:
         for person in couple.persons:
             if person.is_romanceable:
                 self.set_new_love_date(person)
-        return couple
 
     @classmethod
     def set_conservative_traits(cls, person):

@@ -690,7 +690,8 @@ class Person(Traits):
     def get_grandparents_names(self):
         return self.get_names_list(self.grandparents)
 
-    def get_names_list(self, lst):
+    @classmethod
+    def get_names_list(cls, lst):
         if lst is None or len(lst) == 0:
             return "None"
         return ', '.join(map(str, [p.name for p in lst]))

@@ -12,7 +12,7 @@ class CityPersonalHandler:
         """Returns aged up person. May be dead."""
         if person.age == person.stage.end:
             if person.stage.next_stage is False:
-                person.death_date = self.age
+                person.death_date = person.age
             else:
                 self.set_new_stage(person)
         else:
@@ -591,7 +591,7 @@ class PregnancyHandler(CityPregnancyHandler):
         if couple.expecting_num_of_children == Traits.ONE_CHILD:
             print("\n{} and {} have began the process to adopt a child.".format(
                 couple.person1, couple.person2))
-        elif couple.expecting_num_of_children in Traits.SIBLING_SET:
+        elif couple.expecting_num_of_children == Traits.SIBLING_SET:
             print("\n{} and {} have began the process to adopt a sibling set.".format(
                 couple.person1, couple.person2))
         else:
@@ -630,17 +630,24 @@ class PregnancyHandler(CityPregnancyHandler):
 
         if couple.expecting_num_of_children == Traits.ONE_CHILD:
             child = self.foster_care_system.adopt_child(couple)
-            print("\n{} and {} have adopted a {} aged {}: {}.".format(
-                couple.person1, couple.person2, child.baby_gender, child.age, child.name))
-            return [child]
+            self.display_adoptions_message(couple, child)
+            return child
         elif couple.expecting_num_of_children == Traits.SIBLING_SET:
             children = self.foster_care_system.adopt_sibling_set(couple)
-            print("\n{} and {} have adopted a sibling set:".format(couple.person1, couple.person2))
-            for child in children:
-                print("{} ({}, age {})".format(child.name, child.baby_gender, child.age))
+            self.display_adoptions_message(couple, children)
             return children
         else:
             raise Exception("Wrong number of adoptions.")
+
+    @classmethod
+    def display_adoptions_message(cls, couple, children):
+        if len(children) > 1:
+            print("\n{} and {} have adopted a sibling set:".format(couple.person1, couple.person2))
+            for child in children:
+                print("{} ({}, age {})".format(child.name, child.baby_gender, child.age))
+        else:
+            print("\n{} and {} have adopted a {} aged {}: {}.".format(
+                couple.person1, couple.person2, children[0].baby_gender, children[0].age, children[0].name))
 
     @classmethod
     def print_singleton_message(cls, couple, babies):

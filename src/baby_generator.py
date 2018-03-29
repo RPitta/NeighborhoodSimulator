@@ -3,20 +3,21 @@ from person import Person
 
 
 class BabyGenerator:
+    """Baby generator base class."""
 
     def __init__(self, statistics, names):
         self.statistics = statistics
         self.names = names
 
-    def create_first_child(self, surnames):
+    def create_first_child(self, age, surnames):
         """Generates new child without family to populate city."""
-        child = Person(self.statistics.get_gender(), Traits.CHILD.end)
+        child = Person(self.statistics.get_gender(), age)
         self.set_first_child_traits(child, surnames)
         self.set_baby_essential_traits(child)
         return child
 
     def set_first_child_traits(self, child, surnames):
-        """Set statistical social class and random surname that is unique among the population."""
+        """Set statistical/random basic traits for new child."""
         child.surname = self.names.get_surname(surnames)
         child.original_surname = child.surname
         child.race = self.statistics.get_race()
@@ -43,21 +44,20 @@ class BabyGenerator:
         baby.parents.extend(couple.persons)
         for parent in baby.parents:
             parent.children.append(baby)
+
+        # Social class and race
         baby.social_class = baby.parents[0].social_class
         baby.race = baby.parents[0].race  # This must be changed
-
+        # Surname and apartment ID
         if couple.is_straight:
             baby.surname = couple.man.surname
-            baby.apartment_id = couple.woman.apartment_id
         else:
             baby.surname = baby.parents[0].surname
-            baby.apartment_id = baby.parents[0].apartment_id
         baby.original_surname = baby.surname
 
     @classmethod
     def baby_validation(cls, baby):
         """Validates baby's correct traits and family."""
-        # Baby attributes
         if baby.name is None:
             raise Exception("Person has no name.")
         if baby.surname is None or baby.original_surname is None:

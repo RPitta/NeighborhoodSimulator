@@ -1,8 +1,9 @@
 from handler import CityPregnancyHandler, CityPersonalHandler, CityAddictionHandler, CityDeathHandler, \
     CityDivorceHandler, CityMarriageHandler
-
+from traits import Traits
 
 class City:
+    """City class."""
 
     def __init__(self, generator, developer, couple_creator, names, relationship_developer, statistics,
                  foster_care_system):
@@ -10,7 +11,7 @@ class City:
         self.person_developer = developer
         self.couple_creator = couple_creator
         self.names = names
-        self.relationship_developer = relationship_developer
+        self.couple_developer = relationship_developer
         self.statistics = statistics
         self.foster_care_system = foster_care_system
 
@@ -59,15 +60,16 @@ class City:
     # ACTIONS
 
     def populate_city(self):
-        """Populate the city with X number of random people.
-        Starting at the Child stage so that they can be set with essential traits once they reach the teen stage."""
-        for _ in (number + 1 for number in range(100)):
-            person = self.generator.create_first_child(
-                self.population_surnames)
+        """Populate the city with X number of random children."""
+        for _ in (number + 1 for number in range(30)):
+            person = self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)
             self.population.append(person)
 
     def time_jump_city(self):
-        """Ages up city inhabitants."""
+        # Add new child to foster care if too few
+        if len(self.foster_care_system.children) < 2:
+            self.populate_foster_care_system()
+
         self.do_person_action()
 
         # Remove dead couples
@@ -78,6 +80,13 @@ class City:
 
         # Remove broken-up couples
         self.remove_dead_and_brokenup_couples()
+
+    def populate_foster_care_system(self):
+        """Adds a number of babies to foster care centre."""
+        for _ in range(3):
+            new_child = self.generator.create_first_child(Traits.BABY.start, self.population_surnames)
+            self.foster_care_system.add_to_system([new_child])
+            self.population.append(new_child)
 
     def remove_dead_and_brokenup_couples(self):
         """Remove city couples that are dead, have broken up, or live in the neighborhood."""
@@ -120,7 +129,7 @@ class City:
                 couple = self.couple_creator.create_couple(person, self.romanceable_outsiders)
                 if couple is not False:
                     # Set couple traits
-                    self.relationship_developer.set_new_couple_traits(couple)
+                    self.couple_developer.set_new_couples_goals(couple)
                     # Set new love date for polys
                     self.person_developer.set_new_love_date_for_polys(couple)
                     # Add couple to couples list
@@ -133,14 +142,14 @@ class City:
             self.pregnancy_handler.reset_pregnancy(couple)
             # New pregnancy date
             if couple.will_have_children:
-                self.relationship_developer.set_new_pregnancy_or_adoption_process_date(couple)
+                self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
         if couple.is_adoption_date:
             self.population.extend(self.pregnancy_handler.adopt(couple))
             self.pregnancy_handler.reset_adoption(couple)
             # New adoption date
             if couple.will_have_children:
-                self.relationship_developer.set_new_pregnancy_or_adoption_process_date(couple)
+                self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
         if couple.is_marriage_date and couple.will_get_married:
             self.marriage_handler.get_married(couple)
@@ -152,7 +161,7 @@ class City:
             self.pregnancy_handler.start_adoption_process(couple)
 
         if couple.is_breakup_date and couple.will_breakup:
-            self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(
-                couple)
+            self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(couple)
+            # New love dates
             for person in couple.persons:
                 self.person_developer.set_new_love_date(person)

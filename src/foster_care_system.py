@@ -40,23 +40,25 @@ class FosterCareSystem:
 
     def adopt_child(self, couple):
         """Returns only child with statistically random age."""
-        if len(self.children) == 0:
-            raise Exception("No children in foster care.")
+        self.check_children_in_foster_care()
 
-        age_range = self.statistics.get_age_of_adoptive_children()
-        children_within_range = [child for child in self.only_childs if child.age in age_range]
+        children_within_range = []
+        while len(children_within_range) == 0:
+            age_range = self.statistics.get_age_of_adoptive_children()
+            children_within_range = [child for child in self.only_childs if child.age in age_range]
 
         child = self.randomizer.get_random_item(children_within_range)
 
-        self.link_adoptive_family(couple, child)
-        self.remove_from_system(child)
-
-        return child
+        self.link_adoptive_family(couple, [child])
+        self.remove_from_system([child])
+        return [child]
 
     def adopt_sibling_set(self, couple):
         """Returns a set of siblings with statistically random age."""
-        if len(self.children) == 0:
-            raise Exception("No children in foster care.")
+        self.check_children_in_foster_care()
+        if len(self.sibling_sets) == 0:
+            couple.expecting_num_of_children = 1
+            return self.adopt_child(couple)
 
         age_range = self.statistics.get_age_of_adoptive_children()
         children_within_range = [child for child in self.sibling_sets if child.age in age_range]
@@ -64,9 +66,9 @@ class FosterCareSystem:
         child = self.randomizer.get_random_item(children_within_range)
         children = [child] + child.siblings
 
+        couple.expecting_num_of_children = len(children)
         self.link_adoptive_family(couple, children)
         self.remove_from_system(children)
-
         return children
 
     @classmethod
@@ -90,3 +92,7 @@ class FosterCareSystem:
 
         for child in children:
             child.original_surname = child.surname
+
+    def check_children_in_foster_care(self):
+        if len(self.children) == 0:
+            raise Exception("No children in foster care.")

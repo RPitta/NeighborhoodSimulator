@@ -57,28 +57,28 @@ class Neighborhood:
 
             done = False
             while not done:
+                invalid = False
                 # Choose a random living person
                 chosen_person = self.randomizer.get_random_item(
                     city_population)
 
                 # Check that the person isn't already a neighbor, and that they are of age
                 if chosen_person in self.neighbors or not chosen_person.is_of_age:
-                    continue
+                    invalid = True
 
                 # Check that the person isn't a relative from another neighbor
-                if any(
-                        chosen_person in n.partners or chosen_person in n.living_family or chosen_person in n.living_inlaws_family
-                        for n in self.neighbors):
-                    continue
+                for n in self.neighbors:
+                    if chosen_person in n.partners or chosen_person in n.living_family or chosen_person in n.living_inlaws_family:
+                        invalid = True
 
-                # If not, add it to neighbors list and to household's members list
-                self.add_to_neighbors_and_household(h, chosen_person)
-                done = True
-
-                # Add as couple if applicable
-                for couple in city_couples:
-                    if chosen_person in couple.persons:
-                        self.neighbor_couples.append(couple)
+                if not invalid:
+                    # If not, add it to neighbors list and to household's members list
+                    self.add_to_neighbors_and_household(h, chosen_person)
+                    # Add as couple if applicable
+                    for couple in city_couples:
+                        if chosen_person in couple.persons:
+                            self.neighbor_couples.append(couple)
+                    done = True
 
     # ADD EACH NEIGHBOR'S FAMILIES
 
@@ -181,12 +181,12 @@ class Neighborhood:
             # Get thrown out of the household / neighborhood
             if person.is_thrown_out_date:
                 new_apartment_id = self.personal_handler.get_thrown_out(person)
-                self.out_of_household(person, new_apartment_id)
+                self.determine_new_household(person, new_apartment_id)
 
             # Move out of the household / neighborhood
             if person.is_move_out_date:
                 new_apartment_id = self.personal_handler.move_out(person)
-                self.out_of_household(person, new_apartment_id)
+                self.determine_new_household(person, new_apartment_id)
 
             # Become an addict if applicable
             if person.is_addiction_date:
@@ -207,29 +207,29 @@ class Neighborhood:
                 if couple is not False:
                     self.couple_creator.display_new_relationship_message(person, couple)
                     # Set couple traits
-                    self.couple_developer.set_new_couple_traits(
-                        couple)
+                    self.couple_developer.set_new_couples_goals(couple)
                     # Set new love date for polys
-                    self.person_developer.set_new_love_date_for_polys(
-                        couple)
+                    self.person_developer.set_new_love_date_for_polys(couple)
                     # Add couple to couples list
                     self.neighbor_couples.append(couple)
 
-    def remove_from_household(self, person):
-        household = next(h for h in self.households if h.apartment_id == person.apartment_id)
-        household.remove_member(person)
-
-    def remove_from_neighborhood(self, person):
-        self.neighbors = [n for n in self.neighbors if n != person]
-
-    def out_of_household(self, person, new_apartment_id=None):
-        """Removes person from household. May add them to new household or move out of neighborhood."""
+    def determine_new_household(self, person, new_apartment_id=None):
+        """Remove person from household and may add them to new household or move out of neighborhood."""
         self.remove_from_household(person)
         if new_apartment_id is None:
             self.remove_from_neighborhood(person)
         else:
             new_household = next(h for h in self.households if h.apartment_id == new_apartment_id)
             new_household.add_member(person)
+
+    def remove_from_household(self, person):
+        """Helper method to remove person from their household."""
+        household = next(h for h in self.households if h.apartment_id == person.apartment_id)
+        household.remove_member(person)
+
+    def remove_from_neighborhood(self, person):
+        """Helper method to remove person from the neighborhood."""
+        self.neighbors = [n for n in self.neighbors if n != person]
 
     def do_couple_action(self, couple):
         """Couple actions for each couple."""
@@ -253,14 +253,15 @@ class Neighborhood:
         if couple.is_breakup_date and couple.will_breakup:
             self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(
                 couple)
+            # New love dates
             for person in couple.persons:
                 self.person_developer.set_new_love_date(person)
 
     def handle_new_babies(self, new_babies, couple):
         # Add baby/babies to household and neighborhood
-        household = next(h for h in self.households if new_babies[0].apartment_id == h.apartment_id)
+        household = [h for h in self.households if couple.person1.apartment_id == h.apartment_id]
         for baby in new_babies:
-            self.add_to_neighbors_and_household(household, baby)
+            self.add_to_neighbors_and_household(household[0], baby)
         # Reset vars
         self.pregnancy_handler.reset_pregnancy(couple)
         # New pregnancy / adoption date

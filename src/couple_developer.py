@@ -1,5 +1,4 @@
 from utilities.randomizer import Randomizer
-from traits import Traits
 
 
 class CoupleDeveloper:
@@ -8,7 +7,7 @@ class CoupleDeveloper:
         self.statistics = statistics
         self.randomizer = Randomizer()
 
-    def set_new_couple_traits(self, couple):
+    def set_new_couples_goals(self, couple):
         """Set new couple's goals."""
         if len(couple.oldest.span_left_till_old_age) <= 1:  # No time left for marriage/breakup if old age.
             return couple
@@ -46,16 +45,16 @@ class CoupleDeveloper:
     def set_breakup_date(self, couple):
         """Sets couple's break up date."""
         date = couple.marriage_date
-        while date <= couple.marriage_date or date in range(couple.pregnancy_date,
-                                                            couple.birth_date + 2) or date in range(
-                couple.adoption_process_date, couple.adoption_date + 2):
+        while date <= couple.marriage_date or \
+                date in range(couple.pregnancy_date, couple.birth_date + 2) or \
+                date in range(couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
         couple.breakup_date = date
 
     def set_new_pregnancy_or_adoption_process_date(self, couple):
         """Sets pregnancy or adoption date and birth date."""
         date = couple.breakup_date
-        while date in range(couple.breakup_date - 1, couple.breakup_date + 2):
+        while date in range(couple.breakup_date - 3, couple.breakup_date + 3):
             date = self.statistics.get_oldest_pregnancy_date(couple)
 
         if couple.will_get_pregnant:
