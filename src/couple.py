@@ -19,29 +19,25 @@ class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCou
     def woman(self):
         return next((person for person in self.persons if person.is_female), None)
 
-    # Relationship future goals
-
     @property
     def will_get_married(self):
         return super().will_get_married
+
+    @property
+    def will_get_pregnant(self):
+        return super().will_get_pregnant
 
     @property
     def is_marriage_date(self):
         return super().is_marriage_date
 
     @property
-    def will_get_pregnant(self):
-        return self.is_pregnant is False and self.has_desired_children is False and self.all_can_and_want_children
-
-    @property
     def is_pregnancy_date(self):
-        return self.oldest.age == self.pregnancy_date
+        return super().is_pregnancy_date
 
     @property
     def is_birth_date(self):
-        return self.oldest.age == self.birth_date
-
-    # Achieved goals
+        return super().is_birth_date
 
     @property
     def is_married(self):
@@ -49,7 +45,7 @@ class StraightCouple(AbstractMarriableCouple, AbstractFertileCouple, AbstractCou
 
     @property
     def is_pregnant(self):
-        return self.woman.is_pregnant and self.birth_date >= self.woman.age
+        return super().is_pregnant
 
 
 class GayCouple(AbstractMarriableCouple, AbstractCouple):

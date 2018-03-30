@@ -5,7 +5,7 @@ class Person(Traits):
     def __init__(self, gender, age):
         self.gender = gender
         self.age = age
-        self.stage = next(stage for stage in self.LIFESTAGES if age in stage.span)
+        self.stage = next(stage for stage in self.LIFE_STAGES if age in stage.span)
 
         # Names
         self.name = None  # May depend on family
@@ -21,8 +21,7 @@ class Person(Traits):
         self.social_class = None
         self.can_have_bio_children = False
 
-        # Default: Alive, not adopted, not a twin or triplet
-        # Single, not pregnant or in adoption process
+        # Default vars
         self.is_alive = True
         self.is_adopted = False
         self.was_in_foster_care = False
@@ -41,9 +40,6 @@ class Person(Traits):
         self.spouses = []
         self.ex_partners = []
         self.ex_spouses = []
-
-        # Neighborhood
-        self.neighbor_friends = []
 
         # Death (Default: Old age)
         self.death_date = False
@@ -86,6 +82,7 @@ class Person(Traits):
         # Will be initialized if within Neighborhood
         self.apartment_id = -1
         self.is_neighbor = False
+        self.neighbor_friends = []
 
     def __str__(self):
         return self.fullname

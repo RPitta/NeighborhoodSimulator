@@ -7,8 +7,8 @@ class Statistics:
     """Statistics base class."""
 
     def __init__(self, city_data):
-        self.randomizer = Randomizer()
         self.city_data = city_data
+        self.randomizer = Randomizer()
 
     def get_gender(self):
         """Statistical chance for gender."""
@@ -35,6 +35,7 @@ class Statistics:
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         race_data = dbmgr.demo_data(self.city_data, "race")
         dbmgr.__del__()
+
         options = {
             Traits.WHITE: race_data[0]['white'],
             Traits.BLACK: race_data[0]['black'],
@@ -47,15 +48,8 @@ class Statistics:
 
     def get_social_class(self):
         """Statistical chance for social class."""
-        # The database connection, and the city variable probably need doing somewhere once rather than for
-        # every function, every time
-        # Start the db connection
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-
-        # Get the data, passing the city
         social_class_data = dbmgr.demo_data(self.city_data, "social_class")
-
-        # Close the connection
         dbmgr.__del__()
 
         options = {

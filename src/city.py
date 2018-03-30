@@ -68,35 +68,22 @@ class City:
             self.population.append(person)
 
     def time_jump_city(self):
+        """Age up city population."""
         # Add / Remove children in foster care
         self.foster.check_foster_care_system(self.living_outsiders)
-        if len(self.foster.children) < 2:
+        if len(self.foster.children) < 3:
             self.populate_foster_care_system()
 
         self.do_person_action()
-
-        # Remove dead couples
-        self.remove_dead_and_brokenup_couples()
-
-        for couple in self.city_couples:
-            self.do_couple_action(couple)
-
-        # Remove broken-up couples
-        self.remove_dead_and_brokenup_couples()
+        self.do_couple_action()
 
     def populate_foster_care_system(self):
-        """Adds a number of babies to foster care centre."""
+        """Adds a number of different-age children to foster care centre."""
         new_children = [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
         self.foster.add_to_system(new_children)
         self.population.extend(new_children)
-
-    def remove_dead_and_brokenup_couples(self):
-        """Remove city couples that are dead, have broken up, or live in the neighborhood."""
-        if len(self.city_couples) > 0:
-            self.city_couples = [couple for couple in self.city_couples if all(
-                p.is_alive and p.is_partnered and not p.is_neighbor for p in couple.persons)]
 
     def do_person_action(self):
         """Personal actions for each person."""
@@ -106,6 +93,8 @@ class City:
 
             if person.is_death_date:
                 self.death_handler.die(person)
+                # Remove from city couples if applicable
+                self.remove_dead_and_brokenup_couples()
                 continue
 
             # Come out if applicable
@@ -133,36 +122,51 @@ class City:
                     self.couple_developer.set_new_couples_goals(couple)
                     # Set new love date for polys
                     self.person_developer.set_new_love_date_for_polys(couple)
-                    # Add couple to couples list
+                    # Add couple to city couples list
                     self.city_couples.append(couple)
 
-    def do_couple_action(self, couple):
+    def do_couple_action(self):
         """Couple actions for each couple."""
-        if couple.is_birth_date and couple.is_pregnant:
-            self.population.extend(self.pregnancy_handler.give_birth(couple))
-            self.pregnancy_handler.reset_pregnancy(couple)
-            # New pregnancy date
-            if couple.will_have_children:
-                self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
+        for couple in self.city_couples:
+            # Birth
+            if couple.is_birth_date and couple.is_pregnant:
+                self.population.extend(self.pregnancy_handler.give_birth(couple))
+                self.pregnancy_handler.reset_pregnancy(couple)
+                # New pregnancy date
+                if couple.will_have_children:
+                    self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
-        if couple.is_adoption_date:
-            self.population.extend(self.pregnancy_handler.adopt(couple))
-            self.pregnancy_handler.reset_adoption(couple)
-            # New adoption date
-            if couple.will_have_children:
-                self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
+            # Adoption
+            if couple.is_adoption_date:
+                self.population.extend(self.pregnancy_handler.adopt(couple))
+                self.pregnancy_handler.reset_adoption(couple)
+                # New adoption date
+                if couple.will_have_children:
+                    self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
-        if couple.is_marriage_date and couple.will_get_married:
-            self.marriage_handler.get_married(couple)
+            # Marriage
+            if couple.is_marriage_date and couple.will_get_married:
+                self.marriage_handler.get_married(couple)
 
-        if couple.is_pregnancy_date and couple.will_get_pregnant:
-            self.pregnancy_handler.get_pregnant(couple)
+            # Pregnancy
+            if couple.is_pregnancy_date and couple.will_get_pregnant:
+                self.pregnancy_handler.get_pregnant(couple)
 
-        if couple.is_adoption_process_date and couple.will_adopt:
-            self.pregnancy_handler.start_adoption_process(couple)
+            # Adoption process
+            if couple.is_adoption_process_date and couple.will_adopt:
+                self.pregnancy_handler.start_adoption_process(couple)
 
-        if couple.is_breakup_date and couple.will_breakup:
-            self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(couple)
-            # New love dates
-            for person in couple.persons:
-                self.person_developer.set_new_love_date(person)
+            # Breakup
+            if couple.is_breakup_date and couple.will_breakup:
+                self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(couple)
+                # New love dates
+                for person in couple.persons:
+                    self.person_developer.set_new_love_date(person)
+                # Remove from city couples
+                self.remove_dead_and_brokenup_couples()
+
+    def remove_dead_and_brokenup_couples(self):
+        """Remove city couples that are dead, have broken up, or live in the neighborhood."""
+        if len(self.city_couples) > 0:
+            self.city_couples = [couple for couple in self.city_couples if all(
+                p.is_alive and p.is_partnered and not p.is_neighbor for p in couple.persons)]

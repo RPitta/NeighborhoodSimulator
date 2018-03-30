@@ -34,4 +34,3 @@ class LowerClass(AbstractSocialClass):
         super().__init__()
         self.name = "Lower class"
         self.rank = 1
-

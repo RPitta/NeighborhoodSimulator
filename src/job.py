@@ -16,12 +16,12 @@ class Job:
 
     def promotion(self, salary_increment, job_increase=False):
         """Job promotion."""
-        if job_increase and self.job_level < self.Executive:
-            self.job_level += 1
+        if job_increase and self.level < self.Executive:
+            self.level += 1
         self.salary = self.salary * (1 + salary_increment)
 
     def demotion(self, salary_decrease, job_decrease=False):
         """Job demotion."""
-        if job_decrease and self.job_level > 0:
-            self.job_level -= 1
+        if job_decrease and self.level > 0:
+            self.level -= 1
         self.salary = 0 if 1 - salary_decrease < 0 else self.salary * (1 - salary_decrease)

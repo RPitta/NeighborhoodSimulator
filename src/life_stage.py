@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
 
-class LifeStage(metaclass=ABCMeta):
+class AbstractLifeStage(metaclass=ABCMeta):
+    """Life stage base abstract superclass."""
 
     def __init__(self):
         self.stage = None
@@ -41,7 +42,8 @@ class LifeStage(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class Baby(LifeStage):
+class Baby(AbstractLifeStage):
+    """Baby life stage base class."""
 
     def __init__(self):
         super().__init__()
@@ -55,7 +57,8 @@ class Baby(LifeStage):
         return Child()
 
 
-class Child(LifeStage):
+class Child(AbstractLifeStage):
+    """Child life stage base class."""
 
     def __init__(self):
         super().__init__()
@@ -69,7 +72,8 @@ class Child(LifeStage):
         return Teen()
 
 
-class Teen(LifeStage):
+class Teen(AbstractLifeStage):
+    """Teen life stage base class."""
 
     def __init__(self):
         super().__init__()
@@ -83,7 +87,8 @@ class Teen(LifeStage):
         return YoungAdult()
 
 
-class YoungAdult(LifeStage):
+class YoungAdult(AbstractLifeStage):
+    """YoungAdult life stage base class."""
 
     def __init__(self):
         super().__init__()
@@ -97,7 +102,8 @@ class YoungAdult(LifeStage):
         return Adult()
 
 
-class Adult(LifeStage):
+class Adult(AbstractLifeStage):
+    """Adult life stage base class."""
 
     def __init__(self):
         super().__init__()
@@ -111,7 +117,8 @@ class Adult(LifeStage):
         return Senior()
 
 
-class Senior(LifeStage):
+class Senior(AbstractLifeStage):
+    """Senior life stage base class."""
 
     def __init__(self):
         super().__init__()
@@ -123,4 +130,3 @@ class Senior(LifeStage):
     @property
     def next_stage(self):
         return False
-

@@ -152,17 +152,9 @@ class Neighborhood:
     # TIME JUMP
 
     def time_jump_neighborhood(self, romanceable_outsiders):
-        """Main function: age up neighborhood."""
+        """Age up neighborhood."""
         self.do_person_action(romanceable_outsiders)
-
-        # Remove dead couples
-        self.remove_dead_and_brokenup_couples()
-
-        for couple in self.neighbor_couples:
-            self.do_couple_action(couple)
-
-        # Remove broken-up couples
-        self.remove_dead_and_brokenup_couples()
+        self.do_couple_action()
 
     def do_person_action(self, romanceable_outsiders):
         """Personal actions for each person."""
@@ -170,10 +162,14 @@ class Neighborhood:
             # Age up neighborhood
             self.personal_handler.age_up(person)
 
+            # Die
             if person.is_death_date:
                 self.death_handler.die(person)
+                # Remove from household and neighborhood
                 self.remove_from_household(person)
                 self.remove_from_neighborhood(person)
+                # Remove from neighborhood couples if applicable
+                self.remove_dead_and_brokenup_couples()
                 continue
 
             # Come out if applicable
@@ -215,6 +211,41 @@ class Neighborhood:
                     # Add couple to couples list
                     self.neighbor_couples.append(couple)
 
+    def do_couple_action(self):
+        """Couple actions for each couple."""
+        for couple in self.neighbor_couples:
+            # Birth
+            if couple.is_birth_date and couple.is_pregnant and couple.expecting_num_of_children >= 1:
+                new_babies = self.pregnancy_handler.give_birth(couple)
+                self.handle_new_babies(new_babies, couple)
+
+            # Adoption
+            if couple.is_adoption_date:
+                children = self.pregnancy_handler.adopt(couple)
+                self.handle_new_babies(children, couple)
+
+            # Marriage
+            if couple.is_marriage_date and couple.will_get_married:
+                self.marriage_handler.get_married(couple)
+
+            # Pregnancy
+            if couple.is_pregnancy_date and couple.will_get_pregnant:
+                self.pregnancy_handler.get_pregnant(couple)
+
+            # Adoption process
+            if couple.is_adoption_process_date and couple.will_adopt:
+                self.pregnancy_handler.start_adoption_process(couple)
+
+            # Breakup
+            if couple.is_breakup_date and couple.will_breakup:
+                self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(
+                    couple)
+                # New love dates
+                for person in couple.persons:
+                    self.person_developer.set_new_love_date(person)
+                # Remove from neighborhood couples
+                self.remove_dead_and_brokenup_couples()
+
     def determine_new_household(self, person, new_apartment_id=None):
         """Remove person from household and may add them to new household or move out of neighborhood."""
         self.remove_from_household(person)
@@ -232,32 +263,6 @@ class Neighborhood:
     def remove_from_neighborhood(self, person):
         """Helper method to remove person from the neighborhood."""
         self.neighbors = [n for n in self.neighbors if n != person]
-
-    def do_couple_action(self, couple):
-        """Couple actions for each couple."""
-        if couple.is_birth_date and couple.is_pregnant and couple.expecting_num_of_children >= 1:
-            new_babies = self.pregnancy_handler.give_birth(couple)
-            self.handle_new_babies(new_babies, couple)
-
-        if couple.is_adoption_date:
-            children = self.pregnancy_handler.adopt(couple)
-            self.handle_new_babies(children, couple)
-
-        if couple.is_marriage_date and couple.will_get_married:
-            self.marriage_handler.get_married(couple)
-
-        if couple.is_pregnancy_date and couple.will_get_pregnant:
-            self.pregnancy_handler.get_pregnant(couple)
-
-        if couple.is_adoption_process_date and couple.will_adopt:
-            self.pregnancy_handler.start_adoption_process(couple)
-
-        if couple.is_breakup_date and couple.will_breakup:
-            self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(
-                couple)
-            # New love dates
-            for person in couple.persons:
-                self.person_developer.set_new_love_date(person)
 
     def handle_new_babies(self, new_babies, couple):
         # Add baby/babies to household and neighborhood

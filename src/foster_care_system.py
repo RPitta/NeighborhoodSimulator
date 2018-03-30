@@ -2,6 +2,7 @@ from utilities.randomizer import Randomizer
 
 
 class FosterCareSystem:
+    """Foster care system base class."""
 
     def __init__(self, statistics):
         self.statistics = statistics

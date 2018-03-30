@@ -1,4 +1,5 @@
 class Household:
+    """Household base class."""
 
     def __init__(self, apartment_id):
         self.apartment_id = apartment_id
@@ -26,12 +27,12 @@ class Household:
 
         person.apartment_id = -1
         person.is_neighbor = False
-        self.members_list = [member for member in self.members if member != person]
+        self.members_list = [p for p in self.members if p != person]
 
     def add_pet(self, pet):
         """Add pet and set matching apartment IDs."""
-        self.pets_list.append(pet)
         pet.apartment_id = self.apartment_id
+        self.pets_list.append(pet)
 
     def remove_pet(self, pet):
         """Remove pet and its apartment id."""

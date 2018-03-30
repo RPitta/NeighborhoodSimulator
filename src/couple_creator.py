@@ -52,6 +52,7 @@ class CityCoupleCreator:
 
     @classmethod
     def there_are_candidates(cls, candidates):
+        """Checks if there is at least one candidate."""
         return candidates is not None and len(candidates) >= 1
 
     def get_random_candidate(self, candidates):
@@ -60,15 +61,16 @@ class CityCoupleCreator:
 
     @classmethod
     def set_as_partner(cls, lst):
-        for p in lst:
-            p.partners += [partner for partner in lst if partner != p]
+        """Add each person to their partners list."""
+        for person in lst:
+            person.partners += [partner for partner in lst if partner != person]
 
     @classmethod
     def set_shared_social_class(cls, lst):
-        highest_social_class = next(
-            p.social_class for p in lst if p.social_class.rank == max([p.social_class.rank for p in lst]))
-        for p in lst:
-            p.social_class = highest_social_class
+        """Set the same social class for all persons."""
+        highest_social_class = next(p.social_class for p in lst if p.social_class.rank == max([p.social_class.rank for p in lst]))
+        for person in lst:
+            person.social_class = highest_social_class
 
     @classmethod
     def update_relationship_status_to_committed(cls, lst):
@@ -83,12 +85,10 @@ class CityCoupleCreator:
         if person3 is not None:
             return Throuple(person1, person2, person3)
         if person1 in person2.living_bio_family:
-            couple = ConsangCouple(person1, person2)
-        elif person1.gender != person2.gender:
-            couple = StraightCouple(person1, person2)
-        else:
-            couple = GayCouple(person1, person2)
-        return couple
+            return ConsangCouple(person1, person2)
+        if person1.gender != person2.gender:
+            return StraightCouple(person1, person2)
+        return GayCouple(person1, person2)
 
 
 class CoupleCreator(CityCoupleCreator):

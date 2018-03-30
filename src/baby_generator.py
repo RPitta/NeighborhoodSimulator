@@ -62,7 +62,7 @@ class BabyGenerator:
             raise Exception("Person has no name.")
         if baby.surname is None or baby.original_surname is None:
             raise Exception("Person has no surname.")
-        if baby.stage is None or baby.stage not in Traits.LIFESTAGES:
+        if baby.stage is None or baby.stage not in Traits.LIFE_STAGES:
             raise Exception("Person's life stage is wrong.")
         if baby.age is None or baby.age not in baby.stage.span or baby.age not in Traits.LIFESPAN:
             raise Exception("Person's age is wrong.")

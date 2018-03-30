@@ -3,6 +3,7 @@ from utilities.randomizer import Randomizer
 
 
 class PersonDeveloper:
+    """Base class for person developer."""
 
     def __init__(self, setup, statistics):
         self.setup = setup
@@ -14,16 +15,15 @@ class PersonDeveloper:
         if person.stage == Traits.BABY or person.stage == Traits.CHILD:
             pass
         elif person.stage == Traits.TEEN:
-            person = self.set_teen_traits(person)
+            self.set_teen_traits(person)
         elif person.stage == Traits.ADULT:
-            person = self.set_adult_traits(person)
+            self.set_adult_traits(person)
         elif person.stage == Traits.YOUNGADULT:
-            person = self.set_youngadult_traits(person)
+            self.set_youngadult_traits(person)
         elif person.stage == Traits.SENIOR:
-            person = self.set_senior_traits(person)
+            self.set_senior_traits(person)
         else:
             raise Exception("Person's stage is wrong.")
-        return person
 
     def set_teen_traits(self, teen):
         "Teen traits."
@@ -33,7 +33,6 @@ class PersonDeveloper:
         # Set date to come out if LGBTA
         if teen.is_lgbta:
             teen.come_out_date = self.randomizer.get_random_item(teen.span_left_till_next_stage)
-        return teen
 
     @classmethod
     def get_target_gender(cls, teen):
@@ -106,19 +105,16 @@ class PersonDeveloper:
         self.set_love_traits(person)
         # Set chance of drug/alcohol addiction
         self.set_addiction_traits(person)
-        return person
 
     @classmethod
     def set_adult_traits(cls, person):
         """Adult traits."""
         person.can_have_bio_children = False
-        return person
 
     @classmethod
     def set_senior_traits(cls, person):
         """Senior traits."""
         person.employment = Traits.RETIRED
-        return person
 
     # LOVE
 
@@ -235,7 +231,6 @@ class PersonDeveloper:
         elif person.will_recover:
             range_for_rehabilitation = list(range(1, 20))
             person.rehabilitation_date = person.age + self.randomizer.get_random_item(range_for_rehabilitation)
-        return person
 
     def rehabilitation_vs_overdose_chance(self, person):
         """Rehabilitation vs overdose chance."""
@@ -258,4 +253,3 @@ class PersonDeveloper:
         if person.will_relapse:
             range_for_relapse = list(range(1, 10))
             person.relapse_date = person.age + self.randomizer.get_random_item(range_for_relapse)
-        return person

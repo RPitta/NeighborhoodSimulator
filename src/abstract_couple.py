@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class AbstractCouple(metaclass=ABCMeta):
-    """Abstract couple base class."""
+    """Couple base abstract class."""
 
     def __init__(self, person1, person2, person3=None):
         self.person1 = person1
@@ -203,19 +203,19 @@ class AbstractFertileCouple(AbstractCouple, metaclass=ABCMeta):
     @property
     @abstractmethod
     def will_get_pregnant(self):
-        raise NotImplementedError
+        return self.is_pregnant is False and self.has_desired_children is False and self.all_can_and_want_children
 
     @property
     @abstractmethod
     def is_pregnancy_date(self):
-        raise NotImplementedError
+        return self.oldest.age == self.pregnancy_date
 
     @property
     @abstractmethod
     def is_pregnant(self):
-        raise NotImplementedError
+        return self.woman.is_pregnant and self.birth_date >= self.woman.age
 
     @property
     @abstractmethod
     def is_birth_date(self):
-        raise NotImplementedError
+        return self.oldest.age == self.birth_date
