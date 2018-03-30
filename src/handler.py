@@ -119,9 +119,9 @@ class LgbtaHandler(CityLgbtaHandler):
     @classmethod
     def display_sexual_orientation_message(cls, teen, orientation):
         if teen.is_trans and teen.is_male:
-            print("He has also come out as {}.").format(teen, orientation)
+            print("He has also come out as {}.".format(orientation))
         elif teen.is_trans and teen.is_female:
-            print("She has also come out as {}.").format(teen, orientation)
+            print("She has also come out as {}.".format(orientation))
         else:
             print("\n{} has come out as {}.".format(teen, orientation))
 

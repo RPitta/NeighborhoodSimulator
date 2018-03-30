@@ -70,7 +70,8 @@ class PersonDeveloper:
         """Determine chance of suicide as coming out in conservative family consequence."""
         if not self.statistics.get_suicide_chance_as_coming_out_consequence():
             return False
-        teen.death_date = teen.age + 1 if teen.span_left_till_next_stage < 1 else self.randomizer.get_random_item(teen.span_left_till_next_stage)
+        teen.death_date = teen.age + 1 if len(teen.span_left_till_next_stage) < 1 else self.randomizer.get_random_item(
+            teen.span_left_till_next_stage)
         teen.death_cause = Traits.SUICIDE
         return True
 
