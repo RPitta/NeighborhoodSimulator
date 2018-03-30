@@ -68,7 +68,8 @@ class City:
             self.population.append(person)
 
     def time_jump_city(self):
-        # Add new child to foster care if too few
+        # Add / Remove children in foster care
+        self.foster.check_foster_care_system(self.living_outsiders)
         if len(self.foster.children) < 2:
             self.populate_foster_care_system()
 
@@ -85,10 +86,11 @@ class City:
 
     def populate_foster_care_system(self):
         """Adds a number of babies to foster care centre."""
-        for _ in range(3):
-            new_child = self.generator.create_first_child(Traits.BABY.start, self.population_surnames)
-            self.foster.add_to_system([new_child])
-            self.population.append(new_child)
+        new_children = [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
+        new_children += [self.generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
+        new_children += [self.generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
+        self.foster.add_to_system(new_children)
+        self.population.extend(new_children)
 
     def remove_dead_and_brokenup_couples(self):
         """Remove city couples that are dead, have broken up, or live in the neighborhood."""
@@ -105,9 +107,6 @@ class City:
             if person.is_death_date:
                 self.death_handler.die(person)
                 continue
-
-            # Add / Remove children in foster care
-            self.foster.check_foster_care_system(self.living_outsiders)
 
             # Come out if applicable
             if person.is_come_out_date:
