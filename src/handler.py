@@ -66,10 +66,10 @@ class CityLgbtaHandler:
         else:
             person.gender = Traits.FEMALE
 
-    def set_new_name(self, person):
+    def set_new_name(self, teen):
         """Find new name."""
-        new_name = self.names.get_name(person)
-        person.name = new_name
+        new_name = self.names.get_name(teen)
+        teen.name = new_name
 
 
 class LgbtaHandler(CityLgbtaHandler):
@@ -170,9 +170,9 @@ class LgbtaHandler(CityLgbtaHandler):
     @classmethod
     def display_new_household_message(cls, person, friend):
         if person.is_male:
-            print("He now lives in his friend {}'s apartment, {}.".format(person, friend, friend.apartment_id))
+            print("He now lives in his friend {}'s apartment, {}.".format(friend, friend.apartment_id))
         else:
-            print("She now lives in her friend {}'s apartment, {}.".format(person, friend, friend.apartment_id))
+            print("She now lives in her friend {}'s apartment, {}.".format(friend, friend.apartment_id))
 
 
 class CityDeathHandler:
