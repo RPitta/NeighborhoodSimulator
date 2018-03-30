@@ -1,5 +1,5 @@
 from utilities.randomizer import Randomizer
-
+from traits import Traits
 
 class FosterCareSystem:
     """Foster care system base class."""
@@ -10,12 +10,17 @@ class FosterCareSystem:
         self.children = []
 
     @property
+    def children_up_for_adoption(self):
+        """List containing the children in foster care who are within adoptive age range."""
+        return  [child for child in self.children if child.age <= Traits.MAX_AGE_FOR_ADOPTION]
+
+    @property
     def only_childs(self):
-        return [child for child in self.children if len(child.siblings) == 0]
+        return [child for child in self.children_up_for_adoption if len(child.siblings) == 0]
 
     @property
     def sibling_sets(self):
-        return [child for child in self.children if len(child.siblings) > 0]
+        return [child for child in self.children_up_for_adoption if len(child.siblings) > 0]
 
     def check_foster_care_system(self, living_outsiders):
         """Removes newly adult children from the system and adds new children to it if requirements are met."""

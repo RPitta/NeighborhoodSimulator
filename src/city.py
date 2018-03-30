@@ -71,7 +71,7 @@ class City:
         """Age up city population."""
         # Add / Remove children in foster care
         self.foster.check_foster_care_system(self.living_outsiders)
-        if len(self.foster.children) < 3:
+        if len(self.foster.children_up_for_adoption) < 3:
             self.populate_foster_care_system()
 
         self.do_person_action()

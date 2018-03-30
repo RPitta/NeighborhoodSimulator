@@ -23,7 +23,7 @@ class Randomizer:
         # Loop through the list and return the dictionary key of value
         sum_so_far = 0
         for i, value in enumerate(ordered_list):
-            if random_num <= float(value + sum_so_far):
+            if random_num <= value + sum_so_far:
                 if ordered_dict[i][0] is None or ordered_dict[i][0] not in d.keys():
                     raise Exception(" Key not found in dict.")
                 return ordered_dict[i][0]
