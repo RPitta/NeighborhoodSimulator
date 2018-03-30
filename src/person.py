@@ -25,6 +25,7 @@ class Person(Traits):
         # Single, not pregnant or in adoption process
         self.is_alive = True
         self.is_adopted = False
+        self.was_in_foster_care = False
         self.is_twin = False
         self.is_triplet = False
         self.relationship_status = self.SINGLE

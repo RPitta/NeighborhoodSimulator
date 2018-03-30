@@ -1,6 +1,7 @@
 from handler import CityPregnancyHandler, CityPersonalHandler, CityAddictionHandler, CityDeathHandler, \
-    CityDivorceHandler, CityMarriageHandler
+    CityDivorceHandler, CityMarriageHandler, CityLgbtaHandler
 from traits import Traits
+
 
 class City:
     """City class."""
@@ -13,14 +14,15 @@ class City:
         self.names = names
         self.couple_developer = relationship_developer
         self.statistics = statistics
-        self.foster_care_system = foster_care_system
+        self.foster = foster_care_system
 
         # City handlers
         self.personal_handler = CityPersonalHandler(
-            self.names, self.person_developer)
+            self.person_developer)
+        self.lgbta_handler = CityLgbtaHandler(self.names)
         self.addiction_handler = CityAddictionHandler(self.person_developer)
         self.pregnancy_handler = CityPregnancyHandler(
-            self.generator, self.statistics, self.foster_care_system)
+            self.generator, self.statistics, self.foster)
         self.marriage_handler = CityMarriageHandler()
         self.divorce_handler = CityDivorceHandler()
         self.death_handler = CityDeathHandler(self.person_developer)
@@ -35,27 +37,27 @@ class City:
     @property
     def living_population(self):
         """Returns list of living city and neighborhood people."""
-        return [person for person in self.population if person.is_alive]
+        return [p for p in self.population if p.is_alive]
 
     @property
     def living_outsiders(self):
         """Returns list of living city people."""
-        return [person for person in self.living_population if person.is_neighbor is False]
+        return [p for p in self.living_population if p.is_neighbor is False]
 
     @property
     def dead_population(self):
         """Returns list of dead people."""
-        return [person for person in self.population if not person.is_alive]
+        return [p for p in self.population if not p.is_alive]
 
     @property
     def romanceable_outsiders(self):
         """Returns all city inhabitants that are dating and do not live in the neighborhood."""
-        return [person for person in self.living_population if person.is_romanceable and person.is_neighbor is False]
+        return [p for p in self.living_outsiders if p.is_romanceable]
 
     @property
     def population_surnames(self):
         """Returns a list of all surnames from living people."""
-        return set([person.surname for person in self.living_population])
+        return set([p.surname for p in self.living_population])
 
     # ACTIONS
 
@@ -67,7 +69,7 @@ class City:
 
     def time_jump_city(self):
         # Add new child to foster care if too few
-        if len(self.foster_care_system.children) < 2:
+        if len(self.foster.children) < 2:
             self.populate_foster_care_system()
 
         self.do_person_action()
@@ -85,7 +87,7 @@ class City:
         """Adds a number of babies to foster care centre."""
         for _ in range(3):
             new_child = self.generator.create_first_child(Traits.BABY.start, self.population_surnames)
-            self.foster_care_system.add_to_system([new_child])
+            self.foster.add_to_system([new_child])
             self.population.append(new_child)
 
     def remove_dead_and_brokenup_couples(self):
@@ -105,11 +107,11 @@ class City:
                 continue
 
             # Add / Remove children in foster care
-            self.foster_care_system.check_foster_care_system(self.living_outsiders)
+            self.foster.check_foster_care_system(self.living_outsiders)
 
             # Come out if applicable
             if person.is_come_out_date:
-                self.personal_handler.come_out(person)
+                self.lgbta_handler.come_out(person)
 
             # Become an addict if applicable
             if person.is_addiction_date:

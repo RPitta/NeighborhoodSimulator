@@ -312,17 +312,17 @@ class Statistics:
     def get_age_of_adoptive_children(self):
         """Statistical chance for age of child in adoption."""
         options = {
-            "5": 46.4,
-            "10": 27.4,
-            str(Traits.MAX_AGE_FOR_ADOPTION): 26.1
+            5: 46.4,
+            10: 27.4,
+            Traits.MAX_AGE_FOR_ADOPTION: 26.1
         }
         selected = self.randomizer.get_random_dict_key(options)
-        if selected == "5":
+        if selected == 5:
             return [0, 5]
-        elif selected == "10":
+        elif selected == 10:
             return [6, 10]
-        elif selected == str(Traits.MAX_AGE_FOR_ADOPTION):
-            return [11, 15]
+        elif selected == Traits.MAX_AGE_FOR_ADOPTION:
+            return [11, Traits.MAX_AGE_FOR_ADOPTION]
         else:
             raise Exception("Wrong age.")
 

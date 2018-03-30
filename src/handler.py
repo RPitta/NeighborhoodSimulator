@@ -3,20 +3,20 @@ from utilities.randomizer import Randomizer
 
 
 class CityPersonalHandler:
+    """Handles person's individual actions."""
 
-    def __init__(self, names, person_developer):
-        self.names = names
+    def __init__(self, person_developer):
         self.person_developer = person_developer
 
     def age_up(self, person):
         """Returns aged up person. May be dead."""
-        if person.age == person.stage.end:
+        if person.age != person.stage.end:
+            person.age += 1
+        else:
             if person.stage.next_stage is False:
                 person.death_date = person.age
             else:
                 self.set_new_stage(person)
-        else:
-            person.age += 1
 
     def set_new_stage(self, person):
         """Set up new stage if reached."""
@@ -24,6 +24,29 @@ class CityPersonalHandler:
         person.age += 1
         # Set new stage traits
         self.person_developer.set_new_stage_traits(person)
+
+
+class PersonalHandler(CityPersonalHandler):
+    """Adds print messages for neighborhood to city personal handler."""
+
+    def __init__(self, person_developer):
+        CityPersonalHandler.__init__(self, person_developer)
+
+    def set_new_stage(self, person):
+        super().set_new_stage(person)
+        self.display_new_stage_message(person)
+
+    @classmethod
+    def display_new_stage_message(cls, person):
+        print("\n{} is now {}.".format(person, person.age))
+        print("{} is now a {}.".format(person.fullname, person.stage))
+
+
+class CityLgbtaHandler:
+    """Handles lgbta's coming out."""
+
+    def __init__(self, names):
+        self.names = names
 
     def come_out(self, teen):
         """Lgbta persons come out."""
@@ -44,23 +67,17 @@ class CityPersonalHandler:
             person.gender = Traits.FEMALE
 
     def set_new_name(self, person):
-        """Find new name"""
+        """Find new name."""
         new_name = self.names.get_name(person)
         person.name = new_name
 
 
-class PersonalHandler(CityPersonalHandler):
+class LgbtaHandler(CityLgbtaHandler):
+    """Neighborhood lgbta handler."""
+
     def __init__(self, names, person_developer):
-        CityPersonalHandler.__init__(self, names, person_developer)
-
-    def set_new_stage(self, person):
-        super().set_new_stage(person)
-        self.display_new_stage_message(person)
-
-    @classmethod
-    def display_new_stage_message(cls, person):
-        print("\n{} is now {}.\n".format(person, person.age))
-        print("\n{} is now a {}.\n".format(person.fullname, person.stage))
+        CityLgbtaHandler.__init__(self, names)
+        self.person_developer = person_developer
 
     def come_out(self, teen):
         if teen.is_trans:
@@ -72,41 +89,56 @@ class PersonalHandler(CityPersonalHandler):
             self.display_sexual_orientation_message(teen, "bisexual")
         if teen.is_asexual:
             self.display_sexual_orientation_message(teen, "asexual")
+
+        # Print unsupportive family's message if applicable
+        self.display_family_nonsupport_message(teen)
+        # Set coming out consequences if applicable
         self.person_developer.set_coming_out_consequences(teen)
 
-    def set_new_name(self, person):
-        new_name = self.names.get_name(person)
-        self.display_transgender_message(person, new_name)
-        person.name = new_name
+    def set_new_name(self, teen):
+        new_name = self.names.get_name(teen)
+        self.display_transgender_message(teen, new_name)
+        teen.name = new_name
 
     @classmethod
-    def display_transgender_message(cls, person, new_name):
-        if person.is_male:
+    def display_transgender_message(cls, teen, new_name):
+        if teen.is_male:
             print("\n{} has come out as transgender. His new chosen name is {}.".format(
-                person, new_name))
+                teen, new_name))
         else:
             print("\n{} has come out as transgender. Her new chosen name is {}.".format(
-                person, new_name))
+                teen, new_name))
 
     @classmethod
-    def display_sexual_orientation_message(cls, person, orientation):
-        print("\n{} has come out as {}.".format(person, orientation))
+    def display_family_nonsupport_message(cls, teen):
+        if teen.is_male and teen.has_conservative_parents:
+            print("His conservative family is having a hard time coping with it.")
+        elif teen.is_female and teen.has_conservative_parents:
+            print("Her conservative family is having a hard time coping with it.")
+
+    @classmethod
+    def display_sexual_orientation_message(cls, teen, orientation):
+        if teen.is_trans and teen.is_male:
+            print("He has also come out as {}.").format(teen, orientation)
+        elif teen.is_trans and teen.is_female:
+            print("She has also come out as {}.").format(teen, orientation)
+        else:
+            print("\n{} has come out as {}.".format(teen, orientation))
 
     def get_thrown_out(self, person):
-        """Person is thrown out of their home."""
+        """Person is thrown out of their home. Returns None or new household ID."""
         self.display_thrown_out_message(person)
         return self.get_id_from_neighborhood_friends(person)
 
     @classmethod
     def display_thrown_out_message(cls, person):
-        """Prints person's thrown out consequence for coming out in a conservative family."""
         if person.is_male:
             print("\n{} has been thrown out of his home by his unsupportive family.".format(person))
         else:
             print("\n{} has been thrown out of her home by her unsupportive family.".format(person))
 
     def move_out(self, person):
-        """Person moves out of their home."""
+        """Person moves out of their home. Returns None or new household ID."""
         self.display_move_out_message(person)
         return self.get_id_from_neighborhood_friends(person)
 
@@ -124,7 +156,9 @@ class PersonalHandler(CityPersonalHandler):
             self.display_left_neighborhood_message(person)
             return None
         else:
-            return next(friend.apartment_id for friend in person.neighbor_friends if friend.is_liberal)
+            friend = next(friend for friend in person.neighbor_friends if friend.is_liberal)
+            self.display_new_household_message(person, friend)
+            return friend.apartment_id
 
     @classmethod
     def display_left_neighborhood_message(cls, person):
@@ -133,8 +167,16 @@ class PersonalHandler(CityPersonalHandler):
         else:
             print("She no longer lives in the neighborhood.")
 
+    @classmethod
+    def display_new_household_message(cls, person, friend):
+        if person.is_male:
+            print("He now lives in his friend {}'s apartment, {}.".format(person, friend, friend.apartment_id))
+        else:
+            print("She now lives in her friend {}'s apartment, {}.".format(person, friend, friend.apartment_id))
+
 
 class CityDeathHandler:
+    """Handles city people's death."""
 
     def __init__(self, person_developer):
         self.person_developer = person_developer
@@ -143,24 +185,35 @@ class CityDeathHandler:
         """Set person's status to not alive and remove partners."""
         person.is_alive = False
 
-        # Remove person from their partners / spouses
+        # Remove person from their spouses / partners
+        self.remove_from_spouses(person)
+        self.remove_from_partners(person)
+
+    def remove_from_spouses(self, person):
+        """Remove person from spouse's spouses list. Set as widowed."""
         for spouse in person.spouses:
             spouse.relationship_status = Traits.WIDOWED
             spouse.ex_spouses.append(person)
             spouse.spouses = [s for s in spouse.spouses if s != person]
             spouse.partners = [p for p in spouse.partners if p != person]
-            # New love date
-            self.person_developer.set_new_love_date(spouse)
+            self.set_new_love_date_for_widower(spouse)
+
+    def remove_from_partners(self, person):
+        """Remove person from partner's partners list. Set as single."""
         for partner in person.partners:
             partner.ex_partners.append(person)
             partner.partners = [partner for partner in partner.partners if partner != person]
-            # New love date
-            self.person_developer.set_new_love_date(partner)
             if not partner.is_married_or_remarried:
                 partner.relationship_status = Traits.SINGLE
+            self.set_new_love_date_for_widower(partner)
+
+    def set_new_love_date_for_widower(self, person):
+        """Helper method to set new love date for partner/spouse of dead person."""
+        self.person_developer.set_new_love_date(person)
 
 
 class DeathHandler(CityDeathHandler):
+    """Adds print messages for neighborhood people's death."""
 
     def die(self, person):
         super().die(person)

@@ -2,7 +2,8 @@
 
 from household import Household
 from utilities.randomizer import Randomizer
-from handler import AddictionHandler, PersonalHandler, DeathHandler, DivorceHandler, MarriageHandler, PregnancyHandler
+from handler import AddictionHandler, PersonalHandler, DeathHandler, DivorceHandler, MarriageHandler, PregnancyHandler, \
+    LgbtaHandler
 
 
 class Neighborhood:
@@ -25,8 +26,9 @@ class Neighborhood:
         self.death_handler = DeathHandler(self.person_developer)
         self.marriage_handler = MarriageHandler()
         self.divorce_handler = DivorceHandler()
-        self.personal_handler = PersonalHandler(names, person_developer)
-        self.addiction_handler = AddictionHandler(person_developer)
+        self.personal_handler = PersonalHandler(self.person_developer)
+        self.lgbta_handler = LgbtaHandler(self.names, self.person_developer)
+        self.addiction_handler = AddictionHandler(self.person_developer)
         self.pregnancy_handler = PregnancyHandler(baby_generator, statistics, foster_care_system)
 
         # Automatically create given number of apartments/households
@@ -176,16 +178,16 @@ class Neighborhood:
 
             # Come out if applicable
             if person.is_come_out_date:
-                self.personal_handler.come_out(person)
+                self.lgbta_handler.come_out(person)
 
             # Get thrown out of the household / neighborhood
             if person.is_thrown_out_date:
-                new_apartment_id = self.personal_handler.get_thrown_out(person)
+                new_apartment_id = self.lgbta_handler.get_thrown_out(person)
                 self.determine_new_household(person, new_apartment_id)
 
             # Move out of the household / neighborhood
             if person.is_move_out_date:
-                new_apartment_id = self.personal_handler.move_out(person)
+                new_apartment_id = self.lgbta_handler.move_out(person)
                 self.determine_new_household(person, new_apartment_id)
 
             # Become an addict if applicable

@@ -57,33 +57,31 @@ class PersonDeveloper:
 
     def set_coming_out_consequences(self, teen):
         """Chance of teen moving out / being thrown out / committing suicide if conservative family."""
-        if teen.has_conservative_parents:
-            if not self.suicide_consequence(teen):
-                if not self.thrown_out_consequence(teen):
-                    teen.will_move_out = True
-                    teen.move_out_date = Traits.YOUNGADULT.start
+        if not teen.has_conservative_parents:
+            return
+        # Suicide chance
+        if not self.suicide_consequence(teen):
+            # Thrown out chance
+            if not self.thrown_out_consequence(teen):
+                # Otherwise, will move out
+                teen.will_move_out = True
+                teen.move_out_date = Traits.YOUNGADULT.start
 
     def suicide_consequence(self, teen):
         """Determine chance of suicide as coming out in conservative family consequence."""
-        if self.statistics.get_suicide_chance_as_coming_out_consequence():
-            teen.death_date = teen.age + 1 if teen.span_left_till_next_stage < 1 else self.randomizer.get_random_item(teen.span_left_till_next_stage)
-            teen.death_cause = Traits.SUICIDE
-            return True
-        return False
+        if not self.statistics.get_suicide_chance_as_coming_out_consequence():
+            return False
+        teen.death_date = teen.age + 1 if teen.span_left_till_next_stage < 1 else self.randomizer.get_random_item(teen.span_left_till_next_stage)
+        teen.death_cause = Traits.SUICIDE
+        return True
 
     def thrown_out_consequence(self, teen):
-        if self.statistics.get_thrown_out_chance():
-            teen.will_be_thrown_out = True
-            teen.thrown_out_date = Traits.YOUNGADULT.start
-            return True
-        return False
-
-    @classmethod
-    def display_family_nonsupport_message(cls, teen):
-        if teen.is_male:
-            print("His conservative family is having a hard time coping with it.")
-        else:
-            print("Her conservative family is having a hard time coping with it.")
+        """Determine chance of being thrown out of home as coming out consequence."""
+        if not self.statistics.get_thrown_out_chance():
+            return False
+        teen.will_be_thrown_out = True
+        teen.thrown_out_date = Traits.YOUNGADULT.start
+        return True
 
     def set_youngadult_traits(self, person):
         """Young adult traits."""
@@ -128,7 +126,7 @@ class PersonDeveloper:
         """Returns person with statistical / random traits for wish for romance / marriage / children.
         Chance for family or intergenerational love. Sets date to fall in love if applicable."""
         if len(person.span_left_till_old_age) <= 1:
-            return person
+            return
 
         if person.is_poly:
             person.in_love_as_throuple = self.statistics.get_triad_chance()
@@ -160,9 +158,10 @@ class PersonDeveloper:
 
             # Assign date to fall in love. Ex: within 10 years.
             # If person will be dead before then, just loop through their remaining years.
+            if len(person.span_left_till_old_age) <= 1:
+                return
             if len(person.span_left_till_old_age) < 10:
-                person.in_love_date = self.randomizer.get_random_item(
-                    person.span_left_till_old_age)
+                person.in_love_date = self.randomizer.get_random_item(person.span_left_till_old_age)
             else:
                 person.in_love_date = self.randomizer.get_random_item(
                     range(person.age, person.age + 11))

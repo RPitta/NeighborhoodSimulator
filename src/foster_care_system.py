@@ -21,6 +21,7 @@ class FosterCareSystem:
         adults = [child for child in self.children if child.is_of_age]
         siblings_of_adults = [sibling for adult in adults for sibling in self.children if
                               sibling in adult.siblings]
+
         # Remove adults and their siblings
         self.remove_from_system(adults)
         self.remove_from_system(siblings_of_adults)
@@ -32,25 +33,35 @@ class FosterCareSystem:
 
     def add_to_system(self, children):
         """Adds given children to the list of child up for adoption."""
+        self.set_was_in_foster_care_status(children)
         self.children.extend(children)
 
     def remove_from_system(self, children):
         """Removes adopted children or newly-adult children from the system."""
         self.children = [child for child in self.children if child not in children]
 
+    @classmethod
+    def set_was_in_foster_care_status(cls, persons):
+        """Set person's was_in_foster_care status to True."""
+        for p in persons:
+            p.was_in_foster_care = True
+
+    @classmethod
+    def set_is_adopted_status(cls, persons):
+        """Set person's is_adopted status to True."""
+        for p in persons:
+            p.is_adopted = True
+
     def adopt_child(self, couple):
         """Returns only child with statistically random age."""
         self.check_children_in_foster_care()
 
-        children_within_range = []
-        while len(children_within_range) == 0:
-            age_range = self.statistics.get_age_of_adoptive_children()
-            children_within_range = [child for child in self.only_childs if child.age in age_range]
-
+        children_within_range = self.get_children_within_statistical_range(self.only_childs)
         child = self.randomizer.get_random_item(children_within_range)
 
         self.link_adoptive_family(couple, [child])
         self.remove_from_system([child])
+        self.set_is_adopted_status([child])
         return [child]
 
     def adopt_sibling_set(self, couple):
@@ -60,16 +71,24 @@ class FosterCareSystem:
             couple.expecting_num_of_children = 1
             return self.adopt_child(couple)
 
-        age_range = self.statistics.get_age_of_adoptive_children()
-        children_within_range = [child for child in self.sibling_sets if child.age in age_range]
-
+        children_within_range = self.get_children_within_statistical_range(self.sibling_sets)
         child = self.randomizer.get_random_item(children_within_range)
-        children = [child] + child.siblings
+        children = [child] + list(child.siblings)
 
+        # Set expecting num of children for couple now that they know number of siblings
         couple.expecting_num_of_children = len(children)
         self.link_adoptive_family(couple, children)
         self.remove_from_system(children)
+        self.set_is_adopted_status(children)
         return children
+
+    def get_children_within_statistical_range(self, lst):
+        """Helper method to get children within statistical age range."""
+        children_within_range = []
+        while len(children_within_range) == 0:
+            age_range = self.statistics.get_age_of_adoptive_children()
+            children_within_range = [child for child in lst if child.age in age_range]
+        return children_within_range
 
     @classmethod
     def link_adoptive_family(cls, couple, children):
@@ -81,15 +100,13 @@ class FosterCareSystem:
         for parent in children[0].adoptive_parents:
             parent.adoptive_children.extend(children)
 
+        # Surname
         if couple.is_straight:
             for child in children:
                 child.surname = couple.man.surname
-                child.apartment_id = couple.woman.apartment_id
         else:
             for child in children:
                 child.surname = child.adoptive_parents[0].surname
-                child.apartment_id = child.adoptive_parents[0].apartment_id
-
         for child in children:
             child.original_surname = child.surname
 

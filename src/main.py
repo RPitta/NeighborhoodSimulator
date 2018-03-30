@@ -34,7 +34,7 @@ city = City(baby_generator, person_developer, city_couple_creator,
             names, couple_developer, statistics, foster_care_system)
 
 # First time jumps to remove first older generation (the one without parents)
-for _ in range(20):
+for _ in range(30):
     city.time_jump_city()
 
 # Now populate neighborhood
@@ -46,7 +46,7 @@ neighborhood.populate_neighborhood(city.living_population, city.city_couples)
 neighborhood.display_households()
 
 print()
-for _ in range(30):
+for _ in range(20):
     city.time_jump_city()
     neighborhood.time_jump_neighborhood(city.romanceable_outsiders)
 

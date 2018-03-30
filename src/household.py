@@ -82,4 +82,4 @@ class Household:
         if len(set(self.members)) != len(self.members):
             raise Exception("List of household members contains duplicates.")
         if any(p.apartment_id != self.apartment_id for p in self.members):
-            raise Exception("Household member has no assigned apartment ID.")
+            raise Exception("Household member has a wrongly assigned apartment ID.")
