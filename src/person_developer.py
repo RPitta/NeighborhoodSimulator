@@ -26,7 +26,7 @@ class PersonDeveloper:
             raise Exception("Person's stage is wrong.")
 
     def set_teen_traits(self, teen):
-        "Teen traits."
+        """Teen traits."""
         teen.gender_identity = self.statistics.get_gender_identity()  # Gender identity must be set first
         teen.sexual_orientation = self.statistics.get_sexual_orientation()
         teen.target_gender = [gender for gender in self.get_target_gender(teen)]

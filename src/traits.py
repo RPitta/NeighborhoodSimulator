@@ -127,12 +127,20 @@ class Traits:
     LIFE_STAGES = (BABY, CHILD, TEEN, YOUNGADULT, ADULT, SENIOR)
     LIFESPAN = list(range(BABY.start, SENIOR.end + 1))
 
-    # Race
+    # Races
     WHITE = "White"
     BLACK = "Black"
     LATINO = "Latino"
     ASIAN = "Asian"
     RACES = (WHITE, BLACK, LATINO, ASIAN)
+
+    # Race dict
+    race_dict = {
+        WHITE: 0,
+        BLACK: 0,
+        LATINO: 0,
+        ASIAN: 0
+    }
 
     # Social classes
     UPPER_CLASS = UpperClass()
