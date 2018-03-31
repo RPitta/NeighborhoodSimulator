@@ -3,12 +3,13 @@ from traits import Traits
 
 
 class CoupleDeveloper:
+    """Couple developer base class."""
 
     def __init__(self, statistics):
         self.statistics = statistics
         self.randomizer = Randomizer()
 
-    def set_new_couple_traits(self, couple):
+    def set_new_couples_goals(self, couple):
         """Set new couple's goals."""
         if len(couple.oldest.span_left_till_old_age) <= 1:  # No time left for marriage/breakup if old age.
             return couple
@@ -46,24 +47,26 @@ class CoupleDeveloper:
     def set_breakup_date(self, couple):
         """Sets couple's break up date."""
         date = couple.marriage_date
-        while date <= couple.marriage_date or date in range(couple.pregnancy_date,
-                                                            couple.birth_date + 2) or date in range(
-                couple.adoption_process_date, couple.adoption_date + 2):
+        while date <= couple.marriage_date or \
+                date in range(couple.pregnancy_date, couple.birth_date + 2) or \
+                date in range(couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
         couple.breakup_date = date
 
     def set_new_pregnancy_or_adoption_process_date(self, couple):
         """Sets pregnancy or adoption date and birth date."""
+        if abs(couple.oldest.age - couple.breakup_date) <= 4 or abs(couple.marriage_date - couple.breakup_date) <= 4:
+            return couple
         date = couple.breakup_date
-        while date in range(couple.breakup_date - 1, couple.breakup_date + 2):
+        while date in range(couple.breakup_date - 3, couple.breakup_date + 3):
             date = self.statistics.get_oldest_pregnancy_date(couple)
 
         if couple.will_get_pregnant:
             couple.pregnancy_date = date
-            couple.birth_date = date + 1
+            couple.birth_date = date + 1 # baby is born next year (although realistically it'd be about 8 months later)
         elif couple.will_adopt:
             couple.adoption_process_date = date
-            couple.adoption_date = date + 2
+            couple.adoption_date = date + 2 # adoption will take place about 2 years later
         else:
             raise Exception(
                 "Couple is set on having a child but won't get pregnant nor adopt.")

@@ -2,7 +2,8 @@
 
 from household import Household
 from utilities.randomizer import Randomizer
-from handler import AddictionHandler, PersonalHandler, DeathHandler, DivorceHandler, MarriageHandler, PregnancyHandler
+from handler import AddictionHandler, PersonalHandler, DeathHandler, DivorceHandler, MarriageHandler, PregnancyHandler, \
+    LgbtaHandler
 
 
 class Neighborhood:
@@ -22,11 +23,12 @@ class Neighborhood:
 
         # Handler classes
         self.randomizer = Randomizer()
-        self.death_handler = DeathHandler()
+        self.death_handler = DeathHandler(self.person_developer)
         self.marriage_handler = MarriageHandler()
         self.divorce_handler = DivorceHandler()
-        self.personal_handler = PersonalHandler(names, person_developer)
-        self.addiction_handler = AddictionHandler(person_developer)
+        self.personal_handler = PersonalHandler(self.person_developer)
+        self.lgbta_handler = LgbtaHandler(self.names, self.person_developer)
+        self.addiction_handler = AddictionHandler(self.person_developer)
         self.pregnancy_handler = PregnancyHandler(baby_generator, statistics, foster_care_system)
 
         # Automatically create given number of apartments/households
@@ -48,7 +50,6 @@ class Neighborhood:
         Each person and their family are added to each household and to neighbors list."""
         self.choose_first_neighbors(city_population, city_couples)
         self.add_neighbors_families()
-        self.set_neighbor_status()
         self.neighborhood_validation()
 
     def choose_first_neighbors(self, city_population, city_couples):
@@ -58,27 +59,28 @@ class Neighborhood:
 
             done = False
             while not done:
+                invalid = False
                 # Choose a random living person
                 chosen_person = self.randomizer.get_random_item(
                     city_population)
 
                 # Check that the person isn't already a neighbor, and that they are of age
                 if chosen_person in self.neighbors or not chosen_person.is_of_age:
-                    continue
+                    invalid = True
 
                 # Check that the person isn't a relative from another neighbor
-                for neighbor in self.neighbors:
-                    if chosen_person in neighbor.partners or chosen_person in neighbor.living_bio_family or chosen_person in neighbor.living_inlaws_family:
-                        continue
+                for n in self.neighbors:
+                    if chosen_person in n.partners or chosen_person in n.living_family or chosen_person in n.living_inlaws_family:
+                        invalid = True
 
-                # If not, add it to neighbors list and to household's members list
-                self.add_to_neighbors_and_household(h, chosen_person)
-                done = True
-
-                # Add as couple if applicable
-                for couple in city_couples:
-                    if chosen_person in couple.persons:
-                        self.neighbor_couples.append(couple)
+                if not invalid:
+                    # If not, add it to neighbors list and to household's members list
+                    self.add_to_neighbors_and_household(h, chosen_person)
+                    # Add as couple if applicable
+                    for couple in city_couples:
+                        if chosen_person in couple.persons:
+                            self.neighbor_couples.append(couple)
+                    done = True
 
     # ADD EACH NEIGHBOR'S FAMILIES
 
@@ -104,17 +106,14 @@ class Neighborhood:
     def add_child(self, p, child, household):
         """Helper method to add person's bio or adoptive children."""
         if child.is_alive and child not in household.members:
-            if p.is_female and (child.is_single_and_unemployed_adult or not child.is_of_age):
+            if child.is_single_and_unemployed_adult or not child.is_of_age:
                 self.add_to_neighbors_and_household(household, child)
-            elif p.is_male and (child.is_single_and_unemployed_adult or not child.is_of_age):
-                if not child.mother.is_alive or child.mother in p.partners:
-                    self.add_to_neighbors_and_household(household, child)
 
     def add_partners(self, p, household):
         """Add spouse or 1 partner if unmarried"""
         for spouse in p.spouses:
             self.add_to_neighbors_and_household(household, spouse)
-        if len(p.partners) > 0 and p.partners[0] not in p.spouses and p.partners[0] not in household.members:
+        if len(p.spouses) == 0 and len(p.partners) > 0:
             self.add_to_neighbors_and_household(household, p.partners[0])
 
     def add_parents(self, p, household):
@@ -143,13 +142,6 @@ class Neighborhood:
         self.neighbors.append(person)
         household.add_member(person)
 
-    # NEIGHBOR STATUS
-
-    def set_neighbor_status(self):
-        """Set neighbor status to True for each neighbor."""
-        for neighbor in self.neighbors:
-            neighbor.is_neighbor = True
-
     # DISPLAY HOUSEHOLDS
 
     def display_households(self):
@@ -160,107 +152,133 @@ class Neighborhood:
     # TIME JUMP
 
     def time_jump_neighborhood(self, romanceable_outsiders):
-        """Main function: age up neighborhood."""
+        """Age up neighborhood."""
         self.do_person_action(romanceable_outsiders)
-
-        # Remove dead couples
-        self.remove_dead_and_brokenup_couples()
-
-        for couple in self.neighbor_couples:
-            self.do_couple_action(couple)
-
-        # Set neighbor status for newborns
-        self.set_neighbor_status()
-
-        # Remove broken-up couples
-        self.remove_dead_and_brokenup_couples()
+        self.do_couple_action()
 
     def do_person_action(self, romanceable_outsiders):
         """Personal actions for each person."""
         for person in self.neighbors:
             # Age up neighborhood
-            person = self.personal_handler.age_up(person)
-            if not person.is_alive:
+            self.personal_handler.age_up(person)
+
+            # Die
+            if person.is_death_date:
+                self.death_handler.die(person)
+                # Remove from household and neighborhood
+                self.remove_from_household(person)
+                self.remove_from_neighborhood(person)
+                # Remove from neighborhood couples if applicable
+                self.remove_dead_and_brokenup_couples()
                 continue
 
             # Come out if applicable
             if person.is_come_out_date:
-                person = self.personal_handler.come_out(person)
+                self.lgbta_handler.come_out(person)
+
+            # Get thrown out of the household / neighborhood
+            if person.is_thrown_out_date:
+                new_apartment_id = self.lgbta_handler.get_thrown_out(person)
+                self.determine_new_household(person, new_apartment_id)
+
+            # Move out of the household / neighborhood
+            if person.is_move_out_date:
+                new_apartment_id = self.lgbta_handler.move_out(person)
+                self.determine_new_household(person, new_apartment_id)
 
             # Become an addict if applicable
             if person.is_addiction_date:
-                person = self.addiction_handler.become_an_addict(person)
+                self.addiction_handler.become_an_addict(person)
 
             # Recover from addiction if applicable
             if person.is_rehabilitation_date:
-                person = self.addiction_handler.get_sober(person)
+                self.addiction_handler.get_sober(person)
 
             # Relapse if applicable
             if person.is_relapse_date:
-                person = self.addiction_handler.relapse(person)
+                self.addiction_handler.relapse(person)
 
             # Get into a committed relationship if applicable
             if person.is_romanceable:
                 # Create new couple if successful match
-                couple = self.couple_creator.create_couple(
-                    person, romanceable_outsiders)
-
+                couple = self.couple_creator.create_couple(person, romanceable_outsiders)
                 if couple is not False:
+                    self.couple_creator.display_new_relationship_message(person, couple)
                     # Set couple traits
-                    couple = self.couple_developer.set_new_couple_traits(
-                        couple)
+                    self.couple_developer.set_new_couples_goals(couple)
                     # Set new love date for polys
-                    couple = self.person_developer.set_new_love_date_for_polys(
-                        couple)
+                    self.person_developer.set_new_love_date_for_polys(couple)
                     # Add couple to couples list
                     self.neighbor_couples.append(couple)
 
-    def do_couple_action(self, couple):
+    def do_couple_action(self):
         """Couple actions for each couple."""
-        # Pregnancy handler first so that baby can be correctly linked to family.
-        if couple.is_birth_date and couple.is_pregnant and couple.expecting_num_of_children >= 1:
-            new_babies = self.pregnancy_handler.give_birth(couple)
-            household = next(h for h in self.households if new_babies[0].apartment_id == h.apartment_id)
-            for baby in new_babies:
-                self.add_to_neighbors_and_household(household, baby)
-            couple = self.pregnancy_handler.reset_pregnancy(couple)
+        for couple in self.neighbor_couples:
+            # Birth
+            if couple.is_birth_date and couple.is_pregnant and couple.expecting_num_of_children >= 1:
+                new_babies = self.pregnancy_handler.give_birth(couple)
+                self.handle_new_babies(new_babies, couple)
 
-            if couple.will_have_children:
-                couple = self.couple_developer.set_new_pregnancy_or_adoption_process_date(
+            # Adoption
+            if couple.is_adoption_date:
+                children = self.pregnancy_handler.adopt(couple)
+                self.handle_new_babies(children, couple)
+
+            # Marriage
+            if couple.is_marriage_date and couple.will_get_married:
+                self.marriage_handler.get_married(couple)
+
+            # Pregnancy
+            if couple.is_pregnancy_date and couple.will_get_pregnant:
+                self.pregnancy_handler.get_pregnant(couple)
+
+            # Adoption process
+            if couple.is_adoption_process_date and couple.will_adopt:
+                self.pregnancy_handler.start_adoption_process(couple)
+
+            # Breakup
+            if couple.is_breakup_date and couple.will_breakup:
+                self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(
                     couple)
+                # New love dates
+                for person in couple.persons:
+                    self.person_developer.set_new_love_date(person)
+                # Remove from neighborhood couples
+                self.remove_dead_and_brokenup_couples()
 
-        if couple.is_adoption_date:
-            children = self.pregnancy_handler.adopt(couple)
-            household = next([h for h in self.households if children[0].apartment_id == h.apartment_id])
-            for child in children:
-                self.add_to_neighbors_and_household(household, child)
-            couple = self.pregnancy_handler.reset_adoption(couple)
+    def determine_new_household(self, person, new_apartment_id=None):
+        """Remove person from household and may add them to new household or move out of neighborhood."""
+        self.remove_from_household(person)
+        if new_apartment_id is None:
+            self.remove_from_neighborhood(person)
+        else:
+            new_household = next(h for h in self.households if h.apartment_id == new_apartment_id)
+            new_household.add_member(person)
 
-            if couple.will_have_children:
-                couple = self.couple_developer.set_new_pregnancy_or_adoption_process_date(
-                    couple)
+    def remove_from_household(self, person):
+        """Helper method to remove person from their household."""
+        household = next(h for h in self.households if h.apartment_id == person.apartment_id)
+        household.remove_member(person)
 
-        if couple.is_marriage_date and couple.will_get_married:
-            couple = self.marriage_handler.get_married(couple)
+    def remove_from_neighborhood(self, person):
+        """Helper method to remove person from the neighborhood."""
+        self.neighbors = [n for n in self.neighbors if n != person]
 
-        if couple.is_pregnancy_date and couple.will_get_pregnant:
-            couple = self.pregnancy_handler.get_pregnant(couple)
-
-        if couple.is_adoption_process_date and couple.will_adopt:
-            couple = self.pregnancy_handler.start_adoption_process(couple)
-
-        if couple.is_breakup_date and couple.will_breakup:
-            if couple.is_married:
-                couple = self.divorce_handler.get_divorced(couple)
-            else:
-                couple = self.divorce_handler.get_separated(couple)
-            for person in couple.persons:
-                person = self.person_developer.set_love_traits(person)
+    def handle_new_babies(self, new_babies, couple):
+        # Add baby/babies to household and neighborhood
+        household = [h for h in self.households if couple.person1.apartment_id == h.apartment_id]
+        for baby in new_babies:
+            self.add_to_neighbors_and_household(household[0], baby)
+        # Reset vars
+        self.pregnancy_handler.reset_pregnancy(couple)
+        # New pregnancy / adoption date
+        if couple.will_have_children:
+            self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
     def remove_dead_and_brokenup_couples(self):
-        if self.neighbor_couples is not None and len(self.neighbor_couples) > 0:
-            self.neighbor_couples = [couple for couple in self.neighbor_couples if all(
-                p.is_alive and (p.is_committed or p.is_married_or_remarried) for p in couple.persons)]
+        if len(self.neighbor_couples) > 0:
+            self.neighbor_couples = [c for c in self.neighbor_couples if
+                                     all(p.is_alive and p.is_partnered for p in c.persons)]
 
     # VALIDATION
 
@@ -271,6 +289,8 @@ class Neighborhood:
         # Neighborhood validation
         if len(self.neighbors) == 0:
             raise Exception("There are no neighbors.")
+        if len(set(self.neighbor_couples)) != len(self.neighbor_couples):
+            raise Exception("Neighbor couples list contains duplicates.")
         if len(set(self.neighbors)) != len(self.neighbors):
             raise Exception("Neighbor list contains duplicates.")
         if sum(len(h.members_list) for h in self.households) != len(self.neighbors):

@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
 
-class LifeStage(metaclass=ABCMeta):
+class AbstractLifeStage(metaclass=ABCMeta):
+    """Life stage base abstract superclass."""
 
     def __init__(self):
         self.stage = None
@@ -41,9 +42,11 @@ class LifeStage(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class Baby(LifeStage):
+class Baby(AbstractLifeStage):
+    """Baby life stage base class."""
 
     def __init__(self):
+        super().__init__()
         self.stage = "Baby"
         self._start = 0
         self._end = 3
@@ -54,9 +57,11 @@ class Baby(LifeStage):
         return Child()
 
 
-class Child(LifeStage):
+class Child(AbstractLifeStage):
+    """Child life stage base class."""
 
     def __init__(self):
+        super().__init__()
         self.stage = "Child"
         self._start = 4
         self._end = 12
@@ -67,9 +72,11 @@ class Child(LifeStage):
         return Teen()
 
 
-class Teen(LifeStage):
+class Teen(AbstractLifeStage):
+    """Teen life stage base class."""
 
     def __init__(self):
+        super().__init__()
         self.stage = "Teen"
         self._start = 13
         self._end = 17
@@ -80,9 +87,11 @@ class Teen(LifeStage):
         return YoungAdult()
 
 
-class YoungAdult(LifeStage):
+class YoungAdult(AbstractLifeStage):
+    """YoungAdult life stage base class."""
 
     def __init__(self):
+        super().__init__()
         self.stage = "Young Adult"
         self._start = 18
         self._end = 39
@@ -93,9 +102,11 @@ class YoungAdult(LifeStage):
         return Adult()
 
 
-class Adult(LifeStage):
+class Adult(AbstractLifeStage):
+    """Adult life stage base class."""
 
     def __init__(self):
+        super().__init__()
         self.stage = "Adult"
         self._start = 40
         self._end = 59
@@ -106,9 +117,11 @@ class Adult(LifeStage):
         return Senior()
 
 
-class Senior(LifeStage):
+class Senior(AbstractLifeStage):
+    """Senior life stage base class."""
 
     def __init__(self):
+        super().__init__()
         self.stage = "Senior"
         self._start = 60
         self._end = 79

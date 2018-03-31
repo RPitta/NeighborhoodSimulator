@@ -2,224 +2,206 @@ from utilities.randomizer import Randomizer
 from traits import Traits
 import sql_connect
 
-class Statistics:
 
-    def __init__(self, stages):
-        self.stages = stages
+class Statistics:
+    """Statistics base class."""
+
+    def __init__(self, city_data):
+        self.city_data = city_data
         self.randomizer = Randomizer()
 
     def get_gender(self):
-
+        """Statistical chance for gender."""
         options = {
             Traits.MALE: 50,
             Traits.FEMALE: 50
         }
-
         selected = self.randomizer.get_random_dict_key(options)
-
-        if selected not in Traits.GENDERS:
-            raise Exception("Wrong gender.")
-
+        self.validate_selected(selected, Traits.GENDERS)
         return selected
 
     def get_gender_identity(self):
-
+        """Statistical chance for gender identity."""
         options = {
             Traits.CISGENDER: 98,
             Traits.TRANSGENDER: 2
         }
-
         selected = self.randomizer.get_random_dict_key(options)
-
-        if selected not in Traits.GENDER_IDENTITIES:
-            raise Exception("Wrong gender identity.")
-
+        self.validate_selected(selected, Traits.GENDER_IDENTITIES)
         return selected
 
     def get_race(self):
+        """Statistical chance for race."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        race_data = dbmgr.demo_data("default", "race")
+        race_data = dbmgr.demo_data(self.city_data, "race")
         dbmgr.__del__()
+
         options = {
             Traits.WHITE: race_data[0]['white'],
             Traits.BLACK: race_data[0]['black'],
             Traits.LATINO: race_data[0]['latino'],
             Traits.ASIAN: race_data[0]['asian']
         }
-
         selected = self.randomizer.get_random_dict_key(options)
-
-        if selected not in Traits.RACES:
-            raise Exception("Wrong race.")
-
+        self.validate_selected(selected, Traits.RACES)
         return selected
 
     def get_social_class(self):
-        # The database connection, and the city variable probably need doing somewhere once rather than for
-        # every function, every time
-        # Start the db connection
+        """Statistical chance for social class."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-
-        # Get the data, passing the city
-        social_class_data = dbmgr.demo_data("default", "social_class")
-
-        # Close the connection
+        social_class_data = dbmgr.demo_data(self.city_data, "social_class")
         dbmgr.__del__()
 
         options = {
-            Traits.LOWERCLASS: social_class_data[0]['lower_class'],
-            Traits.MIDDLECLASS: social_class_data[0]['middle_class'],
-            Traits.UPPERCLASS: social_class_data[0]['upper_class']
+            Traits.UPPER_CLASS: social_class_data[0]['lower_class'],
+            Traits.MIDDLE_CLASS: social_class_data[0]['middle_class'],
+            Traits.LOWER_CLASS: social_class_data[0]['upper_class']
         }
-
         selected = self.randomizer.get_random_dict_key(options)
-
-        if selected not in Traits.SOCIAL_CLASSES:
-            raise Exception("Wrong social class.")
-
+        self.validate_selected(selected, Traits.SOCIAL_CLASSES)
         return selected
 
+    def get_suicide_chance_as_coming_out_consequence(self):
+        """Statistical chance of suicide after coming out in conservative family."""
+        options = {
+            True: 10,
+            False: 90
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_thrown_out_chance(self):
+        """Statistical chance of being thrown out after coming out in conservative family."""
+        options = {
+            True: 20,
+            False: 80
+        }
+        return self.randomizer.get_random_dict_key(options)
+
     def get_employment_chance(self):
+        """Statistical chance of employment."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        employment_data = dbmgr.demo_data("default", "employment")
+        employment_data = dbmgr.demo_data(self.city_data, "employment")
         dbmgr.__del__()
+
         options = {
             Traits.EMPLOYED: employment_data[0]['employed'],
             Traits.UNEMPLOYED: employment_data[0]['unemployed']
         }
-
         selected = self.randomizer.get_random_dict_key(options)
-
-        if selected not in Traits.EMPLOYMENT:
-            raise Exception("Wrong employment attribute.")
-
+        self.validate_selected(selected, Traits.EMPLOYMENT)
         return selected
 
     def get_death_cause(self, person):
+        """Statistical chance for death cause."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        death_cause_data = dbmgr.demo_data("default", "death_cause")
+        death_cause_data = dbmgr.demo_data(self.city_data, "death_cause")
         dbmgr.__del__()
+
+        # If death date is False = Old Age
         if person.death_date is False:
             return Traits.OLD_AGE
-
-        if person.death_date < self.stages.TEEN.start:
+        # If baby or child = Illness
+        if person.death_date < Traits.TEEN.start:
             return Traits.ILLNESS
 
         options_teen = {
             Traits.ILLNESS: death_cause_data[0]['teen_illness'],
             Traits.SUICIDE: death_cause_data[0]['teen_suicide']
         }
-
         options_young_adult = {
             Traits.ILLNESS: death_cause_data[0]['young_adult_illness'],
             Traits.SUICIDE: death_cause_data[0]['young_adult_suicide'],
             Traits.ACCIDENT: death_cause_data[0]['young_adult_accident']
         }
-
         options_adult = {
             Traits.ILLNESS: death_cause_data[0]['adult_illness'],
             Traits.SUICIDE: death_cause_data[0]['adult_suicide'],
             Traits.ACCIDENT: death_cause_data[0]['adult_accident']
         }
-
         options_senior = {
             Traits.ILLNESS: death_cause_data[0]['senior_illness'],
             Traits.SUICIDE: death_cause_data[0]['senior_suicide'],
             Traits.ACCIDENT: death_cause_data[0]['senior_accident']
         }
 
-        if person.death_date in self.stages.TEEN.span:
+        if person.death_date in Traits.TEEN.span:
             selected = self.randomizer.get_random_dict_key(options_teen)
-        elif person.death_date in self.stages.YOUNGADULT.span:
+        elif person.death_date in Traits.YOUNGADULT.span:
             selected = self.randomizer.get_random_dict_key(options_young_adult)
-        elif person.death_date in self.stages.ADULT.span:
+        elif person.death_date in Traits.ADULT.span:
             selected = self.randomizer.get_random_dict_key(options_adult)
-        elif person.death_date in self.stages.SENIOR.span:
+        elif person.death_date in Traits.SENIOR.span:
             selected = self.randomizer.get_random_dict_key(options_senior)
         else:
             raise Exception("Wrong death date.")
 
-        if selected not in Traits.DEATH_CAUSES:
-            raise Exception("Wrong death cause.")
-
+        self.validate_selected(selected, Traits.DEATH_CAUSES)
         return selected
 
     def get_death_date(self):
-
+        """Statistical chance for death date."""
         options_general = {
             "before_old_age": 50,
             "old_age": 50
         }
 
         options_before_old_age = {
-            self.stages.BABY: 1,
-            self.stages.CHILD: 2,
-            self.stages.TEEN: 3,
-            self.stages.YOUNGADULT: 4,
-            self.stages.ADULT: 10,
-            self.stages.SENIOR: 80
+            Traits.BABY: 1,
+            Traits.CHILD: 2,
+            Traits.TEEN: 3,
+            Traits.YOUNGADULT: 4,
+            Traits.ADULT: 10,
+            Traits.SENIOR: 80
         }
 
         selected = self.randomizer.get_random_dict_key(options_general)
-
         if selected == "old_age":
             return False
 
-        random_life_stage = self.randomizer.get_random_dict_key(
-            options_before_old_age)
-
+        random_life_stage = self.randomizer.get_random_dict_key(options_before_old_age)
         death_date = self.randomizer.get_random_item(random_life_stage.span)
-
-        if death_date not in self.stages.LIFESPAN:
-            raise Exception("Wrong death date.")
-
+        self.validate_selected(death_date, Traits.LIFESPAN)
         return death_date
 
     def get_fertility(self):
-
+        """Statistical chance of being infertile."""
         options = {
-            True: 10,
-            False: 90
+            True: 95,
+            False: 5
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_domestic_partnership_desire(self):
-
+        """Statistical chance for domestic partnership wish."""
         options = {
-            True: 80,
-            False: 20
+            True: 90,
+            False: 10
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_children_desire(self):
-
+        """Statistical chance for children wish."""
         options = {
-            True: 60,
-            False: 40
+            True: 70,
+            False: 30
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_sexual_orientation(self):
-
+        """Statistical chance for sexual orientation."""
         main = {
             "het": 90,
             "homo/bi": 8,
             "ace": 2
         }
-
         homo_bi = {
             "homo": 40,
             "bi": 60
         }
-
         romantic__aromantic = {
             "aromantic": 50,
             "romantic": 50
         }
-
         romantic_orientations = {
             "het": 90,
             "homo/bi": 10
@@ -236,6 +218,7 @@ class Statistics:
             orientation = self.randomizer.get_random_dict_key(homo_bi)
             return Traits.SEXUAL_ORIENTATIONS_DICT[orientation]["allosexual"]
 
+        # Returns [romantic orientation] + "asexual"
         if orientation == "ace":
             orientation = self.randomizer.get_random_dict_key(
                 romantic__aromantic)
@@ -244,8 +227,7 @@ class Statistics:
             if orientation == "aromantic":
                 return Traits.SEXUAL_ORIENTATIONS_DICT[orientation]
 
-            orientation = self.randomizer.get_random_dict_key(
-                romantic_orientations)
+            orientation = self.randomizer.get_random_dict_key(romantic_orientations)
 
             # Returns "heteroromantic asexual"
             if orientation == "het":
@@ -257,195 +239,203 @@ class Statistics:
                 return Traits.SEXUAL_ORIENTATIONS_DICT[orientation]["asexual"]
 
     def get_relationship_orientation(self):
-
+        """Statistical chance for relationship orientation."""
         options = {
             Traits.MONOAMOROUS: 90,
             Traits.POLYAMOROUS: 10
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_marriage_desire(self):
-
+        """Statistical chance for marriage wish."""
         options = {
             True: 60,
             False: 40
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_liberalism(self):
-
-        rates = {
-            True: 60,
-            False: 40
+        """Statistical chance for liberal/conservative ideology."""
+        options = {
+            True: 50,
+            False: 50
         }
-
-        return self.randomizer.get_random_dict_key(rates)
+        return self.randomizer.get_random_dict_key(options)
 
     def get_desired_num_of_children(self):
+        """Statistical chance for desired number of children per couple."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        children_data = dbmgr.demo_data("default", "desired_num_of_children")
+        children_data = dbmgr.demo_data(self.city_data, "desired_num_of_children")
         dbmgr.__del__()
+
         options = {
             Traits.ONE_CHILD: children_data[0]['one_child'],
             Traits.TWO_CHILDREN: children_data[0]['two_children'],
             Traits.THREE_CHILDREN: children_data[0]['three_children'],
             Traits.FOUR_CHILDREN: children_data[0]['four_children']
         }
-
-        return self.randomizer.get_random_dict_key(options)
+        selected = self.randomizer.get_random_dict_key(options)
+        self.validate_selected(selected, Traits.ALLOWED_NUM_OF_CHILDREN_PER_COUPLE)
+        return selected
 
     def get_pregnancy_num_of_children(self):
-        """Random number of children for pregnancy: singleton/twins/triplets"""
+        """Statistical chance of having singleton/twins/triplets."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        pregnancy_data = dbmgr.demo_data("default", "pregnancy")
+        pregnancy_data = dbmgr.demo_data(self.city_data, "pregnancy")
         dbmgr.__del__()
+
         options = {
             Traits.SINGLETON: pregnancy_data[0]['singlton'],
             Traits.TWINS: pregnancy_data[0]['twins'],
             Traits.TRIPLETS: pregnancy_data[0]['triplets']
         }
-
-        return self.randomizer.get_random_dict_key(options)
+        selected = self.randomizer.get_random_dict_key(options)
+        self.validate_selected(selected, Traits.ALLOWED_NUM_OF_CHILDREN_PER_PREGNANCY)
+        return selected
 
     def get_adoption_num_of_children(self):
-
+        """Statistical chance of adopting one child or a sibling set."""
         options = {
             Traits.ONE_CHILD: 70,
             Traits.SIBLING_SET: 30
         }
-
+        selected = self.randomizer.get_random_dict_key(options)
+        self.validate_selected(selected, Traits.ALLOWED_NUM_OF_ADOPTIONS_PER_COUPLE)
         return self.randomizer.get_random_dict_key(options)
 
     def get_age_of_adoptive_children(self):
-
+        """Statistical chance for age of child in adoption."""
         options = {
-            "five_or_younger": 46.4,
-            "between_six_and_ten": 27.4,
-            "between_eleven_and_fifteen": 26.1
+            5: 46.4,
+            10: 27.4,
+            Traits.MAX_AGE_FOR_ADOPTION: 26.1
         }
-
         selected = self.randomizer.get_random_dict_key(options)
-
-        if selected == "five_or_younger":
-            return [0, 5]
-        elif selected == "between_six_and_ten":
-            return [6, 10]
-        elif selected == "between_eleven_and_fifteen":
-            return [11, 15]
+        if selected == 5:
+            return list(range(0, 5))
+        elif selected == 10:
+            return list(range(6, 10))
+        elif selected == Traits.MAX_AGE_FOR_ADOPTION:
+            return list(range(11, Traits.MAX_AGE_FOR_ADOPTION))
         else:
             raise Exception("Wrong age.")
 
-        return selected
-
     def get_breakup_chance(self):
+        """Statistical chance of breaking up."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        breakup_data = dbmgr.demo_data("default", "breakup")
+        breakup_data = dbmgr.demo_data(self.city_data, "breakup")
         dbmgr.__del__()
+
         options = {
             True: breakup_data[0]['breakup_true'],
             False: breakup_data[0]['breakup_false']
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_intergenerational_chance(self):
-        """Returns true if intergenerational relationship. False otherwise."""
-
+        """Statistical chance for intergenerational relationship."""
         options = {
             True: 10,
             False: 90
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_family_love_chance(self):
-        """Returns true if person will fall in love with family member. False otherwise."""
-
+        """Statistical chance for consanguinamorous relationship."""
         options = {
             True: 10,
             False: 90
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_triad_chance(self):
-
+        """Statistical chance for triads / throuples."""
         options = {
             True: 30,
             False: 70
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_drug_addiction_chance(self):
+        """Statistical chance for drug addiction."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        drug_addiction_data = dbmgr.demo_data("default", "drug_addiction")
+        drug_addiction_data = dbmgr.demo_data(self.city_data, "drug_addiction")
         dbmgr.__del__()
+
         options = {
             True: drug_addiction_data[0]['addict_true'],
             False: drug_addiction_data[0]['addict_false']
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_alcohol_addiction_chance(self):
+        """Statistical chance for alcohol addiction."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        alcohol_addiction_data = dbmgr.demo_data("default", "alcohol_addiction")
+        alcohol_addiction_data = dbmgr.demo_data(self.city_data, "alcohol_addiction")
         dbmgr.__del__()
+
         options = {
             True: alcohol_addiction_data[0]['addict_true'],
             False: alcohol_addiction_data[0]['addict_false']
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_rehabilitation_chance(self):
+        """Statistical chance of going through rehabilitation for addiction."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        rehabilitation_data = dbmgr.demo_data("default", "rehabilitation")
+        rehabilitation_data = dbmgr.demo_data(self.city_data, "rehabilitation")
         dbmgr.__del__()
+
         options = {
             True: rehabilitation_data[0]['rehabilitation_true'],
             False: rehabilitation_data[0]['rehabilitation_false']
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_overdose_chance(self):
+        """Statistical chance of overdosing."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        overdose_data = dbmgr.demo_data("default", "overdose")
+        overdose_data = dbmgr.demo_data(self.city_data, "overdose")
         dbmgr.__del__()
+
         options = {
             True: overdose_data[0]['overdose_true'],
             False: overdose_data[0]['overdose_false']
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     def get_relapse_chance(self):
+        """Statistical chance of relapsing"""
         dbmgr = sql_connect.DatabaseManager("testdb.db")
-        relapse_data = dbmgr.demo_data("default", "relapse")
+        relapse_data = dbmgr.demo_data(self.city_data, "relapse")
         dbmgr.__del__()
+
         options = {
             True: relapse_data[0]['relapse_true'],
             False: relapse_data[0]['relapse_false']
         }
-
         return self.randomizer.get_random_dict_key(options)
 
     # EARLY / MID / LATE WITHIN RANGE
 
     def get_oldest_breakup_date(self, couple):
-        """Returns breakup date for oldest person."""
-        return self.get_chance_for_early_mid_late(couple.oldest.span_left_till_old_age, 50, 30, 20)
+        """Returns statistical breakup date for oldest person in couple."""
+        early = 50
+        mid = 30
+        late = 20
+        return self.get_chance_for_early_mid_late(couple.oldest.span_left_till_old_age, early, mid, late)
 
     def get_oldest_pregnancy_date(self, couple):
-        """Returns pregnancy date for oldest person."""
-        return self.get_chance_for_early_mid_late(couple.pregnancy_timespan, 70, 20, 10)
+        """Returns statistical pregnancy date for oldest person in couple."""
+        early = 70
+        mid = 20
+        late = 10
+        return self.get_chance_for_early_mid_late(couple.having_children_timespan, early, mid, late)
 
     def get_chance_for_early_mid_late(self, lst, early_num, mid_num, late_num):
-
+        """Helper method for determining statistical chances within early-mid-late range."""
+        if len(lst) == 0:
+            raise Exception("List is empty.")
         if len(lst) in range(1, 4):
             return self.randomizer.get_random_item(lst)
 
@@ -459,7 +449,6 @@ class Statistics:
             2: mid_num,
             3: late_num
         }
-
         selected = self.randomizer.get_random_dict_key(options)
         if selected == 1:
             return self.randomizer.get_random_item(early)
@@ -471,3 +460,8 @@ class Statistics:
     def split_list_in_three(lst, n):
         k, m = divmod(len(lst), n)
         return (lst[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+
+    @classmethod
+    def validate_selected(cls, selected, lst):
+        if selected not in lst:
+            raise Exception("Statistically selected value is not valid.")

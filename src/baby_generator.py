@@ -3,22 +3,21 @@ from person import Person
 
 
 class BabyGenerator:
+    """Baby generator base class."""
 
-    def __init__(self, stages, statistics, names):
-        self.stages = stages
+    def __init__(self, statistics, names):
         self.statistics = statistics
         self.names = names
 
-    def create_first_child(self, surnames):
+    def create_first_child(self, age, surnames):
         """Generates new child without family to populate city."""
-        child = Person(self.statistics.get_gender(), self.stages.CHILD.end)
+        child = Person(self.statistics.get_gender(), age)
         self.set_first_child_traits(child, surnames)
         self.set_baby_essential_traits(child)
-
         return child
 
     def set_first_child_traits(self, child, surnames):
-        """Set statistical social class and random surname that is unique among the population."""
+        """Set statistical/random basic traits for new child."""
         child.surname = self.names.get_surname(surnames)
         child.original_surname = child.surname
         child.race = self.statistics.get_race()
@@ -33,46 +32,45 @@ class BabyGenerator:
 
     def generate_baby(self, couple):
         """Generates baby from given couple."""
-        baby = Person(self.statistics.get_gender(), self.stages.BABY.start)
+        baby = Person(self.statistics.get_gender(), Traits.BABY.start)
         self.link_family(baby, couple)
         self.set_baby_essential_traits(baby)
         self.baby_validation(baby)
-
         return baby
 
-    def link_family(self, baby, couple):
+    @classmethod
+    def link_family(cls, baby, couple):
         """Assign's baby's family."""
         baby.parents.extend(couple.persons)
         for parent in baby.parents:
             parent.children.append(baby)
+
+        # Social class and race
         baby.social_class = baby.parents[0].social_class
         baby.race = baby.parents[0].race  # This must be changed
-
+        # Surname and apartment ID
         if couple.is_straight:
             baby.surname = couple.man.surname
-            baby.apartment_id = couple.woman.apartment_id
         else:
             baby.surname = baby.parents[0].surname
-            baby.apartment_id = baby.parents[0].apartment_id
-
         baby.original_surname = baby.surname
 
-    def baby_validation(self, baby):
+    @classmethod
+    def baby_validation(cls, baby):
         """Validates baby's correct traits and family."""
-        # Baby attributes
         if baby.name is None:
             raise Exception("Person has no name.")
         if baby.surname is None or baby.original_surname is None:
             raise Exception("Person has no surname.")
-        if baby.stage is None or baby.stage not in self.stages.LIFESTAGES:
+        if baby.stage is None or baby.stage not in Traits.LIFE_STAGES:
             raise Exception("Person's life stage is wrong.")
-        if baby.age is None or baby.age not in baby.stage.span or baby.age not in self.stages.LIFESPAN:
+        if baby.age is None or baby.age not in baby.stage.span or baby.age not in Traits.LIFESPAN:
             raise Exception("Person's age is wrong.")
         if baby.gender is None or baby.gender not in Traits.GENDERS:
             raise Exception("Person's gender is wrong.")
         if baby.death_cause is None or baby.death_cause not in Traits.DEATH_CAUSES:
             raise Exception("Person's death cause is wrong.")
-        if baby.death_date is not False and baby.death_date not in self.stages.LIFESPAN:
+        if baby.death_date is not False and baby.death_date not in Traits.LIFESPAN:
             raise Exception("Person's death date is wrong.")
 
         # Family

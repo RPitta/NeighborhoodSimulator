@@ -1,15 +1,11 @@
 import os
-
 from utilities.randomizer import Randomizer
-from life_stage import Baby, Child, Teen, YoungAdult, Adult, Senior
+from life_stage import *
+from social_class import *
 
 
 class Setup:
-    """Initialize names and surnames from files."""
-    MALE_NAMES = []
-    FEMALE_NAMES = []
-    SURNAMES = []
-    PROFESSIONS = []
+    """Initialize names, surnames and professions from files."""
     MIN_WORDS = 800
 
     def __init__(self):
@@ -19,36 +15,32 @@ class Setup:
         self.PROFESSIONS = self.get_professions()
 
     def get_male_names(self):
+        """Add all male names from file to list."""
         with open(self.find_file_location("male_names.txt"), "r") as file_males:
             names = set([x.split('\n')[0] for x in file_males.readlines()])
             self.validate_list(names)
-            names = self.capitalize_words(names)
-
-            return names
+            return self.capitalize_words(names)
 
     def get_female_names(self):
+        """Add all female names from file to list."""
         with open(self.find_file_location("female_names.txt"), "r") as file_females:
             names = set([x.split('\n')[0] for x in file_females.readlines()])
             self.validate_list(names)
-            names = self.capitalize_words(names)
-
-            return names
+            return self.capitalize_words(names)
 
     def get_surnames(self):
+        """Add all surnames from file to list."""
         with open(self.find_file_location("surnames.txt"), "r") as file_surnames:
             surnames = set([x.split('\t')[0] for x in file_surnames.readlines()])
             self.validate_list(surnames)
-            surnames = self.capitalize_words(surnames)
-
-            return surnames
+            return self.capitalize_words(surnames)
 
     def get_professions(self):
+        """Add all professions from file to list."""
         with open(self.find_file_location("professions.txt"), "r") as file_professions:
             professions = set([x.split('\n')[0] for x in file_professions.readlines()])
             self.validate_list(professions)
-            professions = self.capitalize_words(professions)
-
-            return professions
+            return self.capitalize_words(professions)
 
     @staticmethod
     def find_file_location(file_name):
@@ -66,6 +58,7 @@ class Setup:
 
 
 class Names:
+    """Helper class to get names from lists initialized in Setup."""
 
     def __init__(self, setup):
         self.setup = setup
@@ -73,14 +66,13 @@ class Names:
 
     def get_name(self, person):
         """Returns a name from provided list that is unique among person's siblings and cousins."""
-        unique = False
+        name = unique = False
         while not unique:
             name = self.randomizer.get_random_item(
-                self.setup.MALE_NAMES) if person.is_male else self.randomizer.get_random_item(
-                self.setup.FEMALE_NAMES)
+                self.setup.MALE_NAMES) if person.is_male else self.randomizer.get_random_item(self.setup.FEMALE_NAMES)
             unique = name not in (person.get_siblings_names, person.get_cousins_names)
 
-        self.validate_name(person, name)
+        self.validate_name(name)
         return name
 
     def get_surname(self, unavailable_surnames=None):
@@ -90,7 +82,7 @@ class Names:
             self.validate_surname(surname)
             return surname
 
-        unique = False
+        surname = unique = False
         while not unique:
             surname = self.randomizer.get_random_item(self.setup.SURNAMES)
             unique = surname not in unavailable_surnames
@@ -98,17 +90,19 @@ class Names:
         self.validate_surname(surname, unavailable_surnames)
         return surname
 
-    @classmethod
-    def validate_name(cls, person, name):
-        if name is None:
+    def validate_name(self, name):
+        if name is None or name is False:
             raise Exception("Name is null.")
+        if name not in self.setup.MALE_NAMES and name not in self.setup.FEMALE_NAMES:
+            raise Exception("Name is wrong.")
 
-    @classmethod
-    def validate_surname(cls, surname, unavailable_surnames=None):
+    def validate_surname(self, surname, unavailable_surnames=None):
         if surname is None:
             raise Exception("Surname is null.")
         if unavailable_surnames is not None and surname in unavailable_surnames:
             raise Exception("Surname is not unique.")
+        if surname not in self.setup.SURNAMES:
+            raise Exception("Surname is wrong.")
 
 
 class Traits:
@@ -123,6 +117,16 @@ class Traits:
     TRANSGENDER = "Transgender"
     GENDER_IDENTITIES = (CISGENDER, TRANSGENDER)
 
+    # Life stages
+    BABY = Baby()
+    CHILD = Child()
+    TEEN = Teen()
+    YOUNGADULT = YoungAdult()
+    ADULT = Adult()
+    SENIOR = Senior()
+    LIFE_STAGES = (BABY, CHILD, TEEN, YOUNGADULT, ADULT, SENIOR)
+    LIFESPAN = list(range(BABY.start, SENIOR.end + 1))
+
     # Race
     WHITE = "White"
     BLACK = "Black"
@@ -130,11 +134,11 @@ class Traits:
     ASIAN = "Asian"
     RACES = (WHITE, BLACK, LATINO, ASIAN)
 
-    # Social class
-    UPPERCLASS = "Upperclass"
-    MIDDLECLASS = "Middleclass"
-    LOWERCLASS = "Lowerclass"
-    SOCIAL_CLASSES = (UPPERCLASS, MIDDLECLASS, LOWERCLASS)
+    # Social classes
+    UPPER_CLASS = UpperClass()
+    MIDDLE_CLASS = MiddleClass()
+    LOWER_CLASS = LowerClass()
+    SOCIAL_CLASSES = (UPPER_CLASS, MIDDLE_CLASS, LOWER_CLASS)
 
     # Sexual orientations
     HETEROSEXUAL = "Heterosexual"
@@ -194,9 +198,11 @@ class Traits:
     TWO_CHILDREN = 2
     THREE_CHILDREN = 3
     FOUR_CHILDREN = 4
-    ALLOWED_NUM_OF_CHILDREN_PER_COUPLE = (
-        ONE_CHILD, TWO_CHILDREN, THREE_CHILDREN, FOUR_CHILDREN)
+    ALLOWED_NUM_OF_CHILDREN_PER_COUPLE = (ONE_CHILD, TWO_CHILDREN, THREE_CHILDREN, FOUR_CHILDREN)
+
+    # Adoption-related
     SIBLING_SET = (TWO_CHILDREN, THREE_CHILDREN, FOUR_CHILDREN)
+    ALLOWED_NUM_OF_ADOPTIONS_PER_COUPLE = (ONE_CHILD, SIBLING_SET)
     MAX_AGE_FOR_ADOPTION = 15
 
     # Number of children per pregnancy
@@ -213,15 +219,3 @@ class Traits:
     DRUG_OVERDOSE = "Drug overdose"
     ALCOHOL_OVERDOSE = "Alcohol overdose"
     DEATH_CAUSES = (OLD_AGE, SUICIDE, ILLNESS, ACCIDENT)
-
-
-class LifeStages:
-    """Global variables for instantiated life stages."""
-    BABY = Baby()
-    CHILD = Child()
-    TEEN = Teen()
-    YOUNGADULT = YoungAdult()
-    ADULT = Adult()
-    SENIOR = Senior()
-    LIFESTAGES = (BABY, CHILD, TEEN, YOUNGADULT, ADULT, SENIOR)
-    LIFESPAN = list(range(BABY.start, SENIOR.end + 1))
