@@ -26,7 +26,7 @@ class PersonDeveloper:
             raise Exception("Person's stage is wrong.")
 
     def set_teen_traits(self, teen):
-        "Teen traits."
+        """Teen traits."""
         teen.gender_identity = self.statistics.get_gender_identity()  # Gender identity must be set first
         teen.sexual_orientation = self.statistics.get_sexual_orientation()
         teen.target_gender = [gender for gender in self.get_target_gender(teen)]
@@ -152,6 +152,9 @@ class PersonDeveloper:
             person.in_love_with_intergenerational = self.statistics.get_intergenerational_chance()
             if person.in_love_with_intergenerational:
                 person.is_liberal = True
+            person.in_love_with_another_race = self.statistics.get_interracial_love_chance()
+            if person.in_love_with_another_race:
+                person.is_liberal = True
 
             # Assign date to fall in love. Ex: within 10 years.
             # If person will be dead before then, just loop through their remaining years.
@@ -198,6 +201,7 @@ class PersonDeveloper:
         person.in_love_date = person.age
         person.can_have_bio_children = False
         person.in_love_with_intergenerational = None  # Age not applicable
+        person.in_love_with_another_race = None  # Race not applicable
 
     # ADDICTION
 

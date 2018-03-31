@@ -63,7 +63,7 @@ class City:
 
     def populate_city(self):
         """Populate the city with X number of random children."""
-        for _ in (number + 1 for number in range(30)):
+        for _ in (number + 1 for number in range(200)):
             person = self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)
             self.population.append(person)
 

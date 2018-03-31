@@ -20,8 +20,28 @@ class BabyGenerator:
         """Set statistical/random basic traits for new child."""
         child.surname = self.names.get_surname(surnames)
         child.original_surname = child.surname
-        child.race = self.statistics.get_race()
+        child.race = self.get_race()
         child.social_class = self.statistics.get_social_class()
+
+    def get_race(self):
+        """Return race dictionary with statistical race set."""
+        race = self.statistics.get_race()
+        race_dict_copy = dict(Traits.race_dict)
+
+        if race == Traits.WHITE:
+            race_dict_copy[Traits.WHITE] = 100
+            return race_dict_copy
+        elif race == Traits.BLACK:
+            race_dict_copy[Traits.BLACK] = 100
+            return race_dict_copy
+        elif race == Traits.LATINO:
+            race_dict_copy[Traits.LATINO] = 100
+            return race_dict_copy
+        elif race == Traits.ASIAN:
+            race_dict_copy[Traits.ASIAN] = 100
+            return race_dict_copy
+        else:
+            raise Exception("Wrong race.")
 
     def set_baby_essential_traits(self, baby):
         """Gives baby a random name, target gender, death date/cause and fertility."""
@@ -38,8 +58,7 @@ class BabyGenerator:
         self.baby_validation(baby)
         return baby
 
-    @classmethod
-    def link_family(cls, baby, couple):
+    def link_family(self, baby, couple):
         """Assign's baby's family."""
         baby.parents.extend(couple.persons)
         for parent in baby.parents:
@@ -47,13 +66,26 @@ class BabyGenerator:
 
         # Social class and race
         baby.social_class = baby.parents[0].social_class
-        baby.race = baby.parents[0].race  # This must be changed
+        self.set_race(baby)
         # Surname and apartment ID
         if couple.is_straight:
             baby.surname = couple.man.surname
         else:
             baby.surname = baby.parents[0].surname
         baby.original_surname = baby.surname
+
+    @classmethod
+    def set_race(cls, baby):
+        if all(baby.parents[0].race == p.race for p in baby.parents):
+            baby.race = baby.parents[0].race
+        else:
+            baby.race = dict(Traits.race_dict)
+            for parent in baby.parents:
+                for r, n in parent.race.items():
+                    if n > 0:
+                        baby.race[r] = int(n / 2)
+                        if baby.race[r] < 0:
+                            baby.race[r] = 0
 
     @classmethod
     def baby_validation(cls, baby):

@@ -45,7 +45,11 @@ class Setup:
     @staticmethod
     def find_file_location(file_name):
         path_file = os.path.dirname(os.path.realpath(__file__))
+<<<<<<< HEAD
         path_full = os.path.join(path_file ,'files',file_name) 
+=======
+        path_full = os.path.join(path_file,'files', file_name)
+>>>>>>> 916e992ecf06ad27bb1e46904ba95e8b22ecf01a
         return path_full
 
     @staticmethod
@@ -127,12 +131,20 @@ class Traits:
     LIFE_STAGES = (BABY, CHILD, TEEN, YOUNGADULT, ADULT, SENIOR)
     LIFESPAN = list(range(BABY.start, SENIOR.end + 1))
 
-    # Race
+    # Races
     WHITE = "White"
     BLACK = "Black"
     LATINO = "Latino"
     ASIAN = "Asian"
     RACES = (WHITE, BLACK, LATINO, ASIAN)
+
+    # Race dict
+    race_dict = {
+        WHITE: 0,
+        BLACK: 0,
+        LATINO: 0,
+        ASIAN: 0
+    }
 
     # Social classes
     UPPER_CLASS = UpperClass()
