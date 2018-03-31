@@ -238,8 +238,13 @@ class Neighborhood:
 
             # Breakup
             if couple.is_breakup_date and couple.will_breakup:
-                self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(
-                    couple)
+                if couple.is_married:
+                    self.divorce_handler.get_divorced(couple)
+                else:
+                    self.divorce_handler.get_separated(couple)
+                # Assign new household / leave neighborhood for one person in couple
+                d = self.divorce_handler.leave_household(couple)
+                self.determine_new_household(d["person"], d["id"])
                 # New love dates
                 for person in couple.persons:
                     self.person_developer.set_new_love_date(person)
