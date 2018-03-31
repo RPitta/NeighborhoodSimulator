@@ -23,6 +23,14 @@ class Educations:
 		if major in self.acquired_major.lists:
 			return self.major.lists[major].traits
 
+	def create_major(self, name, traits=None, degree = Degree.Uneducated):
+		created_major = cl.MajorCreator(name, traits = traits, degree = degree)
+		return created_major
+
+	def increase_degree_by(self, major, level = 1):
+		if major in self.acquired_major.lists :
+			return self.acquired_major.lists[major].increase_degree_by(major, level= level)
+		return 0
 
 
 
