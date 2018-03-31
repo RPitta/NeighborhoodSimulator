@@ -214,10 +214,10 @@ class CityDeathHandler:
     def remove_from_partners(self, person):
         """Remove person from partner's partners list. Set as single."""
         for partner in person.partners:
-            partner.ex_partners.append(person)
-            partner.partners = [partner for partner in partner.partners if partner != person]
             if not partner.is_married_or_remarried:
                 partner.relationship_status = Traits.SINGLE
+            partner.ex_partners.append(person)
+            partner.partners = [partner for partner in partner.partners if partner != person]
             self.set_new_love_date_for_widower(partner)
 
     def set_new_love_date_for_widower(self, person):
@@ -364,8 +364,7 @@ class AddictionHandler(CityAddictionHandler):
         if person.is_drug_addict:
             print("\n{} has spent some time in a rehabilitation centre and is no longer a drug addict.".format(person))
         elif person.is_alcohol_addict:
-            print("\n{} has spent some time in a rehabilitation centre and is no longer an alcohol addict.".format(
-                person))
+            print("\n{} has spent some time in a rehabilitation centre and is no longer an alcohol addict.".format(person))
         super().get_sober(person)
 
     def relapse(self, person):
@@ -507,6 +506,8 @@ class CityDivorceHandler:
 
 class DivorceHandler(CityDivorceHandler):
     """Adds print messages to divorce handler."""
+    def __init__(self):
+        self.randomizer = Randomizer()
 
     def get_divorced(self, couple):
         self.display_divorce_message(couple)
@@ -526,6 +527,32 @@ class DivorceHandler(CityDivorceHandler):
         print("\n{} and {} have separated.".format(
             couple.person1, couple.person2))
 
+    def leave_household(self, couple):
+        """Returns person who will leave the apartment and the new apartment ID if any."""
+        leaving_person = self.randomizer.get_random_item(couple.persons)
+        new_apartment_id = self.get_id_from_neighborhood_friends(leaving_person)
+        return {"person" : leaving_person, "id" : new_apartment_id}
+
+    def get_id_from_neighborhood_friends(self, person):
+        """Returns None if person has no neighborhood friends, or liberal friend's apartment ID if so."""
+        if len(person.neighbor_friends) == 0:
+            self.display_left_neighborhood_message(person)
+            return None
+        else:
+            friend = next(friend for friend in person.neighbor_friends if friend.is_liberal)
+            self.display_new_household_message(person, friend)
+            return friend.apartment_id
+
+    @classmethod
+    def display_left_neighborhood_message(cls, person):
+        print("{} has moved out and no longer lives in the neighborhood.".format(person.name))
+
+    @classmethod
+    def display_new_household_message(cls, person, friend):
+        if person.is_male:
+            print("{} now lives in his friend {}'s apartment, {}.".format(person.name, friend, friend.apartment_id))
+        else:
+            print("{} now lives in her friend {}'s apartment, {}.".format(person.name, friend, friend.apartment_id))
 
 class CityPregnancyHandler:
     """Handles pregnancy and adoption."""

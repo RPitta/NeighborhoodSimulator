@@ -1,5 +1,4 @@
 from utilities.randomizer import Randomizer
-from traits import Traits
 
 
 class CoupleDeveloper:
@@ -36,12 +35,11 @@ class CoupleDeveloper:
         return couple
 
     def set_marriage_date(self, couple):
+        """Sets couple's marriage date."""
         marriable_range = range(1, 8)
-        date = couple.oldest.age + \
-               self.randomizer.get_random_item(marriable_range)
+        date = couple.oldest.age + self.randomizer.get_random_item(marriable_range)
         if date not in couple.oldest.span_left_till_old_age:
-            date = self.randomizer.get_random_item(
-                couple.oldest.span_left_till_old_age)
+            date = self.randomizer.get_random_item(couple.oldest.span_left_till_old_age)
         couple.marriage_date = date
 
     def set_breakup_date(self, couple):
