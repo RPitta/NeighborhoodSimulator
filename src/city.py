@@ -63,8 +63,11 @@ class City:
 
     def populate_city(self):
         """Populate the city with X number of random children."""
-        for _ in (number + 1 for number in range(200)):
+        #for _ in (number + 1 for number in range(200)):
+        for i in (number + 1 for number in range(2)):
             person = self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)
+            print(person.name+" is born")
+            person.degree.init_degree(person.age)
             self.population.append(person)
 
     def time_jump_city(self):
@@ -82,6 +85,8 @@ class City:
         new_children = [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
+        for children in new_children :
+            children.degree.init_degree(children.age)
         self.foster.add_to_system(new_children)
         self.population.extend(new_children)
 

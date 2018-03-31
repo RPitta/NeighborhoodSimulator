@@ -1,5 +1,6 @@
 from traits import Traits
 from utilities.randomizer import Randomizer
+from education import Education
 
 
 class CityPersonalHandler:
@@ -17,6 +18,18 @@ class CityPersonalHandler:
                 person.death_date = person.age
             else:
                 self.set_new_stage(person)
+
+        # A kid should start going to school
+        if (person.age == 6) :
+            person.degree.startSchool()
+        else :
+            if ((not person.degree.in_study) and (person.career.employment == Traits.UNEMPLOYED) and person.age > 18) :
+                successNextDegree = person.degree.startNextDegree()
+                if (not successNextDegree) and (self.person_developer.statistics.get_employment_chance() == Traits.EMPLOYED):
+                    person.career.getAJob(person.degree.currentDegree)
+
+            elif (person.degree.in_study) :
+                person.degree.advance_degree_process()
 
     def set_new_stage(self, person):
         """Set up new stage if reached."""
@@ -247,7 +260,7 @@ class CityJobHandler:
 
     def get_fired(self, person):
         """Remove current job."""
-        if person.current_job is None or person.employment == Traits.UNEMPLOYED:
+        if person.current_job is None or person.career.employment == Traits.UNEMPLOYED:
             raise Exception("Cannot get fired if unemployed.")
 
         person.job_history.append(person.current_job)
@@ -257,7 +270,7 @@ class CityJobHandler:
     @classmethod
     def update_employment_status(cls, person, status):
         """Replace unemployed status with employed."""
-        person.employment = status
+        person.career.employment = status
 
     @classmethod
     def get_promotion(cls, person):

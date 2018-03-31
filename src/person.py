@@ -1,7 +1,11 @@
 from traits import Traits
-
+from education import Education
+from job import Job
 
 class Person(Traits):
+    degree = None
+    career = None
+
     def __init__(self, gender, age):
         self.gender = gender
         self.age = age
@@ -61,11 +65,15 @@ class Person(Traits):
         self.in_love_as_throuple = False
         self.in_love_date = -1
 
+        # Degree
+        self.degree = Education(age)
+
         # Professions -> Will be initialized once Young Adult
-        self.occupation = None
-        self.employment = None
-        self.current_job = None
-        self.job_history = []
+        #self.occupation = None
+        #self.employment = None
+        #self.current_job = None
+        #self.job_history = []
+        self.career = Job()
 
         # Addiction attributes -> Will be initialized once Young Adult
         self.will_become_drug_addict = False
@@ -84,6 +92,7 @@ class Person(Traits):
         self.apartment_id = -1
         self.is_neighbor = False
         self.neighbor_friends = []
+
 
     def __str__(self):
         return self.fullname
@@ -213,7 +222,7 @@ class Person(Traits):
     @property
     def is_single_and_unemployed_adult(self):
         """Returns true if person has no partner and is unemployed."""
-        return self.is_of_age and self.is_not_partnered and self.employment is False
+        return self.is_of_age and self.is_not_partnered and self.career.employment is False
 
     @property
     def is_romanceable(self):

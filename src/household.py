@@ -1,3 +1,5 @@
+from traits import Traits
+
 class Household:
     """Household base class."""
 
@@ -5,6 +7,16 @@ class Household:
         self.apartment_id = apartment_id
         self.members_list = []
         self.pets_list = []
+
+    @property
+    def social_class(self):
+        # count total salary of current_member
+        total_salary = 0
+        for people in self.members:
+            total_salary += people.career.salary
+
+
+        return next(s_class for s_class in Traits.SOCIAL_CLASSES if s_class.isBelongedTo(total_salary))
 
     @property
     def members(self):
@@ -41,8 +53,9 @@ class Household:
 
     def display(self):
         print("\n***** Apartment ID " + str(self.apartment_id) + " ********")
+
         for person in self.members:
-            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nProfession: {}\nEmployment: {}".format(
+            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nLatest Education : {}\nProfession: {}\nEmployment: {}\nSalary per Year: {}".format(
                 person.apartment_id,
                 person.name,
                 person.surname,
@@ -50,8 +63,10 @@ class Household:
                 person.age,
                 person.social_class,
                 person.relationship_status,
-                person.occupation,
-                person.employment
+                person.degree.strDegree,
+                person.career.occupation,
+                person.career.employment,
+                person.career.salary,
             )
             for spouse in person.spouses:
                 desc += "\nSpouse: {}".format(spouse)
@@ -77,6 +92,7 @@ class Household:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
             print(desc)
+            print("Social class considered as "+self.social_class.name)
 
     def household_validation(self):
         """Validation of household members."""

@@ -85,9 +85,6 @@ class PersonDeveloper:
 
     def set_youngadult_traits(self, person):
         """Young adult traits."""
-        person.occupation = self.randomizer.get_random_item(
-            self.setup.PROFESSIONS)
-        person.employment = self.statistics.get_employment_chance()
 
         # Set relationship orientation (mono/poly)
         person.relationship_orientation = self.statistics.get_relationship_orientation()
@@ -115,7 +112,7 @@ class PersonDeveloper:
     @classmethod
     def set_senior_traits(cls, person):
         """Senior traits."""
-        person.employment = Traits.RETIRED
+        person.career.employment = Traits.RETIRED
 
     # LOVE
 

@@ -38,3 +38,6 @@ class Randomizer:
             return self.random.choice(lst)
         else:
             raise Exception("Given list is empty.")
+
+    def get_random_number(self, start,range):
+        return self.random.randint(start,range)
