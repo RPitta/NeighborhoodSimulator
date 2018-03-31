@@ -45,7 +45,7 @@ class Setup:
     @staticmethod
     def find_file_location(file_name):
         path_file = os.path.dirname(os.path.realpath(__file__))
-        path_full = path_file + '\\files\\' + file_name
+        path_full = os.path.join(path_file ,'files',file_name) 
         return path_full
 
     @staticmethod
