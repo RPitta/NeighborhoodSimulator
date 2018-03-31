@@ -46,6 +46,14 @@ class Statistics:
         self.validate_selected(selected, Traits.RACES)
         return selected
 
+    def get_interracial_love_chance(self):
+        """Statistical chance for interracial love."""
+        options = {
+            True: 15.1,
+            False: 84.9
+        }
+        return self.randomizer.get_random_dict_key(options)
+
     def get_social_class(self):
         """Statistical chance for social class."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")

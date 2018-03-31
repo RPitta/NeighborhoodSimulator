@@ -15,7 +15,8 @@ class Compatibility:
                self.are_consanguinity_compatible(persons) and \
                self.are_compatible_if_minority(persons) and \
                self.are_not_ex(persons) and \
-               self.are_throuple_compatible(persons)
+               self.are_throuple_compatible(persons) and \
+               self.are_race_compatible(persons)
 
     @classmethod
     def are_different_persons(cls, persons):
@@ -69,7 +70,7 @@ class Compatibility:
     @classmethod
     def are_age_compatible(cls, persons):
         """Compatible if all persons are within desired age range."""
-        if all([p.in_love_with_family for p in persons]):
+        if all([p.in_love_with_intergenerational is None for p in persons]):
             return True
 
         pairs = list(itertools.permutations(persons, r=2))
@@ -84,3 +85,18 @@ class Compatibility:
         for p in pairs:
             compatible_rate += int(abs(p[0].age - p[1].age) < 20)
         return compatible_rate == len(pairs) and all(p.in_love_with_intergenerational is not True for p in persons)
+
+    @classmethod
+    def are_race_compatible(cls, persons):
+        """Compatible if all persons are desired race."""
+        if all([p.in_love_with_another_race is None for p in persons]):
+            return True
+        if all(p.in_love_with_another_race is False for p in persons):
+            return all(persons[0].race == p.race for p in persons)
+        if all(p.in_love_with_another_race for p in persons):
+            pairs = list(itertools.permutations(persons, r=2))
+            compatible_rate = 0
+            for p in pairs:
+                compatible_rate += int(p[0].race != p[1].race)
+            return compatible_rate == len(pairs)
+        return False

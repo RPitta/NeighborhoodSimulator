@@ -57,6 +57,7 @@ class Person(Traits):
         self.wants_children = False
         self.in_love_with_family = False
         self.in_love_with_intergenerational = False
+        self.in_love_with_another_race = False
         self.in_love_as_throuple = False
         self.in_love_date = -1
 
