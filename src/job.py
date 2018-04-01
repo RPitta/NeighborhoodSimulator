@@ -32,6 +32,15 @@ class Job:
         self.salary = salary
         self.employment = employment
 
+    def __str__(self):
+        retval = {
+            'occupation' : self.occupation,
+            'level' : self.level,
+            'salary' : self.salary,
+            'employment' : self.employment
+        }
+        return str(retval)
+
     def getAJob(self,degree):
         self.occupation = self.randomizer.get_random_item(self.setup.PROFESSIONS)
         if degree is Education.Uneducated :

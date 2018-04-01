@@ -63,10 +63,8 @@ class City:
 
     def populate_city(self):
         """Populate the city with X number of random children."""
-        #for _ in (number + 1 for number in range(200)):
-        for i in (number + 1 for number in range(2)):
+        for _ in (number + 1 for number in range(200)):
             person = self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)
-            print(person.name+" is born")
             person.degree.init_degree(person.age)
             self.population.append(person)
 

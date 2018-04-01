@@ -34,6 +34,9 @@ class Education:
         self.current_year_to_take = 0
         self.init_degree(age)
 
+    def __str__(self):
+        return self.strDegree
+
     @property
     def currentDegree(self):
         return self.acquired_degree[-1]
