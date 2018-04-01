@@ -2,72 +2,69 @@ from traits import Traits, Setup
 from utilities.randomizer import Randomizer
 from education import Education
 
+
 class Job:
     """Job base class."""
 
-    Parttimer = -0.5 #half salary
-    Intern = 0
-    Freshgraduate = 1
-    Junior = 2
-    Senior = 3
-    Lead = 4
-    Manager = 5
-    Executive = 6
+    PART_TIMER = -0.5  # half salary
+    INTERN = 0
+    FRESHGRADUATE = 1
+    JUNIOR = 2
+    SENIOR = 3
+    LEAD = 4
+    MANAGER = 5
+    EXECUTIVE = 6
 
-    good_performance = 1
-    bad_performance = -1
-    flat_performance = 0
-    current_performance = 0
+    GOOD_PERFORMANCE = 1
+    BAD_PERFORMANCE = -1
+    FLAT_PERFORMANCE = 0
 
-    employment = None
-    level = None
-    salary = 0 #per year
-
-    randomizer = Randomizer()
-    setup = Setup()
-
-    def __init__(self, title ='Unemployed', level=0, salary=0, employment=Traits.UNEMPLOYED):
-        self.occupation = 'Unemployed'
+    def __init__(self, level=0, salary=0, employment=Traits.UNEMPLOYED):
         self.level = level
-        self.salary = salary
+        self.salary = salary  # per year
         self.employment = employment
+        self.title = None
+        self.current_performance = 0
+        self.randomizer = Randomizer()
+        self.setup = Setup()
 
     def __str__(self):
-        retval = {
-            'occupation' : self.occupation,
-            'level' : self.level,
-            'salary' : self.salary,
-            'employment' : self.employment
+        ret_val = {
+            'occupation': self.title,
+            'level': self.level,
+            'salary': self.salary,
+            'employment': self.employment
         }
-        return str(retval)
+        return str(ret_val)
 
-    def getAJob(self,degree):
-        self.occupation = self.randomizer.get_random_item(self.setup.PROFESSIONS)
-        if degree is Education.Uneducated :
-            self.level = self.Parttimer
-        if degree is Education.School:
-            self.level = self.Intern
-        elif degree is Education.Bachelor :
-            self.level = self.Freshgraduate
-        elif degree is Education.Master :
-            self.level = self.Senior
-        elif degree is Education.Doctor :
-            self.level = self.Executive
+    def get_job(self, degree):
+        """Set occupation and job level."""
+        self.title = self.randomizer.get_random_item(self.setup.PROFESSIONS)
+        if degree == Education.UNEDUCATED:
+            self.level = self.PART_TIMER
+        if degree == Education.SCHOOL:
+            self.level = self.INTERN
+        elif degree == Education.BACHELOR:
+            self.level = self.FRESHGRADUATE
+        elif degree == Education.MASTER:
+            self.level = self.SENIOR
+        elif degree == Education.DOCTOR:
+            self.level = self.EXECUTIVE
+        # Set salary based on job level
         self.salary = self.randomizer.get_random_number(20000, 30000) * (self.level + 1)
-
-        self.employment=Traits.EMPLOYED
-
+        # Switch to Employed
+        self.employment = Traits.EMPLOYED
 
     def promotion(self, salary_increment, job_increase=False):
         """Job promotion."""
-        if job_increase and self.level < self.Executive:
+        if job_increase and self.level < self.EXECUTIVE:
             self.level += 1
         self.salary = self.salary * (1 + salary_increment)
-        self.current_performance = self.good_performance
+        self.current_performance = self.GOOD_PERFORMANCE
 
     def demotion(self, salary_decrease, job_decrease=False):
         """Job demotion."""
         if job_decrease and self.level > 0:
             self.level -= 1
         self.salary = 0 if 1 - salary_decrease < 0 else self.salary * (1 - salary_decrease)
-        self.current_performance = self.bad_performance
+        self.current_performance = self.BAD_PERFORMANCE

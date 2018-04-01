@@ -3,14 +3,14 @@ from utilities.randomizer import Randomizer
 from education import Education
 
 
-class CityPersonalHandler:
-    """Handles person's individual actions."""
+class PersonalHandler:
+    """Handles city and neighborhood persons' individual actions."""
 
     def __init__(self, person_developer):
         self.person_developer = person_developer
 
     def age_up(self, person):
-        """Returns aged up person. May be dead."""
+        """Increase person's age by 1."""
         if person.age != person.stage.end:
             person.age += 1
         else:
@@ -19,40 +19,111 @@ class CityPersonalHandler:
             else:
                 self.set_new_stage(person)
 
-        # A kid should start going to school
-        if (person.age == 6) :
-            person.degree.startSchool()
-        else :
-            if ((not person.degree.in_study) and (person.career.employment == Traits.UNEMPLOYED) and person.age > 18) :
-                successNextDegree = person.degree.startNextDegree()
-                if (not successNextDegree) and (self.person_developer.statistics.get_employment_chance() == Traits.EMPLOYED):
-                    person.career.getAJob(person.degree.currentDegree)
-
-            elif (person.degree.in_study) :
-                person.degree.advance_degree_process()
-
     def set_new_stage(self, person):
-        """Set up new stage if reached."""
+        """Set new stage if reached."""
         person.stage = person.stage.next_stage
         person.age += 1
         # Set new stage traits
         self.person_developer.set_new_stage_traits(person)
 
 
-class PersonalHandler(CityPersonalHandler):
-    """Adds print messages for neighborhood to city personal handler."""
+class CityCareerHandler:
+    """City career handler."""
 
-    def __init__(self, person_developer):
-        CityPersonalHandler.__init__(self, person_developer)
+    def __init__(self, statistics):
+        self.statistics = statistics
 
-    def set_new_stage(self, person):
-        super().set_new_stage(person)
-        self.display_new_stage_message(person)
+    def check_employment_and_education_status(self, person):
+        """Check each person's education and employment status yearly."""
+        if person.education.in_study:
+            self.advance_degree_process(person)
+        else:
+            if person.job.employment == Traits.EMPLOYED:
+                # Logic to at some point get fired / get promoted / get demoted / improve or worsen job performance
+                pass
+            elif person.job.employment == Traits.UNEMPLOYED and person.age >= Traits.YOUNGADULT.start:
+                if not self.will_start_next_degree(person):
+                    person.job.employment = self.statistics.get_employment_chance()
+                    if person.job.employment == Traits.EMPLOYED:
+                        self.get_job(person)
 
     @classmethod
-    def display_new_stage_message(cls, person):
-        print("\n{} is now {}.".format(person, person.age))
-        print("{} is now a {}.".format(person.fullname, person.stage))
+    def advance_degree_process(cls, person):
+        """Advances person's current degree."""
+        person.education.advance_degree_process()
+
+    @classmethod
+    def start_school(cls, child):
+        """Child starts school."""
+        child.education.start_school()
+
+    @classmethod
+    def will_start_next_degree(cls, person):
+        """Person starts next degree if applicable."""
+        if person.education.available_degree == person.education.BACHELOR and person.will_do_bachelor:
+            person.education.start_bachelor()
+        elif person.education.available_degree == person.education.MASTER and person.will_do_master:
+            person.education.start_master()
+        elif person.education.available_degree == person.education.DOCTOR and person.will_do_doctor:
+            person.education.start_doctor()
+        else:
+            return False
+        return True
+
+    @classmethod
+    def get_job(cls, person):
+        person.job.get_job(person.education.current_degree)
+
+
+class CareerHandler(CityCareerHandler):
+    """Neighborhood career handler."""
+
+    def __init__(self, statistics):
+        CityCareerHandler.__init__(self, statistics)
+
+    def start_school(self, child):
+        super().start_school(child)
+        self.display_start_of_school_message(child)
+
+    @classmethod
+    def display_start_of_school_message(cls, child):
+        print("{} has started school.".format(child))
+
+    def advance_degree_process(self, person):
+        super().advance_degree_process(person)
+        if not person.education.in_study:
+            self.display_completed_degree_message(person)
+
+    @classmethod
+    def display_completed_degree_message(cls, person):
+        if person.is_male:
+            print("\n{} has successfully completed his {}.".format(person, person.education))
+        else:
+            print("\n{} has successfully completed her {}.".format(person, person.education))
+
+    def get_job(self, person):
+        super().get_job(person)
+        self.display_new_job_message(person)
+
+    @classmethod
+    def display_new_job_message(cls, person):
+        print("\n{} has found a job as a {}.".format(person, person.job.title))
+
+    @classmethod
+    def will_start_next_degree(cls, person):
+        """Override parent method with print messages for neighbors."""
+        if person.education.available_degree == person.education.BACHELOR and person.will_do_bachelor:
+            person.education.start_bachelor()
+            print("\n{} has started studying a bachelor's degree in X.".format(person))
+        elif person.education.available_degree == person.education.MASTER and person.will_do_master:
+            person.education.start_master()
+            print("\n{} has started studying a master's degree in X.".format(person))
+        elif person.education.available_degree == person.education.DOCTOR and person.will_do_doctor:
+            person.education.start_doctor()
+            print("\n{} has started studying a doctor's degree in X.".format(person))
+        else:
+            return False
+        return True
 
 
 class CityLgbtaHandler:
@@ -554,6 +625,7 @@ class DivorceHandler(CityDivorceHandler):
         else:
             print("{} now lives in her friend {}'s apartment, {}.".format(person.name, friend, friend.apartment_id))
 
+
 class CityPregnancyHandler:
     """Handles pregnancy and adoption."""
 
@@ -652,6 +724,8 @@ class CityPregnancyHandler:
 
 
 class PregnancyHandler(CityPregnancyHandler):
+    """Neighborhood pregnancy handler."""
+
     def __init__(self, person_generator, statistics, foster_care_system):
         CityPregnancyHandler.__init__(self, person_generator, statistics, foster_care_system)
 

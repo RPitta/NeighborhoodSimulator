@@ -3,7 +3,7 @@
 from household import Household
 from utilities.randomizer import Randomizer
 from handler import AddictionHandler, PersonalHandler, DeathHandler, DivorceHandler, MarriageHandler, PregnancyHandler, \
-    LgbtaHandler
+    LgbtaHandler, CareerHandler
 
 
 class Neighborhood:
@@ -30,6 +30,7 @@ class Neighborhood:
         self.lgbta_handler = LgbtaHandler(self.names, self.person_developer)
         self.addiction_handler = AddictionHandler(self.person_developer)
         self.pregnancy_handler = PregnancyHandler(baby_generator, statistics, foster_care_system)
+        self.career_handler = CareerHandler(statistics)
 
         # Automatically create given number of apartments/households
         self.create_households()
@@ -172,6 +173,11 @@ class Neighborhood:
                 self.remove_dead_and_brokenup_couples()
                 continue
 
+            self.career_handler.check_employment_and_education_status(person)
+
+            if person.is_school_start_date:
+                self.career_handler.start_school(person)
+
             # Come out if applicable
             if person.is_come_out_date:
                 self.lgbta_handler.come_out(person)
@@ -242,7 +248,7 @@ class Neighborhood:
                     self.divorce_handler.get_divorced(couple)
                 else:
                     self.divorce_handler.get_separated(couple)
-                # Assign new household / leave neighborhood for one person in couple
+                # One person in couple will leave household / neighborhood
                 d = self.divorce_handler.leave_household(couple)
                 self.determine_new_household(d["person"], d["id"])
                 # New love dates
@@ -262,8 +268,9 @@ class Neighborhood:
 
     def remove_from_household(self, person):
         """Helper method to remove person from their household."""
-        household = next(h for h in self.households if h.apartment_id == person.apartment_id)
-        household.remove_member(person)
+        for h in self.households:
+            if h.apartment_id == person.apartment_id:
+                h.remove_member(person)
 
     def remove_from_neighborhood(self, person):
         """Helper method to remove person from the neighborhood."""
@@ -275,7 +282,10 @@ class Neighborhood:
         for baby in new_babies:
             self.add_to_neighbors_and_household(household[0], baby)
         # Reset vars
-        self.pregnancy_handler.reset_pregnancy(couple)
+        if couple.is_pregnant:
+            self.pregnancy_handler.reset_pregnancy(couple)
+        elif couple.is_in_adoption_process:
+            self.pregnancy_handler.reset_adoption(couple)
         # New pregnancy / adoption date
         if couple.will_have_children:
             self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
@@ -288,6 +298,7 @@ class Neighborhood:
     # VALIDATION
 
     def neighborhood_validation(self):
+        """Error handling."""
         # Individual household validation
         for household in self.households:
             household.household_validation()

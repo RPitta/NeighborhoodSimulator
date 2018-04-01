@@ -39,5 +39,6 @@ class Randomizer:
         else:
             raise Exception("Given list is empty.")
 
-    def get_random_number(self, start,range):
-        return self.random.randint(start,range)
+    def get_random_number(self, start, end):
+        """Returns a random number within given range."""
+        return self.random.randint(start, end)

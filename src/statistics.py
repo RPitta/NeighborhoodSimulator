@@ -99,6 +99,30 @@ class Statistics:
         self.validate_selected(selected, Traits.EMPLOYMENT)
         return selected
 
+    def get_chance_for_getting_bachelor_degree(self):
+        """Statistical chance of getting a bachelor degree."""
+        options = {
+            True: 46,
+            False: 54
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_chance_for_getting_master_degree(self):
+        """Statistical chance of getting a master's degree."""
+        options = {
+            True: 20,
+            False: 80
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_chance_for_getting_doctor_degree(self):
+        """Statistical chance of getting a doctor's degree."""
+        options = {
+            True: 9,
+            False: 91
+        }
+        return self.randomizer.get_random_dict_key(options)
+
     def get_death_cause(self, person):
         """Statistical chance for death cause."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")

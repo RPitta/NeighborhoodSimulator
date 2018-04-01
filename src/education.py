@@ -1,156 +1,115 @@
 from utilities.randomizer import Randomizer
-from statistics import Statistics
+
 
 class Education:
-    Uneducated = 0
-    School = 1
-    Bachelor = 2
-    Master = 3
-    Doctor = 4
+    """Education base class."""
 
-    literal_Degree = ['Uneducated','High School Diploma','Bachelor Degree',
-                      'Master Degree','Doctoral Degree']
+    SCHOOL_START_DATE = 6
+    BACHELOR_START_DATE = 18
+    MASTER_START_DATE = 24
+    DOCTOR_START_DATE = 26
 
-    #Personal data
-    available_degree = 0
-    current_year = 0
-    current_year_to_take = 0
-    in_study = False
-    dropped_out = False
-    total_fail = 0
-    acquired_degree = None
+    SCHOOL_NUM_OF_YEARS = 12
+    BACHELOR_NUM_OR_YEARS = 4
+    MASTER_NUM_OF_YEARS = 2
+    DOCTOR_NUM_OF_YEARS = (6, 10)
 
-    random = Randomizer()
+    # Degrees
+    UNEDUCATED = 0
+    SCHOOL = 1
+    BACHELOR = 2
+    MASTER = 3
+    DOCTOR = 4
+    LITERAL_DEGREES = ['Uneducated', 'High School Diploma', 'Bachelor Degree',
+                       'Master Degree', 'Doctoral Degree']
 
-    def __init__(self,age):
-        self.available_degree = self.School
-        self.acquired_degree = []
-        self.acquired_degree.append(self.Uneducated)
-        self.current_year = 0
+    def __init__(self):
+        self.available_degree = self.SCHOOL
+        self.acquired_degree = [self.UNEDUCATED]
         self.in_study = False
         self.graduated = False
         self.dropped_out = False
+        self.current_year = 0
+        self.years_to_complete_degree = 0
         self.total_fail = 0
-        self.current_year_to_take = 0
-        self.init_degree(age)
+        self.randomizer = Randomizer()
 
     def __str__(self):
-        return self.strDegree
+        return self.LITERAL_DEGREES[self.acquired_degree[-1]]
 
     @property
-    def currentDegree(self):
+    def current_degree(self):
+        """Returns person's current degree level."""
         return self.acquired_degree[-1]
 
-    @property
-    def strDegree(self):
-            return self.literal_Degree[self.acquired_degree[-1]]
-
-    def init_degree(self, age):
-        if age < 7 :
+    def init_degree(self, person):
+        """Initialize education."""
+        if person.age < self.SCHOOL_START_DATE:
             return False
-        elif age < 18 :
-            self.startSchool()
-            self.current_year_to_take = 12 - (age - 6)
-        elif age > 26 and self.get_chance_for_getting_doctor_degree() :
-            self.acquired_degree.append(self.Master)
-            self.startDoctor()
-            self.current_year_to_take -= self.random.get_random_number(1,age-25)
-        elif age > 24 and self.get_chance_for_getting_master_degree() :
-            self.acquired_degree.append(self.Bachelor)
-            self.startMaster()
-            self.current_year_to_take -= self.random.get_random_number(0,1)
-        elif self.get_chance_for_getting_bachelor_degree():
-            self.acquired_degree.append(self.School)
-            self.startBachelor()
-            self.current_year_to_take -= self.random.get_random_number(0,3)
-        else :
-            self.acquired_degree.append(self.School)
+        elif person.age < self.BACHELOR_START_DATE:
+            self.start_school()
+            self.years_to_complete_degree = 12 - (person.age - 6)
+        elif person.age >= self.DOCTOR_START_DATE and person.will_do_doctor:
+            self.acquired_degree.append(self.MASTER)
+            self.start_doctor()
+            self.years_to_complete_degree -= self.randomizer.get_random_number(1, person.age - 25)
+        elif person.age >= self.MASTER_START_DATE and person.will_do_master:
+            self.acquired_degree.append(self.BACHELOR)
+            self.start_master()
+            self.years_to_complete_degree -= self.randomizer.get_random_number(0, 1)
+        elif person.will_do_bachelor:
+            self.acquired_degree.append(self.SCHOOL)
+            self.start_bachelor()
+            self.years_to_complete_degree -= self.randomizer.get_random_number(0, 3)
+        else:
+            self.acquired_degree.append(self.SCHOOL)
             self.in_study = False
-            self.current_year_to_take = 0
+            self.years_to_complete_degree = 0
 
-    def advance_degree_process(self,
-                               is_drug_addict=False,
-                               is_alcohol_addict=False):
-        if (not self.in_study):
-            return False
-        chance_to_fail = 0.25 * ( is_drug_addict + is_alcohol_addict)
-        chance_to_success = 98 - ((chance_to_fail*100))
-        if (self.random.get_random_number(0,100) <= chance_to_success):
-            if (self.current_year == self.current_year_to_take) :
+    def advance_degree_process(self, is_drug_addict=False, is_alcohol_addict=False):
+        """Advance degree."""
+        chance_to_fail = 0.25 * (is_drug_addict + is_alcohol_addict)
+        chance_to_success = 98 - (chance_to_fail * 100)
+        if self.randomizer.get_random_number(0, 100) <= chance_to_success:
+            if self.current_year == self.years_to_complete_degree:
                 self.current_year = 0
                 self.in_study = False
                 self.total_fail = 0
-                self.acquired_degree.append(self.currentDegree+1)
-                if (self.currentDegree+1 != self.Doctor):
-                    self.available_degree = self.currentDegree+1
-            else :
-                self.current_year +=1
-        else :
-            #Doctor candidate will never dropped out
-            if (self.currentDegree+1 == self.Doctor):
+                self.acquired_degree.append(self.current_degree + 1)
+                if self.current_degree + 1 != self.DOCTOR:
+                    self.available_degree = self.current_degree + 1
+            else:
+                self.current_year += 1
+        else:
+            # Doctor candidate will never drop out
+            if self.current_degree + 1 == self.DOCTOR:
                 return
-            self.total_fail +=1
-            if (self.total_fail > 3):
+            self.total_fail += 1
+            if self.total_fail > 3:
                 self.in_study = False
                 self.total_fail = 0
                 self.current_year = 0
 
-    def startNextDegree(self):
-        if self.available_degree == self.Bachelor\
-           and self.get_chance_for_getting_bachelor_degree():
-            self.startBachelor()
-        elif self.available_degree == self.Master\
-             and self.get_chance_for_getting_master_degree():
-            self.startMaster()
-        elif self.available_degree == self.Doctor\
-             and self.get_chance_for_getting_doctor_degree():
-            self.startDoctor()
-        else :
-            return False
-        return True
-
-    def startSchool(self):
-        self.current_year_to_take = 12
+    def start_school(self):
+        self.years_to_complete_degree = self.SCHOOL_NUM_OF_YEARS
         self.in_study = True
         self.total_fail = 0
         self.current_year = 0
 
-
-    def startBachelor(self):
-        self.current_year_to_take = 4
+    def start_bachelor(self):
+        self.years_to_complete_degree = self.BACHELOR_NUM_OR_YEARS
         self.in_study = True
         self.total_fail = 0
         self.current_year = 0
 
-    def startMaster(self):
-        self.current_year_to_take = 2
+    def start_master(self):
+        self.years_to_complete_degree = self.MASTER_NUM_OF_YEARS
         self.in_study = True
         self.total_fail = 0
         self.current_year = 0
 
-    def startDoctor(self):
-        self.current_year_to_take = self.random.get_random_number(6,10)
+    def start_doctor(self):
+        self.years_to_complete_degree = self.randomizer.get_random_number(self.DOCTOR_NUM_OF_YEARS[0], self.DOCTOR_NUM_OF_YEARS[1])
         self.in_study = True
         self.total_fail = 0
         self.current_year = 0
-
-    def get_chance_for_getting_bachelor_degree(self):
-        options = {
-            True: 46,
-            False: 54
-        }
-        return self.random.get_random_dict_key(options)
-
-    def get_chance_for_getting_master_degree(self):
-        options = {
-            True: 20,
-            False: 80
-        }
-        return self.random.get_random_dict_key(options)
-
-    def get_chance_for_getting_doctor_degree(self):
-        options = {
-            True: 9,
-            False: 91
-        }
-        return self.random.get_random_dict_key(options)

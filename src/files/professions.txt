@@ -235,8 +235,6 @@ Doctor
 Driver
 Economist
 Editor
-Employee
-Employment
 Engineer
 English Teacher
 Entertainer

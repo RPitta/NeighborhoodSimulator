@@ -1,5 +1,6 @@
 from traits import Traits
 from utilities.randomizer import Randomizer
+from job import Job
 
 
 class PersonDeveloper:
@@ -12,8 +13,10 @@ class PersonDeveloper:
 
     def set_new_stage_traits(self, person):
         """Link each new stage to their methods for setting new traits."""
-        if person.stage == Traits.BABY or person.stage == Traits.CHILD:
+        if person.stage == Traits.BABY:
             pass
+        elif person.stage == Traits.CHILD:
+            self.set_child_traits(person)
         elif person.stage == Traits.TEEN:
             self.set_teen_traits(person)
         elif person.stage == Traits.ADULT:
@@ -24,6 +27,10 @@ class PersonDeveloper:
             self.set_senior_traits(person)
         else:
             raise Exception("Person's stage is wrong.")
+
+    @classmethod
+    def set_child_traits(cls, child):
+        child.school_start_date = child.education.SCHOOL_START_DATE
 
     def set_teen_traits(self, teen):
         """Teen traits."""
@@ -86,6 +93,11 @@ class PersonDeveloper:
     def set_youngadult_traits(self, person):
         """Young adult traits."""
 
+        # Education
+        person.will_do_bachelor = self.statistics.get_chance_for_getting_bachelor_degree()
+        person.will_do_master = self.statistics.get_chance_for_getting_master_degree()
+        person.will_do_doctor = self.statistics.get_chance_for_getting_master_degree()
+
         # Set relationship orientation (mono/poly)
         person.relationship_orientation = self.statistics.get_relationship_orientation()
 
@@ -109,10 +121,15 @@ class PersonDeveloper:
         """Adult traits."""
         person.can_have_bio_children = False
 
-    @classmethod
-    def set_senior_traits(cls, person):
+    def set_senior_traits(self, person):
         """Senior traits."""
-        person.career.employment = Traits.RETIRED
+        person.job.employment = Traits.RETIRED
+        if person.is_neighbor:
+            self.display_retired_message(person)
+
+    @classmethod
+    def display_retired_message(cls, person):
+        print("\n{} has retired.".format(person))
 
     # LOVE
 

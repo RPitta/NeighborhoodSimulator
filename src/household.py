@@ -55,18 +55,18 @@ class Household:
         print("\n***** Apartment ID " + str(self.apartment_id) + " ********")
 
         for person in self.members:
-            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nLatest Education : {}\nProfession: {}\nEmployment: {}\nSalary per Year: {}".format(
+            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nLatest Education: {}\nProfession: {}\nEmployment: {}\nSalary per Year: {}".format(
                 person.apartment_id,
                 person.name,
                 person.surname,
                 person.gender,
                 person.age,
-                person.social_class,
+                person.social_class.name,
                 person.relationship_status,
-                person.degree.strDegree,
-                person.career.occupation,
-                person.career.employment,
-                person.career.salary,
+                person.education,
+                person.job.title,
+                person.job.employment,
+                person.job.salary,
             )
             for spouse in person.spouses:
                 desc += "\nSpouse: {}".format(spouse)
@@ -92,7 +92,6 @@ class Household:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
             print(desc)
-            print("Social class considered as "+self.social_class.name)
 
     def household_validation(self):
         """Validation of household members."""
