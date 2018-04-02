@@ -1,5 +1,6 @@
 from traits import Traits
 
+
 class Household:
     """Household base class."""
 
@@ -9,22 +10,27 @@ class Household:
         self.pets_list = []
 
     @property
-    def social_class(self):
-        # count total salary of current_member
-        total_salary = 0
-        for people in self.members:
-            total_salary += people.career.salary
-
-
-        return next(s_class for s_class in Traits.SOCIAL_CLASSES if s_class.isBelongedTo(total_salary))
-
-    @property
     def members(self):
         return self.members_list
 
     @property
     def pets(self):
         return self.pets_list
+
+    @property
+    def household_income(self):
+        total_salary = 0
+        for p in self.members:
+            total_salary += p.job.salary
+        return total_salary
+
+    @property
+    def social_class(self):
+        """Returns social class which is within household's income."""
+        for social_class in Traits.SOCIAL_CLASSES:
+            if social_class.belongs_to(self.household_income):
+                return social_class
+        raise Exception("No matching social class within given household income.")
 
     def add_member(self, person):
         """Add member and set matching apartment IDs."""
@@ -61,7 +67,7 @@ class Household:
                 person.surname,
                 person.gender,
                 person.age,
-                person.social_class.name,
+                self.social_class.name,
                 person.relationship_status,
                 person.education,
                 person.job.title,

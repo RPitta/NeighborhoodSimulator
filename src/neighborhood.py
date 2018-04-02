@@ -175,6 +175,12 @@ class Neighborhood:
 
             self.career_handler.check_employment_and_education_status(person)
 
+            # Move in to new household if applicable
+            if person.is_move_in_date:
+                new_apartment_id = self.personal_handler.move_in(person)
+                self.determine_new_household(person, new_apartment_id)
+
+            # Start school if applicable
             if person.is_school_start_date:
                 self.career_handler.start_school(person)
 
@@ -265,6 +271,9 @@ class Neighborhood:
         else:
             new_household = next(h for h in self.households if h.apartment_id == new_apartment_id)
             new_household.add_member(person)
+            # Add to neighbors list if not in it
+            if person not in self.neighbors:
+                self.neighbors.append(person)
 
     def remove_from_household(self, person):
         """Helper method to remove person from their household."""

@@ -48,7 +48,6 @@ class CityCoupleCreator:
         lst = [person, found_person1] if found_person2 is None else [person, found_person1, found_person2]
         self.set_as_partner(lst)
         self.update_relationship_status_to_committed(lst)
-        self.set_shared_social_class(lst)
 
     @classmethod
     def there_are_candidates(cls, candidates):
@@ -64,13 +63,6 @@ class CityCoupleCreator:
         """Add each person to their partners list."""
         for person in lst:
             person.partners += [partner for partner in lst if partner != person]
-
-    @classmethod
-    def set_shared_social_class(cls, lst):
-        """Set the same social class for all persons."""
-        highest_social_class = next(p.social_class for p in lst if p.social_class.rank == max([p.social_class.rank for p in lst]))
-        for person in lst:
-            person.social_class = highest_social_class
 
     @classmethod
     def update_relationship_status_to_committed(cls, lst):

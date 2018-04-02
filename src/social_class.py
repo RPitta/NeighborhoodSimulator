@@ -10,12 +10,9 @@ class AbstractSocialClass(metaclass=ABCMeta):
         self.total_salary_min = 0
         self.total_salary_max = 0
 
-    def isBelongedTo(self, total_salary):
-        if total_salary in range(self.total_salary_min, self.total_salary_max):
-            return True
-        else:
-            return False
-
+    def belongs_to(self, total_salary):
+        """Returns the social class that belongs to given salary."""
+        return total_salary in range(self.total_salary_min, self.total_salary_max + 1)
 
 
 class UpperClass(AbstractSocialClass):
@@ -38,6 +35,7 @@ class MiddleClass(AbstractSocialClass):
         self.rank = 2
         self.total_salary_min = 162354
         self.total_salary_max = 389435
+
 
 class LowerClass(AbstractSocialClass):
     """Poor people."""
