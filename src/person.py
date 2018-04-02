@@ -21,6 +21,7 @@ class Person(Traits):
         self.race = None
         self.relationship_orientation = None
         self.can_have_bio_children = False
+        self.conditions = []
 
         # Default vars
         self.is_alive = True
@@ -124,6 +125,7 @@ class Person(Traits):
         for social_class in self.SOCIAL_CLASSES:
             if social_class.belongs_to(self.job.salary):
                 return social_class
+        raise Exception("No social class within valid salary range.")
 
     @property
     def is_straight(self):
@@ -238,6 +240,10 @@ class Person(Traits):
         return self.wants_domestic_partnership and self.is_love_date and not self.is_fully_partnered
 
     # FUTURE DATES
+
+    @property
+    def is_autism_date(self):
+        return self.age == self.AUTISM_AGE
 
     @property
     def is_school_start_date(self):

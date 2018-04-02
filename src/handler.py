@@ -42,6 +42,15 @@ class PersonalHandler:
             print("\n{} has moved in with her partner {} in apartment {}.".format(person, partner, partner.apartment_id))
 
 
+class ConditionsHandler:
+    """Handles each person's conditions / illnesses."""
+
+    @classmethod
+    def get_autism_diagnostic(cls, baby):
+        if Traits.AUTISTIC_DISORDER in baby.conditions:
+            print("\n{} has been diagnosed with {}.".format(baby, Traits.AUTISTIC_DISORDER))
+
+
 class CityCareerHandler:
     """City career handler."""
 

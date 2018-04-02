@@ -142,6 +142,12 @@ class Traits:
         ASIAN: 0
     }
 
+    # Conditions
+    AUTISTIC_DISORDER = "Autistic Disorder"
+    ASPERGERS = "Asperger's Syndrome"
+    CONDITIONS = (AUTISTIC_DISORDER, ASPERGERS)
+    AUTISM_AGE = 2
+
     # Social classes
     UPPER_CLASS = UpperClass()
     MIDDLE_CLASS = MiddleClass()
