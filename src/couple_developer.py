@@ -71,11 +71,8 @@ class CoupleDeveloper:
 
     def set_marriage_date(self, couple):
         """Sets couple's marriage date."""
-        marriable_range = range(couple.oldest.move_in_date + self.NEXT_YEAR, self.MAX_YEAR_FOR_MARRIAGE)
-        if len(marriable_range) == 0:
-            print(marriable_range)
-            print(str(couple.oldest.move_in_date))
-        date = couple.oldest.age + self.randomizer.get_random_item(marriable_range)
+        marriable_range = range(self.NEXT_YEAR, self.MAX_YEAR_FOR_MARRIAGE)
+        date = couple.oldest.move_in_date + self.randomizer.get_random_item(marriable_range)
         if date not in couple.oldest.span_left_till_old_age:
             date = self.randomizer.get_random_item(couple.oldest.span_left_till_old_age)
         couple.marriage_date = date

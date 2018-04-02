@@ -54,6 +54,21 @@ class Statistics:
         }
         return self.randomizer.get_random_dict_key(options)
 
+    def get_autistic_disorder_chance(self, baby):
+        """Statistical chance of baby developing autism."""
+        options_for_boy = {
+            True: 2.3,
+            False: 97.7
+        }
+        options_for_girl = {
+            True: 0.5,
+            False: 99.5
+        }
+        if baby.is_male:
+            return self.randomizer.get_random_dict_key(options_for_boy)
+        else:
+            return self.randomizer.get_random_dict_key(options_for_girl)
+
     def get_social_class(self):
         """Statistical chance for social class."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")

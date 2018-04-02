@@ -3,7 +3,7 @@
 from household import Household
 from utilities.randomizer import Randomizer
 from handler import AddictionHandler, PersonalHandler, DeathHandler, DivorceHandler, MarriageHandler, PregnancyHandler, \
-    LgbtaHandler, CareerHandler
+    LgbtaHandler, CareerHandler, ConditionsHandler
 
 
 class Neighborhood:
@@ -31,6 +31,7 @@ class Neighborhood:
         self.addiction_handler = AddictionHandler(self.person_developer)
         self.pregnancy_handler = PregnancyHandler(baby_generator, statistics, foster_care_system)
         self.career_handler = CareerHandler(statistics)
+        self.conditions_handler = ConditionsHandler()
 
         # Automatically create given number of apartments/households
         self.create_households()
@@ -174,6 +175,9 @@ class Neighborhood:
                 continue
 
             self.career_handler.check_employment_and_education_status(person)
+
+            if person.is_autism_date:
+                self.conditions_handler.get_autism_diagnostic(person)
 
             # Move in to new household if applicable
             if person.is_move_in_date:
