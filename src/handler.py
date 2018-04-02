@@ -55,17 +55,17 @@ class CityCareerHandler:
     @classmethod
     def start_school(cls, child):
         """Child starts school."""
-        child.education.start_school()
+        child.education.start_degree(child.education.SCHOOL)
 
     @classmethod
     def will_start_next_degree(cls, person):
         """Person starts next degree if applicable."""
         if person.education.available_degree == person.education.BACHELOR and person.will_do_bachelor:
-            person.education.start_bachelor()
+            person.education.start_degree(person.education.BACHELOR)
         elif person.education.available_degree == person.education.MASTER and person.will_do_master:
-            person.education.start_master()
+            person.education.start_degree(person.education.MASTER)
         elif person.education.available_degree == person.education.DOCTOR and person.will_do_doctor:
-            person.education.start_doctor()
+            person.education.start_degree(person.education.DOCTOR)
         else:
             return False
         return True
@@ -113,13 +113,13 @@ class CareerHandler(CityCareerHandler):
     def will_start_next_degree(cls, person):
         """Override parent method with print messages for neighbors."""
         if person.education.available_degree == person.education.BACHELOR and person.will_do_bachelor:
-            person.education.start_bachelor()
+            person.education.start_degree(person.education.BACHELOR)
             print("\n{} has started studying a bachelor's degree in X.".format(person))
         elif person.education.available_degree == person.education.MASTER and person.will_do_master:
-            person.education.start_master()
+            person.education.start_degree(person.education.MASTER)
             print("\n{} has started studying a master's degree in X.".format(person))
         elif person.education.available_degree == person.education.DOCTOR and person.will_do_doctor:
-            person.education.start_doctor()
+            person.education.start_degree(person.education.DOCTOR)
             print("\n{} has started studying a doctor's degree in X.".format(person))
         else:
             return False

@@ -9,10 +9,15 @@ class Education:
     MASTER_START_DATE = 24
     DOCTOR_START_DATE = 26
 
-    SCHOOL_NUM_OF_YEARS = 12
-    BACHELOR_NUM_OR_YEARS = 4
-    MASTER_NUM_OF_YEARS = 2
-    DOCTOR_NUM_OF_YEARS = (6, 10)
+    SCHOOL_NUM_OF_YEARS = (12,12)
+    BACHELOR_NUM_OF_YEARS = (4,4)
+    MASTER_NUM_OF_YEARS = (2,2)
+    DOCTOR_NUM_OF_YEARS = (6,10)
+    YEARS_TO_COMPLETE = [0, \
+                      SCHOOL_NUM_OF_YEARS, \
+                      BACHELOR_NUM_OF_YEARS, \
+                      MASTER_NUM_OF_YEARS, \
+                      DOCTOR_NUM_OF_YEARS]
 
     # Degrees
     UNEDUCATED = 0
@@ -47,19 +52,19 @@ class Education:
         if person.age < self.SCHOOL_START_DATE:
             return False
         elif person.age < self.BACHELOR_START_DATE:
-            self.start_school()
+            self.start_degree(self.SCHOOL)
             self.years_to_complete_degree = 12 - (person.age - 6)
         elif person.age >= self.DOCTOR_START_DATE and person.will_do_doctor:
             self.acquired_degree.append(self.MASTER)
-            self.start_doctor()
+            self.start_degree(self.DOCTOR)
             self.years_to_complete_degree -= self.randomizer.get_random_number(1, person.age - 25)
         elif person.age >= self.MASTER_START_DATE and person.will_do_master:
             self.acquired_degree.append(self.BACHELOR)
-            self.start_master()
+            self.start_degree(self.MASTER)
             self.years_to_complete_degree -= self.randomizer.get_random_number(0, 1)
         elif person.will_do_bachelor:
             self.acquired_degree.append(self.SCHOOL)
-            self.start_bachelor()
+            self.start_degree(self.SCHOOL)
             self.years_to_complete_degree -= self.randomizer.get_random_number(0, 3)
         else:
             self.acquired_degree.append(self.SCHOOL)
@@ -90,26 +95,11 @@ class Education:
                 self.total_fail = 0
                 self.current_year = 0
 
-    def start_school(self):
-        self.years_to_complete_degree = self.SCHOOL_NUM_OF_YEARS
-        self.in_study = True
-        self.total_fail = 0
-        self.current_year = 0
-
-    def start_bachelor(self):
-        self.years_to_complete_degree = self.BACHELOR_NUM_OR_YEARS
-        self.in_study = True
-        self.total_fail = 0
-        self.current_year = 0
-
-    def start_master(self):
-        self.years_to_complete_degree = self.MASTER_NUM_OF_YEARS
-        self.in_study = True
-        self.total_fail = 0
-        self.current_year = 0
-
-    def start_doctor(self):
-        self.years_to_complete_degree = self.randomizer.get_random_number(self.DOCTOR_NUM_OF_YEARS[0], self.DOCTOR_NUM_OF_YEARS[1])
+    def start_degree(self,degree):
+        self.years_to_complete_degree = self.randomizer.get_random_number(self.YEARS_TO_COMPLETE[degree][0],self.YEARS_TO_COMPLETE[degree][1])
+        if degree == self.DOCTOR:
+            temp = self.years_to_complete_degree
+            self.years_to_complete_degree += self.randomizer.get_random_number(0, self.ADDITIONAL)
         self.in_study = True
         self.total_fail = 0
         self.current_year = 0

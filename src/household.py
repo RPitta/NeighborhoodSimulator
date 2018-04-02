@@ -13,10 +13,12 @@ class Household:
         # count total salary of current_member
         total_salary = 0
         for people in self.members:
-            total_salary += people.career.salary
-
-
-        return next(s_class for s_class in Traits.SOCIAL_CLASSES if s_class.isBelongedTo(total_salary))
+            try :
+                total_salary += people.job.salary
+            except AttributeError:
+                pass
+        avg_salary = total_salary/len(self.members)
+        return next(s_class for s_class in Traits.SOCIAL_CLASSES if s_class.is_belonged_to(avg_salary))
 
     @property
     def members(self):
@@ -92,6 +94,7 @@ class Household:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
             print(desc)
+        print("This household is in "+self.social_class.name)
 
     def household_validation(self):
         """Validation of household members."""
