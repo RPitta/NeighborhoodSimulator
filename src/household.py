@@ -1,24 +1,15 @@
 from traits import Traits
 
+
 class Household:
     """Household base class."""
+
+    CHILD_IMPACT_FOR_INCOME = 0.1 # value from 0 to 1
 
     def __init__(self, apartment_id):
         self.apartment_id = apartment_id
         self.members_list = []
         self.pets_list = []
-
-    @property
-    def social_class(self):
-        # count total salary of current_member
-        total_salary = 0
-        for people in self.members:
-            try :
-                total_salary += people.job.salary
-            except AttributeError:
-                pass
-        avg_salary = total_salary/len(self.members)
-        return next(s_class for s_class in Traits.SOCIAL_CLASSES if s_class.is_belonged_to(avg_salary))
 
     @property
     def members(self):
@@ -27,6 +18,24 @@ class Household:
     @property
     def pets(self):
         return self.pets_list
+
+    @property
+    def household_income(self):
+        total_salary = 0
+        total_working_age_member =0
+        for p in self.members:
+            total_salary += p.job.salary
+            total_working_age_member += 1 if p.age > 17 else self.CHILD_IMPACT_FOR_INCOME
+        avg_salary = total_salary/total_working_age_member
+        return avg_salary
+
+    @property
+    def social_class(self):
+        """Returns social class which is within household's income."""
+        for social_class in Traits.SOCIAL_CLASSES:
+            if social_class.belongs_to(self.household_income):
+                return social_class
+        raise Exception("No matching social class within given household income.")
 
     def add_member(self, person):
         """Add member and set matching apartment IDs."""
@@ -57,18 +66,19 @@ class Household:
         print("\n***** Apartment ID " + str(self.apartment_id) + " ********")
 
         for person in self.members:
-            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nLatest Education: {}\nProfession: {}\nEmployment: {}\nSalary per Year: {}".format(
+            desc = "\nApartment ID: {}\nName: {}\nSurname: {}\nGender: {}\nAge: {}\nSocial Class: {}\nCivil Status: {}\nLatest Education: {}\nProfession: {}\nEmployment: {}\nSalary per Year: {} [{}]".format(
                 person.apartment_id,
                 person.name,
                 person.surname,
                 person.gender,
                 person.age,
-                person.social_class.name,
+                self.social_class.name,
                 person.relationship_status,
                 person.education,
                 person.job.title,
                 person.job.employment,
                 person.job.salary,
+                person.social_class.name,
             )
             for spouse in person.spouses:
                 desc += "\nSpouse: {}".format(spouse)
@@ -94,7 +104,7 @@ class Household:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
             print(desc)
-        print("This household is in "+self.social_class.name)
+        print("\nThis household is in "+self.social_class.name)
 
     def household_validation(self):
         """Validation of household members."""

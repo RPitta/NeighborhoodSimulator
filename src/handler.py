@@ -1,6 +1,5 @@
 from traits import Traits
 from utilities.randomizer import Randomizer
-from education import Education
 
 
 class PersonalHandler:
@@ -26,6 +25,22 @@ class PersonalHandler:
         # Set new stage traits
         self.person_developer.set_new_stage_traits(person)
 
+    def move_in(self, person):
+        """Returns person's partner's apartment ID to move into."""
+        self.display_move_in_message(person)
+        return person.house_to_move_in
+
+    @classmethod
+    def display_move_in_message(cls, person):
+        partner = ""
+        for p in person.partners:
+            if p.apartment_id == person.house_to_move_in:
+                partner = p
+        if person.is_male:
+            print("\n{} has moved in with his partner {} in apartment {}.".format(person, partner, partner.apartment_id))
+        else:
+            print("\n{} has moved in with her partner {} in apartment {}.".format(person, partner, partner.apartment_id))
+
 
 class CityCareerHandler:
     """City career handler."""
@@ -50,7 +65,7 @@ class CityCareerHandler:
     @classmethod
     def advance_degree_process(cls, person):
         """Advances person's current degree."""
-        person.education.advance_degree_process()
+        person.education.advance_degree_process(person.is_drug_addict,person.is_alcohol_addict)
 
     @classmethod
     def start_school(cls, child):

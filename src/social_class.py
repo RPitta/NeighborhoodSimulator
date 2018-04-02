@@ -10,12 +10,9 @@ class AbstractSocialClass(metaclass=ABCMeta):
         self.rank = -1
         self.avg_salary_min = 0
 
-    def is_belonged_to(self, avg_salary):
-        if avg_salary >= self.avg_salary_min:
-            return True
-        else:
-            return False
-
+    def belongs_to(self,avg_salary):
+        """Returns the social class that belongs to given salary."""
+        return avg_salary >= self.avg_salary_min
 
 
 class UpperClass(AbstractSocialClass):
@@ -25,7 +22,7 @@ class UpperClass(AbstractSocialClass):
         super().__init__()
         self.name = "Upper class"
         self.rank = 3
-        self.avg_salary_min= 60000
+        self.avg_salary_min= 80000
 
 
 class MiddleClass(AbstractSocialClass):
@@ -36,6 +33,7 @@ class MiddleClass(AbstractSocialClass):
         self.name = "Middle class"
         self.rank = 2
         self.avg_salary_min = 35000
+
 
 class LowerClass(AbstractSocialClass):
     """Poor people."""

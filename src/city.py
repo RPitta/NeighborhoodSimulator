@@ -67,14 +67,14 @@ class City:
             person = self.generator.create_first_child(Traits.BABY.end, self.population_surnames)
             self.population.append(person)
 
-    def time_jump_city(self):
+    def time_jump_city(self, neighborhood=None):
         """Age up city population."""
         # Add / Remove children in foster care
         self.foster.check_foster_care_system(self.living_outsiders)
         if len(self.foster.children_up_for_adoption) < 3:
             self.populate_foster_care_system()
 
-        self.do_person_action()
+        self.do_person_action(neighborhood)
         self.do_couple_action()
 
     def populate_foster_care_system(self):
@@ -89,7 +89,7 @@ class City:
         self.foster.add_to_system(new_children)
         self.population.extend(new_children)
 
-    def do_person_action(self):
+    def do_person_action(self, neighborhood):
         """Personal actions for each person."""
         for person in self.living_outsiders:
             # Age up neighborhood
@@ -104,6 +104,12 @@ class City:
             # Advance career / job
             self.career_handler.check_employment_and_education_status(person)
 
+            # Move in to neighborhood if applicable
+            if person.is_move_in_date:
+                new_apartment_id = self.personal_handler.move_in(person)
+                neighborhood.determine_new_household(person, new_apartment_id)
+
+            # Start school if applicable
             if person.is_school_start_date:
                 self.career_handler.start_school(person)
 
@@ -138,6 +144,17 @@ class City:
     def do_couple_action(self):
         """Couple actions for each couple."""
         for couple in self.city_couples:
+
+            # Breakup
+            if couple.is_breakup_date and couple.will_breakup:
+                self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(couple)
+                # New love dates
+                for person in couple.persons:
+                    self.person_developer.set_new_love_date(person)
+                # Remove from city couples
+                self.remove_dead_and_brokenup_couples()
+                continue
+
             # Birth
             if couple.is_birth_date and couple.is_pregnant:
                 self.population.extend(self.pregnancy_handler.give_birth(couple))
@@ -165,15 +182,6 @@ class City:
             # Adoption process
             if couple.is_adoption_process_date and couple.will_adopt:
                 self.pregnancy_handler.start_adoption_process(couple)
-
-            # Breakup
-            if couple.is_breakup_date and couple.will_breakup:
-                self.divorce_handler.get_divorced(couple) if couple.is_married else self.divorce_handler.get_separated(couple)
-                # New love dates
-                for person in couple.persons:
-                    self.person_developer.set_new_love_date(person)
-                # Remove from city couples
-                self.remove_dead_and_brokenup_couples()
 
     def remove_dead_and_brokenup_couples(self):
         """Remove city couples that are dead, have broken up, or live in the neighborhood."""

@@ -20,7 +20,6 @@ class Person(Traits):
         self.target_gender = []  # Linked to sexual_orientation
         self.race = None
         self.relationship_orientation = None
-        self.social_class = None
         self.can_have_bio_children = False
 
         # Default vars
@@ -94,7 +93,8 @@ class Person(Traits):
         self.apartment_id = -1
         self.is_neighbor = False
         self.neighbor_friends = []
-
+        self.move_in_date = -1
+        self.house_to_move_in = -1
 
     def __str__(self):
         return self.fullname
@@ -117,6 +117,13 @@ class Person(Traits):
         if self.is_male:
             return "boy"
         return "girl"
+
+    @property
+    def social_class(self):
+        """Returns social class based on job salary."""
+        for social_class in self.SOCIAL_CLASSES:
+            if social_class.belongs_to(self.job.salary):
+                return social_class
 
     @property
     def is_straight(self):
@@ -247,6 +254,10 @@ class Person(Traits):
     @property
     def is_come_out_date(self):
         return self.age == self.come_out_date
+
+    @property
+    def is_move_in_date(self):
+        return self.age == self.move_in_date
 
     @property
     def is_move_out_date(self):

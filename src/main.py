@@ -47,7 +47,7 @@ neighborhood.display_households()
 
 print()
 for _ in range(20):
-    city.time_jump_city()
+    city.time_jump_city(neighborhood)
     neighborhood.time_jump_neighborhood(city.romanceable_outsiders)
 
     # Update city population with neighborhood newborns

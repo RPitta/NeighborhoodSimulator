@@ -101,7 +101,6 @@ class FosterCareSystem:
         """Link adopted children to their adoptive family."""
         for child in children:
             child.adoptive_parents.extend(couple.persons)
-            child.social_class = child.adoptive_parents[0].social_class
 
         for parent in children[0].adoptive_parents:
             parent.adoptive_children.extend(children)

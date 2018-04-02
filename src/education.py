@@ -13,11 +13,13 @@ class Education:
     BACHELOR_NUM_OF_YEARS = (4,4)
     MASTER_NUM_OF_YEARS = (2,2)
     DOCTOR_NUM_OF_YEARS = (6,10)
-    YEARS_TO_COMPLETE = [0, \
-                      SCHOOL_NUM_OF_YEARS, \
-                      BACHELOR_NUM_OF_YEARS, \
-                      MASTER_NUM_OF_YEARS, \
+    YEARS_TO_COMPLETE = [0,
+                      SCHOOL_NUM_OF_YEARS,
+                      BACHELOR_NUM_OF_YEARS,
+                      MASTER_NUM_OF_YEARS,
                       DOCTOR_NUM_OF_YEARS]
+
+    FAILING_CLASS_MAX = 3
 
     # Degrees
     UNEDUCATED = 0
@@ -25,15 +27,20 @@ class Education:
     BACHELOR = 2
     MASTER = 3
     DOCTOR = 4
-    LITERAL_DEGREES = ['Uneducated', 'High School Diploma', 'Bachelor Degree',
-                       'Master Degree', 'Doctoral Degree']
+    LITERAL_DEGREES = ['Uneducated', 'High School Diploma',
+                       'Bachelor Degree','Master Degree',
+                       'Doctoral Degree']
+
+    # External Factor
+    # Value range from 0 to 1
+    DRUG_ADDICTION_EFFECT = 0.25
+    ALCOHOL_ADDICTION_EFFECT = 0.25
+    CHANCE_OF_BAD_DECISION = 0.02
 
     def __init__(self):
         self.available_degree = self.SCHOOL
         self.acquired_degree = [self.UNEDUCATED]
         self.in_study = False
-        self.graduated = False
-        self.dropped_out = False
         self.current_year = 0
         self.years_to_complete_degree = 0
         self.total_fail = 0
@@ -73,8 +80,10 @@ class Education:
 
     def advance_degree_process(self, is_drug_addict=False, is_alcohol_addict=False):
         """Advance degree."""
-        chance_to_fail = 0.25 * (is_drug_addict + is_alcohol_addict)
-        chance_to_success = 98 - (chance_to_fail * 100)
+        chance_to_fail = (self.DRUG_ADDICTION_EFFECT * is_drug_addict) \
+                            + (self.ALCOHOL_ADDICTION_EFFECT * is_alcohol_addict)\
+                            + (self.CHANCE_OF_BAD_DECISION)
+        chance_to_success = 100 - (chance_to_fail * 100)
         if self.randomizer.get_random_number(0, 100) <= chance_to_success:
             if self.current_year == self.years_to_complete_degree:
                 self.current_year = 0
@@ -90,16 +99,15 @@ class Education:
             if self.current_degree + 1 == self.DOCTOR:
                 return
             self.total_fail += 1
-            if self.total_fail > 3:
+            if self.total_fail > self.FAILING_CLASS_MAX:
                 self.in_study = False
                 self.total_fail = 0
                 self.current_year = 0
 
     def start_degree(self,degree):
-        self.years_to_complete_degree = self.randomizer.get_random_number(self.YEARS_TO_COMPLETE[degree][0],self.YEARS_TO_COMPLETE[degree][1])
-        if degree == self.DOCTOR:
-            temp = self.years_to_complete_degree
-            self.years_to_complete_degree += self.randomizer.get_random_number(0, self.ADDITIONAL)
+        self.years_to_complete_degree = self.randomizer.get_random_number(\
+                                            self.YEARS_TO_COMPLETE[degree][0],\
+                                            self.YEARS_TO_COMPLETE[degree][1])
         self.in_study = True
         self.total_fail = 0
         self.current_year = 0

@@ -36,7 +36,7 @@ class Compatibility:
     @classmethod
     def are_not_ex(cls, persons):
         """Compatible if not ex-partners / ex-spouses."""
-        return all(persons[0] not in (p.ex_partners, p.ex_spouses) for p in persons)
+        return all(persons[0] not in p.ex_partners and persons[0] not in p.ex_spouses for p in persons)
 
     @classmethod
     def are_compatible_if_minority(cls, persons):

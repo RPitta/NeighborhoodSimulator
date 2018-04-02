@@ -21,7 +21,6 @@ class BabyGenerator:
         child.surname = self.names.get_surname(surnames)
         child.original_surname = child.surname
         child.race = self.get_race()
-        child.social_class = self.statistics.get_social_class()
 
     def get_race(self):
         """Return race dictionary with statistical race set."""
@@ -64,8 +63,7 @@ class BabyGenerator:
         for parent in baby.parents:
             parent.children.append(baby)
 
-        # Social class and race
-        baby.social_class = baby.parents[0].social_class
+        # Race
         self.set_race(baby)
         # Surname and apartment ID
         if couple.is_straight:

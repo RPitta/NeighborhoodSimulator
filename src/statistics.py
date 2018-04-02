@@ -344,11 +344,11 @@ class Statistics:
         }
         selected = self.randomizer.get_random_dict_key(options)
         if selected == 5:
-            return list(range(0, 5))
+            return list(range(0, 6))
         elif selected == 10:
-            return list(range(6, 10))
+            return list(range(6, 11))
         elif selected == Traits.MAX_AGE_FOR_ADOPTION:
-            return list(range(11, Traits.MAX_AGE_FOR_ADOPTION))
+            return list(range(11, Traits.MAX_AGE_FOR_ADOPTION+1))
         else:
             raise Exception("Wrong age.")
 
