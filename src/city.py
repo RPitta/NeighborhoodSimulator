@@ -164,7 +164,7 @@ class City:
                     self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
             # Adoption
-            if couple.is_adoption_date:
+            if couple.is_adoption_date and couple.is_in_adoption_process:
                 self.population.extend(self.pregnancy_handler.adopt(couple))
                 self.pregnancy_handler.reset_adoption(couple)
                 # New adoption date

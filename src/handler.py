@@ -698,9 +698,6 @@ class CityPregnancyHandler:
 
     def give_birth(self, couple):
         """Returns newborns from given pregnant couple."""
-        if couple.is_pregnant is False:
-            raise Exception("Cannot give birth if not pregnant.")
-
         babies = []
         if couple.expecting_num_of_children == Traits.SINGLETON:
             babies = [self.person_generator.generate_baby(couple)]
@@ -728,9 +725,6 @@ class CityPregnancyHandler:
 
     def adopt(self, couple):
         """Returns adoptions from given couple."""
-        if not all([p.is_in_adoption_process for p in couple.persons]):
-            raise Exception("Couple cannot adopt if not in adoption process.")
-
         if couple.expecting_num_of_children == Traits.ONE_CHILD:
             return self.foster_care_system.adopt_child(couple)
         elif couple.expecting_num_of_children == Traits.SIBLING_SET:
