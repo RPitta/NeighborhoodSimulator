@@ -4,7 +4,7 @@ from traits import Traits
 class Household:
     """Household base class."""
 
-    CHILD_IMPACT_FOR_INCOME = 0.1 # value from 0 to 1
+    CHILD_IMPACT_FOR_INCOME = 0.1  # value from 0 to 1
 
     def __init__(self, apartment_id):
         self.apartment_id = apartment_id
@@ -22,10 +22,10 @@ class Household:
     @property
     def household_income(self):
         total_salary = 0
-        total_working_age_member =0
+        total_working_age_member = 0
         for p in self.members:
             total_salary += p.job.salary
-            total_working_age_member += 1 if p.age > 17 else self.CHILD_IMPACT_FOR_INCOME
+            total_working_age_member += 1 if p.age >= Traits.YOUNGADULT.start else self.CHILD_IMPACT_FOR_INCOME
         avg_salary = total_salary/total_working_age_member
         return avg_salary
 
@@ -104,11 +104,14 @@ class Household:
                 if sibling in self.members:
                     desc += "\nSibling: {}".format(sibling)
             print(desc)
-        print("\nThis household is in "+self.social_class.name)
 
     def household_validation(self):
         """Validation of household members."""
         if len(set(self.members)) != len(self.members):
             raise Exception("List of household members contains duplicates.")
         if any(p.apartment_id != self.apartment_id for p in self.members):
+            for p in self.members:
+                print(p)
+                print(p.age)
+                print(str(p.apartment_id))
             raise Exception("Household member has a wrongly assigned apartment ID.")

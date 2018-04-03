@@ -19,8 +19,8 @@ class Job:
     BAD_PERFORMANCE = -1
     FLAT_PERFORMANCE = 0
 
-    SALARY_MIN_STANDARD = 20000 # per year
-    SALARY_MAX_STANDARD = 30000 # per year
+    SALARY_MIN_STANDARD = 20000  # per year
+    SALARY_MAX_STANDARD = 30000  # per year
 
     def __init__(self, level=0, salary=0, employment=Traits.UNEMPLOYED):
         self.level = level
@@ -55,9 +55,7 @@ class Job:
             self.level = self.EXECUTIVE
         # Set salary based on job level
         self.salary = self.randomizer.get_random_number(
-                                        self.SALARY_MIN_STANDARD,
-                                        self.SALARY_MAX_STANDARD)\
-                        * (self.level + 1)
+            self.SALARY_MIN_STANDARD, self.SALARY_MAX_STANDARD) * (self.level + 1)
         # Switch to Employed
         self.employment = Traits.EMPLOYED
 

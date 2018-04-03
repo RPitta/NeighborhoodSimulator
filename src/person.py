@@ -128,6 +128,14 @@ class Person(Traits):
         raise Exception("No social class within valid salary range.")
 
     @property
+    def is_white(self):
+        return self.race[self.WHITE] == 100
+
+    @property
+    def is_challenged(self):
+        return len(self.conditions) > 0
+
+    @property
     def is_straight(self):
         return self.sexual_orientation == self.HETEROSEXUAL
 
@@ -166,8 +174,10 @@ class Person(Traits):
 
     @property
     def is_minority(self):
-        """Returns true if person is LGBTA, poly or is/was in love with a family member."""
-        return self.is_lgbta or self.is_poly or self.in_love_with_family
+        """Returns true if person has mental/physical conditions,
+        is LGBTA, poly or is/was in love with a family member,
+        or is non-white."""
+        return self.is_lgbta or self.is_poly or self.in_love_with_family or self.is_challenged or self.is_white is False
 
     # AGE
 

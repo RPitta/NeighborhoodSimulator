@@ -70,9 +70,12 @@ class CoupleDeveloper:
         person.house_to_move_in = next(p.apartment_id for p in couple.persons if p != person)
 
     def set_marriage_date(self, couple):
-        """Sets couple's marriage date."""
+        """Sets couple's marriage date based on move in date."""
         marriable_range = range(self.NEXT_YEAR, self.MAX_YEAR_FOR_MARRIAGE)
-        date = couple.oldest.move_in_date + self.randomizer.get_random_item(marriable_range)
+        if couple.move_in_date == -1:
+            date = couple.oldest.age + self.randomizer.get_random_item(marriable_range)
+        else:
+            date = couple.move_in_date + self.randomizer.get_random_item(marriable_range)
         if date not in couple.oldest.span_left_till_old_age:
             date = self.randomizer.get_random_item(couple.oldest.span_left_till_old_age)
         couple.marriage_date = date
@@ -80,7 +83,7 @@ class CoupleDeveloper:
     def set_breakup_date(self, couple):
         """Sets couple's break up date."""
         date = couple.marriage_date
-        while date <= couple.marriage_date or date in range(couple.pregnancy_date, couple.birth_date + 2) or \
+        while date <= couple.move_in_date or date <= couple.marriage_date or date in range(couple.pregnancy_date, couple.birth_date + 2) or \
                 date in range(couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
         couple.breakup_date = date
@@ -89,8 +92,9 @@ class CoupleDeveloper:
         """Sets pregnancy or adoption date and birth date."""
         if abs(couple.oldest.age - couple.breakup_date) <= 4 or abs(couple.marriage_date - couple.breakup_date) <= 4:
             return couple
+
         date = couple.breakup_date
-        while date <= couple.oldest.move_in_date or date <= couple.marriage_date or date in range(
+        while date <= couple.move_in_date or date <= couple.marriage_date or date in range(
                 couple.breakup_date - 3, couple.breakup_date + 3):
             date = self.statistics.get_oldest_pregnancy_date(couple)
 
