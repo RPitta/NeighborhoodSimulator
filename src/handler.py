@@ -111,7 +111,7 @@ class CareerHandler(CityCareerHandler):
 
     @classmethod
     def display_start_of_school_message(cls, child):
-        print("{} has started school.".format(child))
+        print("\n{} has started school.".format(child))
 
     def advance_degree_process(self, person):
         super().advance_degree_process(person)
@@ -382,21 +382,21 @@ class JobHandler(CityJobHandler):
     """Adds print messages to city job handler class."""
 
     def add_job(self, person, job):
-        print("{} has found a job as a {}.".format(person, job.title))
+        print("\n{} has found a job as a {}.".format(person, job.title))
         super().add_job(person, job)
 
     def get_fired(self, person):
-        print("{} has been fired.".format(person))
+        print("\n{} has been fired.".format(person))
         super().get_fired(person)
 
     @classmethod
     def get_promotion(cls, person):
-        print("{} has been promoted.")
+        print("\n{} has been promoted.")
         super().get_promotion(person)
 
     @classmethod
     def get_demotion(cls, person):
-        print("{} has been demoted.")
+        print("\n{} has been demoted.")
         super().get_demotion(person)
 
 
