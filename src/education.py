@@ -48,6 +48,46 @@ class Education:
         """Returns person's current degree level."""
         return self.acquired_degree[-1]
 
+    def start_degree(self, degree):
+        """Starts new degree."""
+        start = self.YEARS_TO_COMPLETE[degree][0]
+        end = self.YEARS_TO_COMPLETE[degree][1]
+        self.years_to_complete_degree = self.randomizer.get_random_number(start, end)
+        self.in_study = True
+        self.total_fail = 0
+        self.current_year = 0
+
+    def advance_degree(self, is_drug_addict=False, is_alcohol_addict=False):
+        """Advance degree."""
+        chance_to_fail = self.DRUG_ADDICTION_EFFECT * is_drug_addict + self.ALCOHOL_ADDICTION_EFFECT * is_alcohol_addict + self.CHANCE_OF_BAD_DECISION
+        chance_to_success = 100 - (chance_to_fail * 100)
+        if self.randomizer.get_random_number(0, 100) <= chance_to_success:
+            if self.current_year != self.years_to_complete_degree:
+                self.current_year += 1
+            else:
+                self.acquire_degree()
+                if self.current_degree + 1 != self.DOCTOR:
+                    self.available_degree = self.current_degree + 1
+        else:
+            if self.current_degree + 1 == self.DOCTOR:
+                return
+            self.total_fail += 1
+            if self.total_fail > self.FAILING_CLASS_MAX:
+                self.fail_out()
+
+    def acquire_degree(self):
+        """Append new obtained degree and finish studies."""
+        self.current_year = 0
+        self.in_study = False
+        self.total_fail = 0
+        self.acquired_degree.append(self.current_degree + 1)
+
+    def fail_out(self):
+        """Fail out of current degree."""
+        self.in_study = False
+        self.total_fail = 0
+        self.current_year = 0
+
     def init_degree(self, person):
         """Initialize education for non-natural born persons."""
         if person.age < self.SCHOOL_START_DATE:
@@ -71,45 +111,3 @@ class Education:
             self.acquired_degree.append(self.SCHOOL)
             self.in_study = False
             self.years_to_complete_degree = 0
-
-    def start_degree(self, degree):
-        """Starts new degree."""
-        start = self.YEARS_TO_COMPLETE[degree][0]
-        end = self.YEARS_TO_COMPLETE[degree][1]
-        self.years_to_complete_degree = self.randomizer.get_random_number(start, end)
-        self.in_study = True
-        self.total_fail = 0
-        self.current_year = 0
-
-    def advance_degree(self, is_drug_addict=False, is_alcohol_addict=False):
-        """Advance degree."""
-        chance_to_fail = self.DRUG_ADDICTION_EFFECT * is_drug_addict + self.ALCOHOL_ADDICTION_EFFECT * is_alcohol_addict + self.CHANCE_OF_BAD_DECISION
-        chance_to_success = 100 - (chance_to_fail * 100)
-        if self.randomizer.get_random_number(0, 100) <= chance_to_success:
-            if self.current_degree == self.years_to_complete_degree:
-                self.current_year += 1
-            else:
-                self.acquire_degree()
-                if self.current_degree + 1 != self.DOCTOR:
-                    self.available_degree = self.current_degree + 1
-        else:
-            # Doctor candidate will never drop out
-            if self.current_degree + 1 == self.DOCTOR:
-                return
-            self.total_fail += 1
-            # Fail out
-            if self.total_fail > self.FAILING_CLASS_MAX:
-                self.fail_out()
-
-    def acquire_degree(self):
-        """Append new obtained degree and finish studies."""
-        self.current_year = 0
-        self.in_study = False
-        self.total_fail = 0
-        self.acquired_degree.append(self.current_degree + 1)
-
-    def fail_out(self):
-        """Fail out of current degree."""
-        self.in_study = False
-        self.total_fail = 0
-        self.current_year = 0
