@@ -80,7 +80,7 @@ class CityCareerHandler:
     def check_employment_and_education_status(self, person):
         """Check each person's education and employment status yearly."""
         if person.education.in_study:
-            self.advance_degree_process(person)
+            self.advance_degree(person)
         else:
             if person.job.employment == Traits.EMPLOYED:
                 # Logic to at some point get fired / get promoted / get demoted / improve or worsen job performance
@@ -92,9 +92,9 @@ class CityCareerHandler:
                         self.get_job(person)
 
     @classmethod
-    def advance_degree_process(cls, person):
+    def advance_degree(cls, person):
         """Advances person's current degree."""
-        person.education.advance_degree_process(person.is_drug_addict,person.is_alcohol_addict)
+        person.education.advance_degree(person.is_drug_addict, person.is_alcohol_addict)
 
     @classmethod
     def start_school(cls, child):
@@ -134,7 +134,7 @@ class CareerHandler(CityCareerHandler):
         print("\n{} has started school.".format(child))
 
     def advance_degree_process(self, person):
-        super().advance_degree_process(person)
+        super().advance_degree(person)
         if not person.education.in_study:
             self.display_completed_degree_message(person)
 
