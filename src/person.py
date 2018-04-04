@@ -2,6 +2,7 @@ from traits import Traits
 from education import Education
 from job import Job
 
+
 class Person(Traits):
 
     def __init__(self, gender, age):
@@ -71,10 +72,10 @@ class Person(Traits):
         self.will_do_doctor = False
 
         # Professions -> Will be initialized once Young Adult
-        #self.occupation = None
-        #self.employment = None
-        #self.current_job = None
-        #self.job_history = []
+        # self.occupation = None
+        # self.employment = None
+        # self.current_job = None
+        # self.job_history = []
         self.job = Job()
 
         # Addiction attributes -> Will be initialized once Young Adult
@@ -130,6 +131,13 @@ class Person(Traits):
     @property
     def is_white(self):
         return self.race[self.WHITE] == 100
+
+    @property
+    def is_mixed_race(self):
+        for r, n in self.race.items():
+            if n in range(1, 100):
+                return True
+        return False
 
     @property
     def is_challenged(self):
@@ -360,7 +368,8 @@ class Person(Traits):
     def bio_family(self):
         """Returns biological family members."""
         family_2d_list = [self.parents, self.children, self.full_grandparents, self.full_grandchildren,
-                          self.full_siblings, self.half_siblings, self.full_cousins, self.half_cousins, self.full_uncles,
+                          self.full_siblings, self.half_siblings, self.full_cousins, self.half_cousins,
+                          self.full_uncles,
                           self.half_uncles, self.full_aunts, self.half_aunts, self.full_nephews, self.half_nephews,
                           self.full_nieces, self.half_nieces]
         family_2d_filtered_list = list(filter(any, family_2d_list))

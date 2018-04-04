@@ -104,6 +104,8 @@ class BabyGenerator:
             raise Exception("Person's death cause is wrong.")
         if baby.death_date is not False and baby.death_date not in Traits.LIFESPAN:
             raise Exception("Person's death date is wrong.")
+        if sum(baby.race.values()) != 100:
+            raise Exception("Race does not add up to 100.")
 
         # Family
         if len(baby.bio_family) == 0:

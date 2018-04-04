@@ -93,7 +93,7 @@ class Compatibility:
             return True
         if all(p.in_love_with_another_race is False for p in persons):
             return all(persons[0].race == p.race for p in persons)
-        if all(p.in_love_with_another_race for p in persons):
+        if all(p.in_love_with_another_race in [True, None] for p in persons):
             pairs = list(itertools.permutations(persons, r=2))
             compatible_rate = 0
             for p in pairs:

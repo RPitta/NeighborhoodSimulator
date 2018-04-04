@@ -86,3 +86,9 @@ for p in neighborhood.neighbor_couples:
     attrs = vars(p)
     print(', '.join("%s: %s" % item for item in attrs.items()))
     print()
+print("****************************")
+for p in city.living_population:
+    if p.is_mixed_race:
+        attrs = vars(p)
+        print(', '.join("%s: %s" % item for item in attrs.items()))
+        print()

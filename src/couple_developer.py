@@ -83,14 +83,17 @@ class CoupleDeveloper:
     def set_breakup_date(self, couple):
         """Sets couple's break up date."""
         date = couple.marriage_date
-        while date <= couple.move_in_date or date <= couple.marriage_date or date in range(couple.pregnancy_date, couple.birth_date + 2) or \
+        while date <= couple.move_in_date or date <= couple.marriage_date or date in range(couple.pregnancy_date,
+                                                                                           couple.birth_date + 2) or \
                 date in range(couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
         couple.breakup_date = date
 
     def set_new_pregnancy_or_adoption_process_date(self, couple):
         """Sets pregnancy or adoption date and birth date."""
-        if abs(couple.oldest.age - couple.breakup_date) <= 4 or abs(couple.marriage_date - couple.breakup_date) <= 4:
+        if abs(couple.oldest.age - couple.breakup_date) <= 4 or abs(
+                couple.marriage_date - couple.breakup_date) <= 4 or abs(
+                couple.move_in_date - couple.breakup_date) <= 4:
             return couple
 
         date = couple.breakup_date
