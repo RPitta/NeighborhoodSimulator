@@ -31,11 +31,17 @@ class FosterCareSystem:
         # Remove adults and their siblings
         self.remove_from_system(adults)
         self.remove_from_system(siblings_of_adults)
+        dead_children = [child for child in self.children if child.is_alive is False]
+        self.remove_from_system(dead_children)
 
         # Add new kids
         new_children = [child for person in living_outsiders for child in person.children if
-                        person.must_place_children_up_for_adoption and child not in self.children]
-        self.add_to_system(new_children)
+                        person.must_place_children_up_for_adoption and child.is_alive and child not in self.children]
+        if len(new_children) > 0:
+            self.add_to_system(new_children)
+
+        # Validation
+        self.foster_validation()
 
     def add_to_system(self, children):
         """Adds given children to the list of child up for adoption."""
@@ -61,6 +67,8 @@ class FosterCareSystem:
     def adopt_child(self, couple):
         """Returns only child with statistically random age."""
         self.check_children_in_foster_care()
+        if len(self.only_childs) == 0:
+            return self.adopt_sibling_set(couple)
 
         children_within_range = self.get_children_within_statistical_range(self.only_childs)
         child = self.randomizer.get_random_item(children_within_range)
@@ -116,5 +124,13 @@ class FosterCareSystem:
             child.original_surname = child.surname
 
     def check_children_in_foster_care(self):
-        if len(self.children) == 0:
+        if len(self.children_up_for_adoption) == 0:
             raise Exception("No children in foster care.")
+
+    def foster_validation(self):
+        if any(child.is_alive is False for child in self.children):
+            raise Exception("Dead children in foster care centre.")
+        if any(child.age >= Traits.YOUNGADULT.start for child in self.children):
+            raise Exception("Adult persons in foster care centre.")
+        if len(set(self.children)) != len(self.children):
+            raise Exception("List of children in foster care centre contains duplicates.")

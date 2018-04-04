@@ -323,7 +323,8 @@ class Person(Traits):
 
     @property
     def has_children_within_adoption_age(self):
-        return len(self.children) > 0 and all(child.age <= self.MAX_AGE_FOR_ADOPTION for child in self.children)
+        return len(self.children) > 0 and all(
+            child.is_alive and child.age <= self.MAX_AGE_FOR_ADOPTION for child in self.children)
 
     @property
     def has_max_num_of_children(self):

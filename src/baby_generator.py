@@ -76,16 +76,14 @@ class BabyGenerator:
 
     @classmethod
     def set_race(cls, baby):
+        """Determines baby's race based on parents' race."""
         if all(baby.parents[0].race == p.race for p in baby.parents):
             baby.race = baby.parents[0].race
         else:
             baby.race = dict(Traits.race_dict)
             for parent in baby.parents:
                 for r, n in parent.race.items():
-                    if n > 0:
-                        baby.race[r] = int(n / 2)
-                        if baby.race[r] < 0:
-                            baby.race[r] = 0
+                    baby.race[r] += int(n / 2)
 
     @classmethod
     def baby_validation(cls, baby):
