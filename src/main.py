@@ -46,7 +46,7 @@ neighborhood.populate_neighborhood(city.living_population, city.city_couples)
 neighborhood.display_households()
 
 print()
-for _ in range(20):
+for _ in range(40):
     city.time_jump_city(neighborhood)
     neighborhood.time_jump_neighborhood(city.romanceable_outsiders)
 

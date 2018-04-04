@@ -113,7 +113,7 @@ class CoupleDeveloper:
 
     @classmethod
     def unique_dates_validation(cls, couple):
-        if couple.will_get_married and couple.marriage_date > 0:
+        if couple.will_get_married and couple.marriage_date >= couple.oldest.age:
             if couple.marriage_date not in couple.oldest.span_left_till_old_age:
                 raise Exception(
                     "Marriage date cannot be set outside oldest person's lifetime.")

@@ -108,6 +108,8 @@ class City:
             if person.is_move_in_date:
                 new_apartment_id = self.personal_handler.move_in(person)
                 neighborhood.determine_new_household(person, new_apartment_id)
+                for child in person.underage_children:
+                    neighborhood.determine_new_household(child, new_apartment_id)
 
             # Start school if applicable
             if person.is_school_start_date:

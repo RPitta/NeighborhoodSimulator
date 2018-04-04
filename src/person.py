@@ -343,6 +343,10 @@ class Person(Traits):
     # FAMILY
 
     @property
+    def underage_children(self):
+        return [child for child in self.children if child.is_of_age is False and child.is_alive]
+
+    @property
     def has_conservative_parents(self):
         """Returns true if parents are conservative."""
         if len(self.adoptive_parents) > 0:
@@ -724,6 +728,10 @@ class Person(Traits):
         return self.get_names_list(self.children)
 
     @property
+    def get_underage_childrens_names(self):
+        return self.get_names_list(self.underage_children)
+
+    @property
     def get_cousins_names(self):
         return self.get_names_list(self.cousins)
 
@@ -735,4 +743,7 @@ class Person(Traits):
     def get_names_list(cls, lst):
         if lst is None or len(lst) == 0:
             return "None"
-        return ', '.join(map(str, [p.name for p in lst]))
+        names_list = [p.name for p in lst]
+        if len(lst) == 1:
+            return ', '.join(map(str, names_list))
+        return ', '.join(map(str, names_list[:-1])) + ' and ' + str(names_list[-1])

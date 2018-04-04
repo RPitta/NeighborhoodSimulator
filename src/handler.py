@@ -36,10 +36,30 @@ class PersonalHandler:
         for p in person.partners:
             if p.apartment_id == person.house_to_move_in:
                 partner = p
-        if person.is_male:
-            print("\n{} has moved in with his partner {} in apartment {}.".format(person, partner, partner.apartment_id))
+        if partner.is_male:
+            print("\n{}'s partner {} has moved in with him.".format(partner, person))
+            if len(person.underage_children) == 1:
+                if person.is_male:
+                    print("His underage child {} has also moved in.".format(person.get_underage_childrens_names))
+                else:
+                    print("Her underage child {} has also moved in.".format(person.get_underage_childrens_names))
+            elif len(person.underage_children) > 1:
+                if person.is_male:
+                    print("His underage children {} have also moved in.".format(person.get_underage_childrens_names))
+                else:
+                    print("Her underage children {} have also moved in.".format(person.get_underage_childrens_names))
         else:
-            print("\n{} has moved in with her partner {} in apartment {}.".format(person, partner, partner.apartment_id))
+            print("\n{}'s partner {} has moved in with her.".format(partner, person))
+            if len(person.underage_children) == 1:
+                if person.is_male:
+                    print("His underage child {} has also moved in.".format(person.get_underage_childrens_names))
+                else:
+                    print("Her underage child {} has also moved in.".format(person.get_underage_childrens_names))
+            elif len(person.underage_children) > 1:
+                if person.is_male:
+                    print("His underage children {} have also moved in.".format(person.get_underage_childrens_names))
+                else:
+                    print("Her underage children {} have also moved in.".format(person.get_underage_childrens_names))
 
 
 class ConditionsHandler:

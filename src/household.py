@@ -45,7 +45,7 @@ class Household:
 
     def remove_member(self, person):
         """Remove member and their apartment id."""
-        if person not in self.members_list:
+        if person not in self.members:
             raise Exception("Can't remove a person who wasn't a household member.")
 
         person.apartment_id = -1
@@ -110,8 +110,6 @@ class Household:
         if len(set(self.members)) != len(self.members):
             raise Exception("List of household members contains duplicates.")
         if any(p.apartment_id != self.apartment_id for p in self.members):
-            for p in self.members:
-                print(p)
-                print(p.age)
-                print(str(p.apartment_id))
             raise Exception("Household member has a wrongly assigned apartment ID.")
+        if any(p.is_alive is False for p in self.members):
+            raise Exception("Household member is dead.")
