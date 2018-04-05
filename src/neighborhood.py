@@ -140,9 +140,9 @@ class Neighborhood:
 
     def add_to_neighbors_and_household(self, household, person):
         """Helper method to add each neighbor to the household and neighbors list."""
-        person.apartment_id = household.apartment_id
-        self.neighbors.append(person)
         household.add_member(person)
+        self.neighbors.append(person)
+
 
     # DISPLAY HOUSEHOLDS
 
@@ -307,8 +307,6 @@ class Neighborhood:
         if len(self.neighbor_couples) > 0:
             self.neighbor_couples = [c for c in self.neighbor_couples if
                                      all(p.is_alive and p.is_partnered for p in c.persons)]
-
-    # VALIDATION
 
     def neighborhood_validation(self):
         """Error handling."""

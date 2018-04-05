@@ -334,6 +334,10 @@ class CityDeathHandler:
             partner.ex_partners.append(person)
             partner.partners = [partner for partner in partner.partners if partner != person]
             self.set_new_love_date_for_widower(partner)
+            # Reset move_in_date if applicable
+            if partner.house_to_move_in == person.apartment_id and partner.move_in_date >= partner.age:
+                partner.move_in_date = -1
+                partner.house_to_move_in = -1
 
     def set_new_love_date_for_widower(self, person):
         """Helper method to set new love date for partner/spouse of dead person."""

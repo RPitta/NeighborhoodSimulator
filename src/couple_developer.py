@@ -135,9 +135,6 @@ class CoupleDeveloper:
                     "Marriage date cannot be set outside oldest person's lifetime.")
         if couple.will_breakup:
             if couple.breakup_date not in couple.oldest.span_left_till_old_age:
-                print(couple.oldest)
-                print(couple.oldest.age)
-                print(couple.breakup_date)
                 raise Exception(
                     "Breakup date cannot be set outside oldest person's lifetime.")
         if couple.pregnancy_date > 0:
@@ -148,7 +145,7 @@ class CoupleDeveloper:
             if couple.oldest.is_young_adult is False:
                 raise Exception(
                     "Pregnancy/birth date cannot be set if couple is older than young adult.")
-        if couple.adoption_process_date > 0:
+        if couple.will_adopt and couple.adoption_process_date > 0:
             if couple.adoption_process_date not in couple.oldest.span_left_till_old_age or \
                     couple.adoption_date not in couple.oldest.span_left_till_old_age:
                 raise Exception(
