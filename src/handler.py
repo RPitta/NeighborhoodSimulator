@@ -483,7 +483,8 @@ class AddictionHandler(CityAddictionHandler):
         if person.is_drug_addict:
             print("\n{} has spent some time in a rehabilitation centre and is no longer a drug addict.".format(person))
         elif person.is_alcohol_addict:
-            print("\n{} has spent some time in a rehabilitation centre and is no longer an alcohol addict.".format(person))
+            print("\n{} has spent some time in a rehabilitation centre and is no longer an alcohol addict.".format(
+                person))
         super().get_sober(person)
 
     def relapse(self, person):
@@ -625,6 +626,7 @@ class CityDivorceHandler:
 
 class DivorceHandler(CityDivorceHandler):
     """Adds print messages to divorce handler."""
+
     def __init__(self):
         self.randomizer = Randomizer()
 
@@ -648,9 +650,14 @@ class DivorceHandler(CityDivorceHandler):
 
     def leave_household(self, couple):
         """Returns person who will leave the apartment and the new apartment ID if any."""
-        leaving_person = self.randomizer.get_random_item(couple.persons)
+        if any(p.move_in_date > 0 for p in couple.persons):
+            # If someone had moved in, they'll be the one to move out.
+            leaving_person = next(p for p in couple.persons if p.move_in_date > 0)
+        else:
+            # Else, random person will move out.
+            leaving_person = self.randomizer.get_random_item(couple.persons)
         new_apartment_id = self.get_id_from_neighborhood_friends(leaving_person)
-        return {"person" : leaving_person, "id" : new_apartment_id}
+        return {"person": leaving_person, "id": new_apartment_id}
 
     def get_id_from_neighborhood_friends(self, person):
         """Returns None if person has no neighborhood friends, or liberal friend's apartment ID if so."""
@@ -664,7 +671,23 @@ class DivorceHandler(CityDivorceHandler):
 
     @classmethod
     def display_left_neighborhood_message(cls, person):
-        print("{} has moved out and no longer lives in the neighborhood.".format(person.name))
+        if len(person.children) == 0:
+            print("{} has moved out and no longer lives in the neighborhood.".format(person.name))
+        else:
+            children_in_household = [p for p in person.children if
+                                     p.move_in_date > 0 and p.apartment_id == p.apartment_id]
+            if len(children_in_household) == 0:
+                print("{} has moved out and no longer lives in the neighborhood.".format(person.name))
+            elif len(children_in_household) == 1:
+                if person.is_male:
+                    print("{} and his child have moved out and no longer live in the neighborhood.".format(person.name))
+                else:
+                    print("{} and her child have moved out and no longer live in the neighborhood.".format(person.name))
+            else:
+                if person.is_male:
+                    print("{} and his children have moved out and no longer live in the neighborhood.".format(person.name))
+                else:
+                    print("{} and her children have moved out and no longer live in the neighborhood.".format(person.name))
 
     @classmethod
     def display_new_household_message(cls, person, friend):

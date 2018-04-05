@@ -174,6 +174,7 @@ class Neighborhood:
                 self.remove_dead_and_brokenup_couples()
                 continue
 
+            # Advance career yearly
             self.career_handler.check_employment_and_education_status(person)
 
             if person.is_autism_date:
@@ -183,6 +184,8 @@ class Neighborhood:
             if person.is_move_in_date:
                 new_apartment_id = self.personal_handler.move_in(person)
                 self.determine_new_household(person, new_apartment_id)
+                for child in person.underage_children:
+                    self.determine_new_household(child, new_apartment_id)
 
             # Start school if applicable
             if person.is_school_start_date:
@@ -260,8 +263,15 @@ class Neighborhood:
                     self.divorce_handler.get_separated(couple)
                 # One person in couple will leave household / neighborhood
                 d = self.divorce_handler.leave_household(couple)
+                # Leaving divorced person's children will also leave household.
+                if len(d["person"].children) > 0:
+                    children_in_household = [p for p in d["person"].children if
+                                             p.move_in_date > 0 and p.apartment_id == p.apartment_id]
+                    for child in children_in_household:
+                        self.determine_new_household(child, d["id"])
+                # Leaving divorced person leaves household
                 self.determine_new_household(d["person"], d["id"])
-                # New love dates
+                # New love dates for all
                 for person in couple.persons:
                     self.person_developer.set_new_love_date(person)
                 # Remove from neighborhood couples
@@ -306,7 +316,7 @@ class Neighborhood:
     def remove_dead_and_brokenup_couples(self):
         if len(self.neighbor_couples) > 0:
             self.neighbor_couples = [c for c in self.neighbor_couples if
-                                     all(p.is_alive and p.is_partnered for p in c.persons)]
+                                     all(p.is_alive and p.is_partnered and p.is_neighbor for p in c.persons)]
 
     def neighborhood_validation(self):
         """Error handling."""
