@@ -71,7 +71,7 @@ class City:
         """Age up city population."""
         # Add / Remove children in foster care
         self.foster.check_foster_care_system(self.living_outsiders)
-        if len(self.foster.children_up_for_adoption) < 3:
+        if len(self.foster.children_up_for_adoption) < 5:
             self.populate_foster_care_system()
 
         self.do_person_action(neighborhood)
@@ -82,6 +82,9 @@ class City:
         new_children = [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
+        new_children += [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
+        new_children += [self.generator.create_first_child(Traits.BABY.end, self.population_surnames)]
+        new_children += [self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)]
         # Assign education
         for child in new_children:
             child.education.init_degree(child)

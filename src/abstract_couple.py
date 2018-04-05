@@ -90,9 +90,19 @@ class AbstractCouple(metaclass=ABCMeta):
         return next(person for person in self.persons if person.age == self.get_youngest_age)
 
     @property
+    def age_difference(self):
+        """Returns couple's age difference."""
+        return abs(self.oldest.age - self.youngest.age)
+
+    @property
     def move_in_date(self):
         """Returns person's highest move in date."""
         return max(p.move_in_date for p in self.persons)
+
+    @property
+    def person_who_will_move_in(self):
+        """Returns person who will move in."""
+        return next(p for p in self.persons if p.move_in_date == self.move_in_date)
 
     @property
     def is_breakup_date(self):

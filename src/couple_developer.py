@@ -84,13 +84,21 @@ class CoupleDeveloper:
     def set_breakup_date(self, couple):
         """Sets couple's break up date."""
         if abs(Traits.SENIOR.end - couple.marriage_date) <= 1 or abs(Traits.SENIOR.end - couple.move_in_date) <= 1:
+            # Couple will not break up if no time left after move in date or marriage date.
+            couple.will_breakup = False
             return
         date = couple.marriage_date
         while date <= couple.move_in_date or date <= couple.marriage_date or date in range(couple.pregnancy_date,
-                                                                                           couple.birth_date + 2) or \
-                date in range(couple.adoption_process_date, couple.adoption_date + 2):
+                                                                                           couple.birth_date + 2) or date in range(
+                couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
-        couple.breakup_date = date
+
+        # If youngest person in couple is the one to move in,
+        # add age difference to breakup date (which is based on oldest person's age)
+        if abs(couple.move_in_date - couple.person_who_will_move_in.age) > abs(couple.breakup_date - couple.oldest.age):
+            couple.breakup_date = date + couple.age_difference
+        else:
+            couple.breakup_date = date
 
     def set_new_pregnancy_or_adoption_process_date(self, couple):
         """Sets pregnancy or adoption date and birth date."""
@@ -98,7 +106,7 @@ class CoupleDeveloper:
             return couple
         if abs(couple.oldest.age - couple.breakup_date) <= 4 or abs(
                 couple.marriage_date - couple.breakup_date) <= 4 or abs(
-            couple.move_in_date - couple.breakup_date) <= 4:
+                couple.move_in_date - couple.breakup_date) <= 4:
             return couple
 
         date = couple.breakup_date
@@ -127,6 +135,9 @@ class CoupleDeveloper:
                     "Marriage date cannot be set outside oldest person's lifetime.")
         if couple.will_breakup:
             if couple.breakup_date not in couple.oldest.span_left_till_old_age:
+                print(couple.oldest)
+                print(couple.oldest.age)
+                print(couple.breakup_date)
                 raise Exception(
                     "Breakup date cannot be set outside oldest person's lifetime.")
         if couple.pregnancy_date > 0:

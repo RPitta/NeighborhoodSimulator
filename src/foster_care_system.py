@@ -31,6 +31,7 @@ class FosterCareSystem:
         # Remove adults and their siblings
         self.remove_from_system(adults)
         self.remove_from_system(siblings_of_adults)
+        # Remove dead children
         dead_children = [child for child in self.children if child.is_alive is False]
         self.remove_from_system(dead_children)
 
@@ -46,7 +47,9 @@ class FosterCareSystem:
     def add_to_system(self, children):
         """Adds given children to the list of child up for adoption."""
         self.set_was_in_foster_care_status(children)
-        self.children.extend(children)
+        for child in children:
+            if child not in self.children:
+                self.children.append(child)
 
     def remove_from_system(self, children):
         """Removes adopted children or newly-adult children from the system."""
