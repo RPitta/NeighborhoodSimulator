@@ -93,10 +93,10 @@ class CoupleDeveloper:
                 couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
 
-        # If youngest person in couple is the one to move in,
+        # If selected breakup date is before move in date,
         # add age difference to breakup date (which is based on oldest person's age)
-        if abs(couple.move_in_date - couple.person_who_will_move_in.age) > abs(couple.breakup_date - couple.oldest.age):
-            couple.breakup_date = date + couple.age_difference
+        if couple.move_in_date + couple.age_difference >= date:
+            couple.breakup_date = date + (couple.age_difference + self.NEXT_YEAR)
         else:
             couple.breakup_date = date
 
