@@ -83,20 +83,25 @@ class CoupleDeveloper:
 
     def set_breakup_date(self, couple):
         """Sets couple's break up date."""
-        if abs(Traits.SENIOR.end - couple.marriage_date) <= 1 or abs(Traits.SENIOR.end - couple.move_in_date) <= 1:
+        if abs(Traits.SENIOR.end - couple.marriage_date) <= self.NEXT_YEAR or abs(
+                Traits.SENIOR.end - couple.move_in_date) <= self.NEXT_YEAR:
             # Couple will not break up if no time left after move in date or marriage date.
             couple.will_breakup = False
             return
         date = couple.marriage_date
         while date <= couple.move_in_date or date <= couple.marriage_date or date in range(couple.pregnancy_date,
                                                                                            couple.birth_date + 2) or date in range(
-                couple.adoption_process_date, couple.adoption_date + 2):
+            couple.adoption_process_date, couple.adoption_date + 2):
             date = self.statistics.get_oldest_breakup_date(couple)
 
         # If selected breakup date is before move in date,
         # add age difference to breakup date (which is based on oldest person's age)
         if couple.move_in_date + couple.age_difference >= date:
             couple.breakup_date = date + (couple.age_difference + self.NEXT_YEAR)
+            # If oldest person will be dead by breakup date, set will break up to False
+            if couple.breakup_date not in couple.oldest.span_left_till_old_age:
+                couple.will_breakup = False
+                couple.breakup_date = -1
         else:
             couple.breakup_date = date
 
@@ -106,7 +111,7 @@ class CoupleDeveloper:
             return couple
         if abs(couple.oldest.age - couple.breakup_date) <= 4 or abs(
                 couple.marriage_date - couple.breakup_date) <= 4 or abs(
-                couple.move_in_date - couple.breakup_date) <= 4:
+            couple.move_in_date - couple.breakup_date) <= 4:
             return couple
 
         date = couple.breakup_date
