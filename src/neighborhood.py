@@ -143,7 +143,6 @@ class Neighborhood:
         household.add_member(person)
         self.neighbors.append(person)
 
-
     # DISPLAY HOUSEHOLDS
 
     def display_households(self):
@@ -166,7 +165,8 @@ class Neighborhood:
 
             # Die
             if person.is_death_date:
-                self.death_handler.die(person)
+                household = next(h for h in self.households if h.apartment_id == person.apartment_id)
+                self.death_handler.die(person, household)
                 # Remove from household and neighborhood
                 self.remove_from_household(person)
                 self.remove_from_neighborhood(person)
@@ -178,7 +178,16 @@ class Neighborhood:
             self.career_handler.check_employment_and_education_status(person)
 
             if person.is_autism_date:
-                self.conditions_handler.get_autism_diagnostic(person)
+                self.conditions_handler.display_autism_diagnostic_message(person)
+
+            if person.is_depression_date:
+                self.conditions_handler.display_depression_diagnostic_message(person)
+
+            if person.is_therapy_date:
+                self.conditions_handler.display_therapy_start_message(person)
+
+            if person.is_recovery_date_for_depression:
+                self.conditions_handler.recover_from_depression(person)
 
             # Move in to new household if applicable
             if person.is_move_in_date:
@@ -314,6 +323,7 @@ class Neighborhood:
             self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
     def remove_dead_and_brokenup_couples(self):
+        """Remove divorced/separated couples and couples who contain dead persons."""
         if len(self.neighbor_couples) > 0:
             self.neighbor_couples = [c for c in self.neighbor_couples if
                                      all(p.is_alive and p.is_partnered and p.is_neighbor for p in c.persons)]

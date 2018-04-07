@@ -33,31 +33,45 @@ class Job:
 
     def __str__(self):
         ret_val = {
-            'occupation': self.title,
+            'title': self.title,
             'level': self.level,
             'salary': self.salary,
             'employment': self.employment
         }
         return str(ret_val)
 
-    def get_job(self, degree):
+    def get_job(self, person):
         """Set occupation and job level."""
         self.title = self.randomizer.get_random_item(self.setup.PROFESSIONS)
-        if degree == Education.UNEDUCATED:
+        if person.is_female:
+            self.change_to_female_titles()
+        self.set_job_level(person)
+        self.set_salary()
+        self.employment = Traits.EMPLOYED
+
+    def change_to_female_titles(self):
+        """Change male only job titles to female titles."""
+        if self.title == "Waiter":
+            self.title = "Waitress"
+        if self.title == "Actor":
+            self.title = "Actress"
+
+    def set_job_level(self, person):
+        """Set job level based on person's achieved education."""
+        if person.education == Education.UNEDUCATED:
             self.level = self.PART_TIMER
-        if degree == Education.SCHOOL:
+        if person.education == Education.SCHOOL:
             self.level = self.INTERN
-        elif degree == Education.BACHELOR:
+        elif person.education == Education.BACHELOR:
             self.level = self.FRESHGRADUATE
-        elif degree == Education.MASTER:
+        elif person.education == Education.MASTER:
             self.level = self.SENIOR
-        elif degree == Education.DOCTOR:
+        elif person.education == Education.DOCTOR:
             self.level = self.EXECUTIVE
-        # Set salary based on job level
+
+    def set_salary(self):
         self.salary = self.randomizer.get_random_number(
             self.SALARY_MIN_STANDARD, self.SALARY_MAX_STANDARD) * (self.level + 1)
-        # Switch to Employed
-        self.employment = Traits.EMPLOYED
 
     def promotion(self, salary_increment, job_increase=False):
         """Job promotion."""
@@ -72,3 +86,10 @@ class Job:
             self.level -= 1
         self.salary = 0 if 1 - salary_decrease < 0 else self.salary * (1 - salary_decrease)
         self.current_performance = self.BAD_PERFORMANCE
+
+    def get_fired(self):
+        """Lose job."""
+        self.title = None
+        self.salary = 0
+        self.current_performance = 0
+        self.employment = Traits.UNEMPLOYED

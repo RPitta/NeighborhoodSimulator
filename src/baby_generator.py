@@ -48,6 +48,7 @@ class BabyGenerator:
         baby.death_date = self.statistics.get_death_date()
         baby.death_cause = self.statistics.get_death_cause(baby)
         baby.can_have_bio_children = self.statistics.get_fertility()
+        # Autism chance
         if self.statistics.get_autistic_disorder_chance(baby):
             baby.conditions.append(Traits.AUTISTIC_DISORDER)
 

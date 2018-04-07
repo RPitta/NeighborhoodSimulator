@@ -147,6 +147,7 @@ class Traits:
     ASPERGERS = "Asperger's Syndrome"
     CONDITIONS = (AUTISTIC_DISORDER, ASPERGERS)
     AUTISM_AGE = 2
+    DEPRESSION = "Depression"
 
     # Social classes
     UPPER_CLASS = UpperClass()

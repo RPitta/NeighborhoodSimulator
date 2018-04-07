@@ -92,6 +92,13 @@ class Statistics:
         }
         return self.randomizer.get_random_dict_key(options)
 
+    def get_suicide_chance_as_depression_consequence(self):
+        options = {
+            True: 15,
+            False: 85
+        }
+        return self.randomizer.get_random_dict_key(options)
+
     def get_thrown_out_chance(self):
         """Statistical chance of being thrown out after coming out in conservative family."""
         options = {
@@ -460,6 +467,30 @@ class Statistics:
         options = {
             True: relapse_data[0]['relapse_true'],
             False: relapse_data[0]['relapse_false']
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_depression_chance(self):
+        """Statistical chance of suffering from depression."""
+        options = {
+            True: 33.3,
+            False:  66.7
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_therapy_chance(self):
+        """Statistical chance of going to therapy."""
+        options = {
+            True: 33.3,
+            False:  66.7
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def get_recovery_chance(self):
+        """Statistical chance of recovering with therapy."""
+        options = {
+            True: 50,
+            False:  50
         }
         return self.randomizer.get_random_dict_key(options)
 

@@ -84,8 +84,6 @@ class Person(Traits):
         self.addiction_date = -1
         self.is_drug_addict = False
         self.is_alcohol_addict = False
-        self.will_recover = False
-        self.will_overdose = False
         self.was_drug_addict = False
         self.was_alcohol_addict = False
         self.rehabilitation_date = -1
@@ -97,6 +95,11 @@ class Person(Traits):
         self.neighbor_friends = []
         self.move_in_date = -1
         self.house_to_move_in = -1
+
+        # Depression
+        self.depression_date = -1
+        self.therapy_date = -1
+        self.depression_recovery_date = -1
 
     def __str__(self):
         return self.fullname
@@ -246,7 +249,8 @@ class Person(Traits):
     @property
     def is_fully_partnered(self):
         """Returns true if: Mono person has 1 partner, or poly partner has max number of partners."""
-        return len(self.partners) == 1 if self.is_mono else len(self.partners) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
+        return len(self.partners) == 1  # This is only set temporally to disable polyamory. Right code is below.
+        # return len(self.partners) == 1 if self.is_mono else len(self.partners) == self.ALLOWED_NUM_OF_PARTNERS_FOR_POLYS
 
     @property
     def is_single_and_unemployed_adult(self):
@@ -261,7 +265,21 @@ class Person(Traits):
 
     @property
     def is_autism_date(self):
-        return self.age == self.AUTISM_AGE
+        if self.AUTISTIC_DISORDER in self.conditions:
+            return self.age == self.AUTISM_AGE
+        return False
+
+    @property
+    def is_depression_date(self):
+        return self.age == self.depression_date
+
+    @property
+    def is_therapy_date(self):
+        return self.age == self.therapy_date
+
+    @property
+    def is_recovery_date_for_depression(self):
+        return self.age == self.depression_recovery_date
 
     @property
     def is_school_start_date(self):

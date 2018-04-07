@@ -1,31 +1,29 @@
-from handler import CityPregnancyHandler, PersonalHandler, CityAddictionHandler, CityDeathHandler, \
-    CityDivorceHandler, CityMarriageHandler, CityLgbtaHandler, CityCareerHandler
+from handler import PregnancyHandler, PersonalHandler, AddictionHandler, DeathHandler, DivorceHandler, MarriageHandler, LgbtaHandler, CareerHandler
 from traits import Traits
 
 
 class City:
     """City base class."""
 
-    def __init__(self, generator, developer, couple_creator, names, relationship_developer, statistics,
+    def __init__(self, generator, developer, couple_creator, names, couple_developer, statistics,
                  foster_care_system):
-        self.generator = generator
+        self.baby_generator = generator
         self.person_developer = developer
         self.couple_creator = couple_creator
         self.names = names
-        self.couple_developer = relationship_developer
+        self.couple_developer = couple_developer
         self.statistics = statistics
         self.foster = foster_care_system
 
         # City handlers
         self.personal_handler = PersonalHandler(self.person_developer)
-        self.lgbta_handler = CityLgbtaHandler(self.names)
-        self.addiction_handler = CityAddictionHandler(self.person_developer)
-        self.pregnancy_handler = CityPregnancyHandler(
-            self.generator, self.statistics, self.foster)
-        self.marriage_handler = CityMarriageHandler()
-        self.divorce_handler = CityDivorceHandler()
-        self.death_handler = CityDeathHandler(self.person_developer)
-        self.career_handler = CityCareerHandler(statistics)
+        self.lgbta_handler = LgbtaHandler(self.names, self.person_developer)
+        self.addiction_handler = AddictionHandler(self.person_developer)
+        self.pregnancy_handler = PregnancyHandler(self.baby_generator, self.statistics, self.foster)
+        self.marriage_handler = MarriageHandler()
+        self.divorce_handler = DivorceHandler()
+        self.death_handler = DeathHandler(self.person_developer)
+        self.career_handler = CareerHandler(statistics)
 
         # Lists for couples and global population
         self.city_couples = []
@@ -64,7 +62,7 @@ class City:
     def populate_city(self):
         """Populate the city with X number of random children."""
         for _ in (number + 1 for number in range(400)):
-            person = self.generator.create_first_child(Traits.BABY.end, self.population_surnames)
+            person = self.baby_generator.create_first_child(Traits.BABY.end, self.population_surnames)
             self.population.append(person)
 
     def time_jump_city(self, neighborhood=None):
@@ -79,12 +77,12 @@ class City:
 
     def populate_foster_care_system(self):
         """Adds a number of different-age children to foster care centre."""
-        new_children = [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.BABY.end, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)]
+        new_children = [self.baby_generator.create_first_child(Traits.BABY.start, self.population_surnames)]
+        new_children += [self.baby_generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
+        new_children += [self.baby_generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
+        new_children += [self.baby_generator.create_first_child(Traits.BABY.start, self.population_surnames)]
+        new_children += [self.baby_generator.create_first_child(Traits.BABY.end, self.population_surnames)]
+        new_children += [self.baby_generator.create_first_child(Traits.CHILD.end, self.population_surnames)]
         # Assign education
         for child in new_children:
             child.education.init_degree(child)

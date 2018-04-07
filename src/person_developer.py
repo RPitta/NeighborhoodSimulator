@@ -245,21 +245,17 @@ class PersonDeveloper:
 
     def set_addiction_consequences(self, person):
         """Chance for rehabilitation / overdose / left untreated if addict."""
-        self.rehabilitation_vs_overdose_chance(person)
-        # Set dates for rehabilitation / overdose.
-        if person.will_overdose:
-            range_for_overdose = list(range(1, 20))
-            person.death_date = person.age + self.randomizer.get_random_item(range_for_overdose)
-            self.set_type_of_addiction_for_death_cause(person)
-        elif person.will_recover:
+        will_recover = self.statistics.get_rehabilitation_chance()
+        if will_recover:
             range_for_rehabilitation = list(range(1, 20))
             person.rehabilitation_date = person.age + self.randomizer.get_random_item(range_for_rehabilitation)
-
-    def rehabilitation_vs_overdose_chance(self, person):
-        """Rehabilitation vs overdose chance."""
-        person.will_recover = self.statistics.get_alcohol_addiction_chance()
-        if not person.will_recover:
-            person.will_overdose = self.statistics.get_alcohol_addiction_chance()
+        else:
+            will_overdose = self.statistics.get_alcohol_addiction_chance()
+            # Set dates for rehabilitation / overdose.
+            if will_overdose:
+                range_for_overdose = list(range(1, 20))
+                person.death_date = person.age + self.randomizer.get_random_item(range_for_overdose)
+                self.set_type_of_addiction_for_death_cause(person)
 
     @classmethod
     def set_type_of_addiction_for_death_cause(cls, person):
@@ -271,8 +267,35 @@ class PersonDeveloper:
 
     def relapse_chance(self, person):
         """Chance of relapsing and relapse date if so."""
-        person.will_relapse = self.statistics.get_relapse_chance()
+        will_relapse = self.statistics.get_relapse_chance()
         # Set relapse date if applicable
-        if person.will_relapse:
-            range_for_relapse = list(range(1, 10))
+        if will_relapse:
+            range_for_relapse = range(1, 10)
             person.relapse_date = person.age + self.randomizer.get_random_item(range_for_relapse)
+
+    def set_depression_for_housemates(self, person, household):
+        """Adds statistical chance of depression to each housemate of dead person."""
+        housemates = [p for p in household.members if p != person]
+        for p in housemates:
+            if p.age >= Traits.TEEN.start:
+                depressed = self.statistics.get_depression_chance()
+                if depressed:
+                    p.conditions.append(Traits.DEPRESSION)
+                    p.depression_date = p.age + 1  # Depression will be diagnosed next year
+                    self.set_depression_consequences(p)
+
+    def set_depression_consequences(self, person):
+        """Depressed person will go to therapy, commit suicide, or depression will be left untreated."""
+        will_go_to_therapy = self.statistics.get_therapy_chance()
+        if will_go_to_therapy:
+            person.therapy_date = person.depression_date + 1  # Therapy will start one year after depression diagnosis
+            will_recover = self.statistics.get_recovery_chance()
+            if will_recover:
+                recovery_range = range(1, 5)
+                person.depression_recovery_date = person.therapy_date + self.randomizer.get_random_item(recovery_range)
+        else:
+            suicide = self.statistics.get_suicide_chance_as_depression_consequence()
+            if suicide:
+                suicidal_range = range(1, 5)
+                person.death_date = person.depression_date + self.randomizer.get_random_item(suicidal_range)
+                person.death_cause = Traits.SUICIDE
