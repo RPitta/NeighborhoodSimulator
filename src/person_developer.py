@@ -34,12 +34,20 @@ class PersonDeveloper:
 
     def set_teen_traits(self, teen):
         """Teen traits."""
+        if Traits.AUTISTIC_DISORDER in teen.conditions:
+            self.set_autistic_teen_traits(teen)
+            return
         teen.gender_identity = self.statistics.get_gender_identity()  # Gender identity must be set first
         teen.sexual_orientation = self.statistics.get_sexual_orientation()
         teen.target_gender = [gender for gender in self.get_target_gender(teen)]
-        # Set date to come out if LGBTA
         if teen.is_lgbta:
             teen.come_out_date = self.randomizer.get_random_item(teen.span_left_till_next_stage)
+
+    def set_autistic_teen_traits(self, teen):
+        """Cisgender, aromantic asexual, no coming out date for autistic persons."""
+        teen.gender_identity = Traits.CISGENDER
+        teen.sexual_orientation = Traits.AROMANTIC_ASEXUAL
+        teen.target_gender = [gender for gender in self.get_target_gender(teen)]
 
     @classmethod
     def get_target_gender(cls, teen):
@@ -94,9 +102,10 @@ class PersonDeveloper:
         """Young adult traits."""
 
         # Education
-        person.will_do_bachelor = self.statistics.get_chance_for_getting_bachelor_degree()
-        person.will_do_master = self.statistics.get_chance_for_getting_master_degree()
-        person.will_do_doctor = self.statistics.get_chance_for_getting_master_degree()
+        if Traits.AUTISTIC_DISORDER not in person.conditions:
+            person.will_do_bachelor = self.statistics.get_chance_for_getting_bachelor_degree()
+            person.will_do_master = self.statistics.get_chance_for_getting_master_degree()
+            person.will_do_doctor = self.statistics.get_chance_for_getting_master_degree()
 
         # Set relationship orientation (mono/poly)
         person.relationship_orientation = self.statistics.get_relationship_orientation()
@@ -139,6 +148,10 @@ class PersonDeveloper:
         if len(person.span_left_till_old_age) <= 1:
             return
 
+        if Traits.AUTISTIC_DISORDER in person.conditions:
+            self.set_autistic_yadult_traits(person)
+            return
+
         if person.is_poly:
             person.in_love_as_throuple = self.statistics.get_triad_chance()
 
@@ -153,6 +166,13 @@ class PersonDeveloper:
             self.set_new_love_date(person)
         else:
             self.set_aromantic_traits(person)
+
+    def set_autistic_yadult_traits(self, person):
+        """No romance nor children for autistic persons."""
+        person.relationship_orientation = False
+        person.wants_children = False
+        person.can_have_bio_children = False
+        self.set_aromantic_traits(person)
 
     def set_new_love_date(self, person):
         """Sets in_love_date within person's age and X.

@@ -41,6 +41,8 @@ class Person(Traits):
         self.adoptive_children = []
         self.partners = []
         self.spouses = []
+        self.deceased_partners = []
+        self.deceased_spouses = []
         self.ex_partners = []
         self.ex_spouses = []
 
@@ -132,15 +134,18 @@ class Person(Traits):
         raise Exception("No social class within valid salary range.")
 
     @property
+    def can_work(self):
+        return self.AUTISTIC_DISORDER not in self.conditions
+
+    @property
     def is_white(self):
-        return self.race[self.WHITE] == 100
+        for race, percentage in self.race.items():
+            return race == Traits.WHITE and percentage == 100
 
     @property
     def is_mixed_race(self):
-        for r, n in self.race.items():
-            if n in range(1, 100):
-                return True
-        return False
+        for percentage in self.race.values():
+            return percentage in range(25, 76)
 
     @property
     def is_challenged(self):
@@ -213,6 +218,15 @@ class Person(Traits):
         return list(range(self.age + 1, self.SENIOR.end + 1))
 
     # RELATIONSHIP STATUS
+
+    @property
+    def has_divorced_parents(self):
+        if len(self.adoptive_parents) > 0:
+            return self.adoptive_parents[0] in self.adoptive_parents[1].ex_partners or self.adoptive_parents[0] in self.adoptive_parents[1].ex_spouses
+        elif len(self.parents) > 0:
+            return self.parents[0] in self.parents[1].ex_partners or self.parents[0] in self.parents[1].ex_spouses
+        else:
+            return False
 
     @property
     def is_single(self):

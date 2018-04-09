@@ -22,9 +22,10 @@ class Statistics:
 
     def get_gender_identity(self):
         """Statistical chance for gender identity."""
+        # Link: https://en.wikipedia.org/wiki/Transgender
         options = {
-            Traits.CISGENDER: 98,
-            Traits.TRANSGENDER: 2
+            Traits.CISGENDER: 99.4,
+            Traits.TRANSGENDER: 0.6
         }
         selected = self.randomizer.get_random_dict_key(options)
         self.validate_selected(selected, Traits.GENDER_IDENTITIES)
@@ -32,6 +33,7 @@ class Statistics:
 
     def get_race(self):
         """Statistical chance for race."""
+        # Link: https://www.census.gov/quickfacts/fact/table/US/PST045216
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         race_data = dbmgr.demo_data(self.city_data, "race")
         dbmgr.__del__()
@@ -48,6 +50,7 @@ class Statistics:
 
     def get_interracial_love_chance(self):
         """Statistical chance for interracial love."""
+        # Link: https://en.wikipedia.org/wiki/Interracial_marriage_in_the_United_States
         options = {
             True: 15.1,
             False: 84.9
@@ -56,6 +59,7 @@ class Statistics:
 
     def get_autistic_disorder_chance(self, baby):
         """Statistical chance of baby developing autism."""
+        # Link: https://www.autismspeaks.org/what-autism/prevalence
         options_for_boy = {
             True: 2.3,
             False: 97.7
@@ -93,6 +97,8 @@ class Statistics:
         return self.randomizer.get_random_dict_key(options)
 
     def get_suicide_chance_as_depression_consequence(self):
+        """Statistical chance of suicide for a depressed person."""
+        # Link: http://www.allaboutdepression.com/gen_04.html
         options = {
             True: 15,
             False: 85
@@ -109,6 +115,8 @@ class Statistics:
 
     def get_employment_chance(self):
         """Statistical chance of employment."""
+        # Link: https://tradingeconomics.com/united-states/unemployment-rate
+        # To insert into DB: Employed: 95.9. Unemployed: 4.1.
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         employment_data = dbmgr.demo_data(self.city_data, "employment")
         dbmgr.__del__()
@@ -123,25 +131,28 @@ class Statistics:
 
     def get_chance_for_getting_bachelor_degree(self):
         """Statistical chance of getting a bachelor degree."""
+        # Link: http://thehill.com/homenews/state-watch/326995-census-more-americans-have-college-degrees-than-ever-before
         options = {
-            True: 46,
-            False: 54
+            True: 33.4,
+            False: 66.6
         }
         return self.randomizer.get_random_dict_key(options)
 
     def get_chance_for_getting_master_degree(self):
         """Statistical chance of getting a master's degree."""
+        # Link: http://thehill.com/homenews/state-watch/326995-census-more-americans-have-college-degrees-than-ever-before
         options = {
-            True: 20,
-            False: 80
+            True: 9.3,
+            False: 90.7
         }
         return self.randomizer.get_random_dict_key(options)
 
     def get_chance_for_getting_doctor_degree(self):
         """Statistical chance of getting a doctor's degree."""
+        # Link: http://thehill.com/homenews/state-watch/326995-census-more-americans-have-college-degrees-than-ever-before
         options = {
-            True: 9,
-            False: 91
+            True: 2,
+            False: 98
         }
         return self.randomizer.get_random_dict_key(options)
 
@@ -219,9 +230,10 @@ class Statistics:
 
     def get_fertility(self):
         """Statistical chance of being infertile."""
+        # Link: https://www.womenshealth.gov/a-z-topics/infertility
         options = {
-            True: 95,
-            False: 5
+            True: 90,
+            False: 10
         }
         return self.randomizer.get_random_dict_key(options)
 
@@ -302,17 +314,19 @@ class Statistics:
 
     def get_marriage_desire(self):
         """Statistical chance for marriage wish."""
+        # Link: http://www.abc.net.au/news/2017-04-26/more-people-than-ever-are-single-and-thats-a-good-thing/8473398
         options = {
-            True: 60,
-            False: 40
+            True: 75,
+            False: 25
         }
         return self.randomizer.get_random_dict_key(options)
 
     def get_liberalism(self):
         """Statistical chance for liberal/conservative ideology."""
+        # Link: https://www.theblaze.com/news/2018/01/12/poll-gap-between-liberal-and-conservative-steadily-narrowing-among-american-adults
         options = {
-            True: 50,
-            False: 50
+            True: 42.6,
+            False: 57.3
         }
         return self.randomizer.get_random_dict_key(options)
 
@@ -334,6 +348,7 @@ class Statistics:
 
     def get_pregnancy_num_of_children(self):
         """Statistical chance of having singleton/twins/triplets."""
+        # Link: https://en.wikipedia.org/wiki/Multiple_birth
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         pregnancy_data = dbmgr.demo_data(self.city_data, "pregnancy")
         dbmgr.__del__()
@@ -370,21 +385,30 @@ class Statistics:
         elif selected == 10:
             return list(range(6, 11))
         elif selected == Traits.MAX_AGE_FOR_ADOPTION:
-            return list(range(11, Traits.MAX_AGE_FOR_ADOPTION+1))
+            return list(range(11, Traits.MAX_AGE_FOR_ADOPTION + 1))
         else:
             raise Exception("Wrong age.")
 
-    def get_breakup_chance(self):
+    def get_breakup_chance(self, couple):
         """Statistical chance of breaking up."""
+        # Link: http://stories.avvo.com/relationships/divorce/numbers-breakdown-divorce-generation.html
+        # Link: https://psychcentral.com/blog/is-my-marriage-doomed-if-my-parents-got-divorced-when-i-was-a-kid/
+        # Insert to DB: True: 52.7. False: 48.3. If divorced parents: True: 79. False: 21.
         dbmgr = sql_connect.DatabaseManager("testdb.db")
         breakup_data = dbmgr.demo_data(self.city_data, "breakup")
         dbmgr.__del__()
 
-        options = {
+        options_for_married_parents = {
             True: breakup_data[0]['breakup_true'],
             False: breakup_data[0]['breakup_false']
         }
-        return self.randomizer.get_random_dict_key(options)
+        options_for_divorced_parents = {
+            True: 79,
+            False: 21
+        }
+        if all(p.has_divorced_parents for p in couple.persons):
+            return self.randomizer.get_random_dict_key(options_for_divorced_parents)
+        return self.randomizer.get_random_dict_key(options_for_married_parents)
 
     def get_intergenerational_chance(self):
         """Statistical chance for intergenerational relationship."""
@@ -474,7 +498,7 @@ class Statistics:
         """Statistical chance of suffering from depression."""
         options = {
             True: 33.3,
-            False:  66.7
+            False: 66.7
         }
         return self.randomizer.get_random_dict_key(options)
 
@@ -482,7 +506,7 @@ class Statistics:
         """Statistical chance of going to therapy."""
         options = {
             True: 33.3,
-            False:  66.7
+            False: 66.7
         }
         return self.randomizer.get_random_dict_key(options)
 
@@ -490,7 +514,7 @@ class Statistics:
         """Statistical chance of recovering with therapy."""
         options = {
             True: 50,
-            False:  50
+            False: 50
         }
         return self.randomizer.get_random_dict_key(options)
 

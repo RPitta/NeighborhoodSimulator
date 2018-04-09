@@ -102,7 +102,7 @@ class CareerHandler:
                 # Logic to at some point get fired / get promoted / get demoted / improve or worsen job performance
                 pass
             elif person.job.employment == Traits.UNEMPLOYED and person.age >= Traits.YOUNGADULT.start:
-                if not self.will_start_next_degree(person):
+                if not self.will_start_next_degree(person) and person.can_work:
                     person.job.employment = self.statistics.get_employment_chance()
                     if person.job.employment == Traits.EMPLOYED:
                         self.get_job(person)
@@ -311,7 +311,7 @@ class DeathHandler:
         """Remove person from spouse's spouses list. Set as widowed."""
         for spouse in person.spouses:
             spouse.relationship_status = Traits.WIDOWED
-            spouse.ex_spouses.append(person)
+            spouse.deceased_spouses.append(person)
             spouse.spouses = [s for s in spouse.spouses if s != person]
             spouse.partners = [p for p in spouse.partners if p != person]
             self.set_new_love_date_for_widower(spouse)
@@ -321,7 +321,7 @@ class DeathHandler:
         for partner in person.partners:
             if not partner.is_married_or_remarried:
                 partner.relationship_status = Traits.SINGLE
-            partner.ex_partners.append(person)
+            partner.deceased_partners.append(person)
             partner.partners = [partner for partner in partner.partners if partner != person]
             self.set_new_love_date_for_widower(partner)
             # Reset move_in_date if applicable
@@ -456,7 +456,7 @@ class MarriageHandler:
     def set_married_status(cls, couple):
         """Change each person's relationship status to married or remarried."""
         for person in couple.persons:
-            if len(person.ex_spouses) > 0:
+            if len(person.ex_spouses) > 0 or len(person.deceased_spouses) > 0:
                 person.relationship_status = Traits.REMARRIED
             else:
                 person.relationship_status = Traits.MARRIED

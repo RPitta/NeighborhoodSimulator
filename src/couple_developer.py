@@ -27,7 +27,7 @@ class CoupleDeveloper:
             self.set_marriage_date(couple)
 
         # Statistical break up chance.
-        couple.will_breakup = self.statistics.get_breakup_chance()
+        couple.will_breakup = self.statistics.get_breakup_chance(couple)
 
         # If couple will break up, set break-up date to each person
         if couple.will_breakup:
