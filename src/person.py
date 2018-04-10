@@ -140,7 +140,7 @@ class Person(Traits):
     @property
     def is_white(self):
         for race, percentage in self.race.items():
-            return race == Traits.WHITE and percentage == 100
+            return race == Traits.WHITE and percentage >= 25
 
     @property
     def is_mixed_race(self):
@@ -193,7 +193,7 @@ class Person(Traits):
         """Returns true if person has mental/physical conditions,
         is LGBTA, poly or is/was in love with a family member,
         or is non-white."""
-        return self.is_lgbta or self.is_poly or self.in_love_with_family or self.is_challenged or self.is_white is False
+        return self.is_lgbta or self.is_poly or self.in_love_with_family or self.is_challenged or self.is_mixed_race or self.is_white is False
 
     # AGE
 
@@ -222,7 +222,8 @@ class Person(Traits):
     @property
     def has_divorced_parents(self):
         if len(self.adoptive_parents) > 0:
-            return self.adoptive_parents[0] in self.adoptive_parents[1].ex_partners or self.adoptive_parents[0] in self.adoptive_parents[1].ex_spouses
+            return self.adoptive_parents[0] in self.adoptive_parents[1].ex_partners or self.adoptive_parents[0] in \
+                   self.adoptive_parents[1].ex_spouses
         elif len(self.parents) > 0:
             return self.parents[0] in self.parents[1].ex_partners or self.parents[0] in self.parents[1].ex_spouses
         else:
