@@ -63,7 +63,7 @@ class City:
 
     def populate_city(self):
         """Populate the city with X number of random children."""
-        for _ in (number + 1 for number in range(400)):
+        for _ in (number + 1 for number in range(200)):
             person = self.generator.create_first_child(Traits.BABY.end, self.population_surnames)
             self.population.append(person)
 
@@ -71,7 +71,7 @@ class City:
         """Age up city population."""
         # Add / Remove children in foster care
         self.foster.check_foster_care_system(self.living_outsiders)
-        if len(self.foster.children_up_for_adoption) < 5:
+        if len(self.foster.children_up_for_adoption) < 3:
             self.populate_foster_care_system()
 
         self.do_person_action(neighborhood)
@@ -82,9 +82,6 @@ class City:
         new_children = [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.CHILD.start, self.population_surnames)]
         new_children += [self.generator.create_first_child(Traits.TEEN.start, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.BABY.start, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.BABY.end, self.population_surnames)]
-        new_children += [self.generator.create_first_child(Traits.CHILD.end, self.population_surnames)]
         # Assign education
         for child in new_children:
             child.education.init_degree(child)
@@ -149,6 +146,7 @@ class City:
     def do_couple_action(self):
         """Couple actions for each couple."""
         for couple in self.city_couples:
+
 
             # Breakup
             if couple.is_breakup_date and couple.will_breakup:

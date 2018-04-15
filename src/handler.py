@@ -824,6 +824,8 @@ class PregnancyHandler(CityPregnancyHandler):
                 babies.append(new_baby)
             self.print_triplets_message(couple, babies)
         else:
+            print("IS Pregnant = " + str(couple.is_pregnant))
+            print("Expecting Children = " + str(couple.expecting_num_of_children))
             raise Exception("Number of births is not permitted.")
 
         return babies
