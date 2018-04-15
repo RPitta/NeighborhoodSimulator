@@ -21,6 +21,7 @@ class Household:
 
     @property
     def household_income(self):
+        """Returns average household income from all employed adults."""
         total_salary = 0
         total_working_age_member = 0
         for p in self.members:
@@ -107,9 +108,9 @@ class Household:
 
     def household_validation(self):
         """Validation of household members."""
+        if any(p.is_alive is False for p in self.members):
+            raise Exception("Household member is dead.")
         if len(set(self.members)) != len(self.members):
             raise Exception("List of household members contains duplicates.")
         if any(p.apartment_id != self.apartment_id for p in self.members):
             raise Exception("Household member has a wrongly assigned apartment ID.")
-        if any(p.is_alive is False for p in self.members):
-            raise Exception("Household member is dead.")

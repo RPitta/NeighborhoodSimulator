@@ -19,14 +19,24 @@ HOUSEHOLD
 
 BABIES
 * Newborns are aged "0" (referring to being only days alive and having not reached yet 12 months)
-* Newborns take their father's surname (regardless of whether the parents are married or not) unless adopted by a single female.
-* Newborns have the same social class as their parents.
-* Babies aged 3 can become autistic (high-functioning or not). If not high-functioning, autistic persons will be undateable and will always live with parents/siblings.
+* Newborns take their father's surname (regardless of whether the parents are married or not) unless adopted by gay couple or single female.
+
+RACES
+* White, Black, Latino and Asian.
+* Mixed races (babies born from interracial relationships)
+
+CONDITIONS
+* Autistic Disorder: Diagnosed at age 2. Will never date or have children, will never work or go to university, will never live alone.
+* Aspergers: Diagnosed at age 4-12. Can have a normal life.
+* Depression: Diagnosed after the death of a family member. They will either recover through therapy, commit suicide, or leave it untreated.
+
+SOCIAL CLASS
+* Individual social class depends on person's job salary.
+* Household social class is based on household income; sum of salary of all employed adult household member.
 
 DEATH
 * Death can happen at any age starting from age 1. Old age set at 80 at the moment, but should be increased.
 * Possible death causes depend on age: if baby/child, it can only be from an illness. Teens can die from illness or suicide. Adults can die from an illness, (road) accident, suicide, overdose, or old age if seniors.
-* A dead family member can cause their parent/sibling/child/partner to become depressed; they will either recover through therapy, or commit suicide.
 * If one person from an unmarried couple dies, the other one will have a civil status of Single. If married, they will be Widowed.
 * Death in the neighborhood will cause reactions / funeral attendance by the neighbors.
 
@@ -38,13 +48,13 @@ PROFESSIONS
 * Persons who have a specific profession such as actors or politicians will be able to get rich / famous and may cause reactions among the neighborhood.
 
 ADDICTIONS
-* Persons over 18 can become drug or alcohol addicts. 
-* They will eventually either be sent to a rehabilitation facility, or overdose.
-* They can relapse after years being sober.
+* Persons >= 18 can become drug or alcohol addicts. 
+* They will eventually either be sent to a rehabilitation facility, overdose, or become functional addicts.
+* They can relapse after years of being sober.
 
 RELATIONSHIPS
 * Persons can start getting into committed relationships once young adults (18). Teenage "crushes" not implemented (yet?).
-* Persons realize their relationship orientation (monoamorous/polyamorous) at 18+.
+* Persons realize their relationship orientation (monoamorous/polyamorous) once young adults.
 * Poly persons can only date 2 persons at the same time. (Should increase this in the future?)
 * Intergenerational relationships are considered to be relationships with at least a 20-year age difference (youngest one must always be of age).
 * Throuples (or triads) are considered to be relationships between three poly persons all romantically involved with each other.
@@ -60,24 +70,24 @@ PREGNANCY AND ADOPTION
 * Pregnant women can only have 1 child, twins or triplets.
 * Only 1 or 2 children can be adopted at the same time.
 * Who can have biological children: straight couples (excluding infertile couples), two (m/f) persons from a throuple (but all three will be the child's parents), and consanguineous couples (who will have a slightly increased chance of having a disabled child). Transgender persons and asexual persons (regardless of romantic orientation) cannot.
-* Who can adopt: everyone (single persons and couples). However, only single persons who want children but do not want a committed relationship will adopt. Throuples will "officially" adopt as couples (but all three will be the child's parents), and consanguineous couples will "officially" adopt as single persons (but both will be the child's parents). 
+* Who can adopt: everyone (single persons and couples). Single persons who want children but do not want a committed relationship will adopt. Throuples will "officially" adopt as couples (but all three will be the child's parents), and consanguineous couples will "officially" adopt as single persons (but both will be the child's parents). 
 
 DIVORCE
 * Couples can get divorced/separated at any point in time from one year after getting together, up until old age.
-* One of the two (the man if straight couple) will move to another apartment in the neighborhood if available, or move out of the building.
-* Underage children will remain with the mother.
+* One of the two will move to another apartment in the neighborhood if available, or move out of the building.
+* Children will remain in the household regardless of which parent leaves.
 * Each person will be added to each other's list of ex-partners / ex-spouses and there will be a chance of getting back together eventually.
 * Divorced persons who marry a second (or third) time will have a civil status of Remarried.
 * Divorced/separated persons who start dating another person who has children, will become step-parents. 
-* New partners / spouses will move into the household.
-* Step-children will also move in if the new partner is their mother, or the children's mother is dead. Adult children will only move in if single and unemployed.
+* New partners will move into the household.
+* Step-children will also move in if underage or are otherwise dependant.
 
 MINORITIES
-* Persons within minority groups (LGBTA persons, poly persons and consanguinamorous persons) are liberal by default, as are persons who at any point have an intergenerational relationship.
+* Persons within minority groups (non-white persons, challenged persons, LGBTA persons, poly persons and consanguinamorous persons) are liberal by default, as are persons who at any point have an intergenerational relationship.
 * Persons within minority groups and intergenerationals will be subjected to their families and beighbors (positive and/or negative) reactions.
 * LGBTA persons can only come out during their teenage years (13-17).
 * Conservative families of LGBTA teens may throw them out or these teens may move out at 18 or commit suicide.
-* Relationships between minority and non-minority (for example, between transgender/cisgender or mono/poly, can only happen if the non-minority person is liberal)
+* Relationships between minority and non-minority (for example, between transgender/cisgender or mono/poly) can only happen if the non-minority person is liberal.
 
 NEIGHBORHOOD
 * Located a bit far from the city, so neighbors will be friendlier/closer to each other than they normally would be if they lived in a large city. 
