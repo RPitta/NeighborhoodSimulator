@@ -74,6 +74,7 @@ class City:
         if len(self.foster.children_up_for_adoption) < 3:
             self.populate_foster_care_system()
 
+        self.do_household_action(neighborhood)
         self.do_person_action(neighborhood)
         self.do_couple_action()
 
@@ -88,6 +89,24 @@ class City:
         # Add to foster care centre and city population
         self.foster.add_to_system(new_children)
         self.population.extend(new_children)
+
+    def do_household_action(self,neighborhood):
+        """Action for each household"""
+        if neighborhood is None:
+            return
+        for household in neighborhood.households :
+            if household.household_income == 0 :
+               if household.finance_status == household.SAFE :
+                   household.finance_status = household.BROKE
+               elif household.finance_status == household.BROKE :
+                   household.finance_status = household.HOMELESS
+                   if self.statistics.willing_to_move_outside() :
+                       household.set_living_outside()
+            else :
+                household.finance_status = household.SAFE
+                if (not household.is_neighbor and self.statistics.willing_to_move_back()):
+                    hosehold.set_living_inside()
+
 
     def do_person_action(self, neighborhood):
         """Personal actions for each person."""
@@ -175,7 +194,7 @@ class City:
                     self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
 
             # Marriage
-            if couple.is_marriage_date and couple.will_get_married:
+            if  couple.is_marriage_date and couple.will_get_married :
                 self.marriage_handler.get_married(couple)
 
             # Pregnancy

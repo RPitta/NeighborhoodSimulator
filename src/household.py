@@ -6,10 +6,16 @@ class Household:
 
     CHILD_IMPACT_FOR_INCOME = 0.1  # value from 0 to 1
 
+    #household financial stage
+    SAFE = 0
+    BROKE = 1
+    HOMELESS = 2
+
     def __init__(self, apartment_id):
         self.apartment_id = apartment_id
         self.members_list = []
         self.pets_list = []
+        self.finance_status = self.SAFE
 
     @property
     def members(self):
@@ -27,8 +33,9 @@ class Household:
         for p in self.members:
             total_salary += p.job.salary
             total_working_age_member += 1 if p.age >= Traits.YOUNGADULT.start else self.CHILD_IMPACT_FOR_INCOME
-        avg_salary = total_salary/total_working_age_member
-        return avg_salary
+        if total_working_age_member == 0 :
+            return 0
+        return total_salary/total_working_age_member
 
     @property
     def social_class(self):
@@ -37,6 +44,21 @@ class Household:
             if social_class.belongs_to(self.household_income):
                 return social_class
         raise Exception("No matching social class within given household income.")
+
+    @property
+    def is_neighbor(self):
+        """check if member is one of neighborhood"""
+        return self.members_list[0].is_neighbor
+
+    def set_living_inside(self):
+        """set all member move to the neighborhood"""
+        for p in self.members_list :
+            p.is_neighbor = True
+
+    def set_living_outside(self):
+        """set all member leaving the neighborhood"""
+        for p in self.members_list :
+            p.is_neighbor = False
 
     def add_member(self, person):
         """Add member and set matching apartment IDs."""

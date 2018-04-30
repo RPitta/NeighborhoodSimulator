@@ -83,13 +83,16 @@ class CityCareerHandler:
             self.advance_degree(person)
         else:
             if person.job.employment == Traits.EMPLOYED:
-                # Logic to at some point get fired / get promoted / get demoted / improve or worsen job performance
+                person.job.progress_job()
                 pass
             elif person.job.employment == Traits.UNEMPLOYED and person.age >= Traits.YOUNGADULT.start:
                 if not self.will_start_next_degree(person):
                     person.job.employment = self.statistics.get_employment_chance()
                     if person.job.employment == Traits.EMPLOYED:
+                        person.job.unemployed_year = 0
                         self.get_job(person)
+                    else :
+                        person.job.unemployed_year += 1
 
     @classmethod
     def advance_degree(cls, person):
