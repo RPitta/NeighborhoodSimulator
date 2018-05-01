@@ -6,7 +6,7 @@ from social_class import *
 
 class Setup:
     """Initialize names, surnames and professions from files."""
-    MIN_WORDS = 800
+    MIN_WORDS = 5
 
     def __init__(self):
         self.MALE_NAMES = self.get_male_names()
@@ -37,10 +37,15 @@ class Setup:
 
     def get_professions(self):
         """Add all professions from file to list."""
-        with open(self.find_file_location("professions.txt"), "r") as file_professions:
-            professions = set([x.split('\n')[0] for x in file_professions.readlines()])
-            self.validate_list(professions)
-            return self.capitalize_words(professions)
+        return_value = {}
+        file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),'files','professions')
+        for filename in os.listdir(file_dir):
+            with open(os.path.join(file_dir, filename)) as file_professions:
+                professions = list([x.split('\n')[0] for x in file_professions.readlines()])
+                self.validate_list(professions)
+                return_value[filename] = professions
+        return return_value
+
 
     @staticmethod
     def find_file_location(file_name):

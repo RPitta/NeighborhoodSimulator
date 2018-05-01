@@ -330,6 +330,23 @@ class Statistics:
         }
         return self.randomizer.get_random_dict_key(options)
 
+    def willing_to_move_outside(self):
+        """Statistical of family willing to move outside of neighborhood"""
+        options = {
+            True: 50,
+            False: 50
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+    def willing_to_move_back(self):
+        """Statistical of family willing to move back to inside of neighborhood"""
+        options = {
+            True: 50,
+            False: 50
+        }
+        return self.randomizer.get_random_dict_key(options)
+
+
     def get_desired_num_of_children(self):
         """Statistical chance for desired number of children per couple."""
         dbmgr = sql_connect.DatabaseManager("testdb.db")

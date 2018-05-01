@@ -782,6 +782,12 @@ class Person(Traits):
     def get_grandparents_names(self):
         return self.get_names_list(self.grandparents)
 
+    # FINANCIAL LIFE
+    @property
+    def unemployed_for_a_long_time(self):
+        return self.job.unemployed_year > 2
+
+
     @classmethod
     def get_names_list(cls, lst):
         if lst is None or len(lst) == 0:

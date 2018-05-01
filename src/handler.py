@@ -99,13 +99,16 @@ class CareerHandler:
             self.advance_degree(person)
         else:
             if person.job.employment == Traits.EMPLOYED:
-                # Logic to at some point get fired / get promoted / get demoted / improve or worsen job performance
+                person.job.progress_job()
                 pass
             elif person.job.employment == Traits.UNEMPLOYED and person.age >= Traits.YOUNGADULT.start:
                 if not self.will_start_next_degree(person) and person.can_work:
                     person.job.employment = self.statistics.get_employment_chance()
                     if person.job.employment == Traits.EMPLOYED:
+                        person.job.unemployed_year = 0
                         self.get_job(person)
+                    else :
+                        person.job.unemployed_year += 1
 
     def advance_degree(self, person):
         """Advances person's current degree."""
@@ -728,6 +731,8 @@ class PregnancyHandler:
                 self.print_triplets_message(couple, babies)
             return babies
         else:
+            print("IS Pregnant = " + str(couple.is_pregnant))
+            print("Expecting Children = " + str(couple.expecting_num_of_children))
             raise Exception("Number of births is not permitted.")
 
     def adopt(self, couple):
