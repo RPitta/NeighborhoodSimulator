@@ -67,9 +67,8 @@ class Job:
     def get_job(self, person):
         """Set occupation and job level."""
         job_chance = [self.LOW_JOB_LIST, self.FAMOUS_JOB_LIST]
-        if (person.education >= Education.BACHELOR) :
+        if (person.education.current_degree >= Education.BACHELOR) :
             job_chance.append(self.BACHELOR_JOB_LIST)
-        self.title = self.randomizer.get_random_item(self.setup.PROFESSIONS)
         if person.is_female:
             self.change_to_female_titles()
         self.set_job_level(person)

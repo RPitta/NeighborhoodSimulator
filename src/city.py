@@ -106,7 +106,7 @@ class City:
             else :
                 household.finance_status = household.SAFE
                 if (not household.is_neighbor and self.statistics.willing_to_move_back()):
-                    hosehold.set_living_inside()
+                    household.set_living_inside()
 
 
     def do_person_action(self, neighborhood):
