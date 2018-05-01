@@ -410,6 +410,15 @@ class Statistics:
             return self.randomizer.get_random_dict_key(options_for_divorced_parents)
         return self.randomizer.get_random_dict_key(options_for_married_parents)
 
+    def get_couple_reconciliation_chance(self):
+        """Statistical chance for a separated couple to get back together."""
+        # Link: https://www.quora.com/How-common-is-it-for-divorced-couples-to-get-back-together
+        options = {
+            True: 6,
+            False: 94
+        }
+        return self.randomizer.get_random_dict_key(options)
+
     def get_intergenerational_chance(self):
         """Statistical chance for intergenerational relationship."""
         options = {
