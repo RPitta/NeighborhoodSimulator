@@ -4,13 +4,12 @@ from abc import ABCMeta
 class AbstractSocialClass(metaclass=ABCMeta):
     """Abstract base class for social class."""
 
-
     def __init__(self):
         self.name = ""
         self.rank = -1
         self.avg_salary_min = 0
 
-    def belongs_to(self,avg_salary):
+    def belongs_to(self, avg_salary):
         """Returns the social class that belongs to given salary."""
         return avg_salary >= self.avg_salary_min
 
@@ -22,7 +21,7 @@ class UpperClass(AbstractSocialClass):
         super().__init__()
         self.name = "Upper class"
         self.rank = 3
-        self.avg_salary_min= 80000
+        self.avg_salary_min = 80000
 
 
 class MiddleClass(AbstractSocialClass):

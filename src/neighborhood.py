@@ -47,7 +47,6 @@ class Neighborhood:
             household = Household(i)
             self.households.append(household)
 
-
     def populate_neighborhood(self, city_population, city_couples):
         """Populate the neighborhood with X number of city inhabitants.
         Each person and their family are added to each household and to neighbors list."""

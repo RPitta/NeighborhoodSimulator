@@ -107,7 +107,7 @@ class CareerHandler:
                     if person.job.employment == Traits.EMPLOYED:
                         person.job.unemployed_year = 0
                         self.get_job(person)
-                    else :
+                    else:
                         person.job.unemployed_year += 1
 
     def advance_degree(self, person):

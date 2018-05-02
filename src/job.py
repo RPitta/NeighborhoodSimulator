@@ -26,8 +26,7 @@ class Job:
 
     SALARY_MIN_STANDARD = 20000  # per year
     SALARY_MAX_STANDARD = 30000  # per year
-
-    MAXIMUM_SALARY_CHANGE = 30 # in percentages
+    MAXIMUM_SALARY_CHANGE = 30  # in percentages
 
     def __init__(self, level=0, salary=0, employment=Traits.UNEMPLOYED):
         self.level = level
@@ -52,28 +51,27 @@ class Job:
         """Auto progress job performance"""
         self.current_performance += self.randomizer.get_random_item(self.PERFORMANCE_LIST)
         self.change_salary_rate = self.randomizer.get_random_number(0, 30) / 100
-        if (self.current_performance > 2) :
+        if self.current_performance > 2:
             self.promotion(self.change_salary_rate)
-        elif (self.current_performance > 1):
-            self.promotion(self.change_salary_rate,job_increase=True)
-        elif (self.current_performance < -3 ):
+        elif self.current_performance > 1:
+            self.promotion(self.change_salary_rate, job_increase=True)
+        elif self.current_performance < -3:
             self.termination()
-        elif (self.current_performance < -2):
+        elif self.current_performance < -2:
             self.demotion(self.change_salary_rate, job_decrease=True)
-        elif (self.current_performance < -1):
+        elif self.current_performance < -1:
             self.demotion(self.change_salary_rate)
-
 
     def get_job(self, person):
         """Set occupation and job level."""
         job_chance = [self.LOW_JOB_LIST, self.FAMOUS_JOB_LIST]
-        if (person.education.current_degree >= Education.BACHELOR) :
+        if person.education.current_degree >= Education.BACHELOR:
             job_chance.append(self.BACHELOR_JOB_LIST)
         if person.is_female:
             self.change_to_female_titles()
         self.set_job_level(person)
         self.title = self.randomizer.get_random_item(
-                        self.setup.PROFESSIONS[self.randomizer.get_random_item(job_chance)])
+            self.setup.PROFESSIONS[self.randomizer.get_random_item(job_chance)])
         self.set_salary()
         self.employment = Traits.EMPLOYED
 
@@ -97,9 +95,8 @@ class Job:
         elif person.education == Education.DOCTOR:
             self.level = self.EXECUTIVE
 
-
-
     def set_salary(self):
+        """Determines random job salary."""
         self.salary = self.randomizer.get_random_number(
             self.SALARY_MIN_STANDARD, self.SALARY_MAX_STANDARD) * (self.level + 1)
 
@@ -109,7 +106,6 @@ class Job:
             self.level += 1
             self.current_performance = self.FLAT_PERFORMANCE
         self.salary = self.salary * (1 + salary_increment)
-
 
     def demotion(self, salary_decrease, job_decrease=False):
         """Job demotion."""
@@ -123,5 +119,5 @@ class Job:
         self.salary = 0
         self.level = 0
         self.employment = Traits.UNEMPLOYED
-        self.title="ex-"+self.title
+        self.title = "ex-" + self.title
         self.current_performance = self.FLAT_PERFORMANCE

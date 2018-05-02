@@ -787,7 +787,6 @@ class Person(Traits):
     def unemployed_for_a_long_time(self):
         return self.job.unemployed_year > 2
 
-
     @classmethod
     def get_names_list(cls, lst):
         if lst is None or len(lst) == 0:

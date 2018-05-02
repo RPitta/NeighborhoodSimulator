@@ -25,8 +25,7 @@ class Education:
     DOCTOR = 4
     LITERAL_DEGREES = ['Uneducated', 'High School Diploma', 'Bachelor Degree', 'Master Degree', 'Doctoral Degree']
 
-    # External Factor
-    # Value range from 0 to 1
+    # External Factor. Value range from 0 to 1
     DRUG_ADDICTION_EFFECT = 0.25
     ALCOHOL_ADDICTION_EFFECT = 0.25
     CHANCE_OF_BAD_DECISION = 0.02

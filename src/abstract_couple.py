@@ -125,7 +125,8 @@ class AbstractCouple(metaclass=ABCMeta):
 
     @property
     def will_have_children(self):
-        if any([p.has_max_num_of_children for p in self.persons]) or self.has_desired_children or self.is_pregnant or self.birth_date > self.oldest.age:
+        if any([p.has_max_num_of_children for p in
+                self.persons]) or self.has_desired_children or self.is_pregnant or self.birth_date > self.oldest.age:
             return False
         return self.can_and_wants_bio_or_adopted_children
 

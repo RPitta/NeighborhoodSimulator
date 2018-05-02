@@ -6,7 +6,7 @@ class Household:
 
     CHILD_IMPACT_FOR_INCOME = 0.1  # value from 0 to 1
 
-    #household financial stage
+    # household financial stage
     SAFE = 0
     BROKE = 1
     HOMELESS = 2
@@ -33,9 +33,9 @@ class Household:
         for p in self.members:
             total_salary += p.job.salary
             total_working_age_member += 1 if p.age >= Traits.YOUNGADULT.start else self.CHILD_IMPACT_FOR_INCOME
-        if total_working_age_member == 0 :
+        if total_working_age_member == 0:
             return 0
-        return total_salary/total_working_age_member
+        return total_salary / total_working_age_member
 
     @property
     def social_class(self):
@@ -52,12 +52,12 @@ class Household:
 
     def set_living_inside(self):
         """set all member move to the neighborhood"""
-        for p in self.members_list :
+        for p in self.members_list:
             p.is_neighbor = True
 
     def set_living_outside(self):
         """set all member leaving the neighborhood"""
-        for p in self.members_list :
+        for p in self.members_list:
             p.is_neighbor = False
 
     def add_member(self, person):

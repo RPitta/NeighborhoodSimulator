@@ -38,7 +38,7 @@ class Setup:
     def get_professions(self):
         """Add all professions from file to list."""
         return_value = {}
-        file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),'files','professions')
+        file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files', 'professions')
         for filename in os.listdir(file_dir):
             with open(os.path.join(file_dir, filename)) as file_professions:
                 professions = list([x.split('\n')[0] for x in file_professions.readlines()])
@@ -46,11 +46,10 @@ class Setup:
                 return_value[filename] = professions
         return return_value
 
-
     @staticmethod
     def find_file_location(file_name):
         path_file = os.path.dirname(os.path.realpath(__file__))
-        path_full = os.path.join(path_file,'files', file_name)
+        path_full = os.path.join(path_file, 'files', file_name)
         return path_full
 
     @staticmethod
