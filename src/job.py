@@ -5,7 +5,6 @@ from education import Education
 
 class Job:
     """Job base class."""
-
     BACHELOR_JOB_LIST = 'BACHELOR'
     FAMOUS_JOB_LIST = 'FAMOUS'
     LOW_JOB_LIST = 'LOW'
@@ -48,20 +47,20 @@ class Job:
         }
         return str(ret_val)
 
-    def progress_job(self):
+    def progress_job(self,person):
         """Auto progress job performance"""
         self.current_performance += self.randomizer.get_random_item(self.PERFORMANCE_LIST)
         self.change_salary_rate = self.randomizer.get_random_number(0, 30) / 100
         if (self.current_performance > 2) :
-            self.promotion(self.change_salary_rate)
+            self.promotion(self.change_salary_rate,person)
         elif (self.current_performance > 1):
-            self.promotion(self.change_salary_rate,job_increase=True)
+            self.promotion(self.change_salary_rate,person,job_increase=True)
         elif (self.current_performance < -3 ):
-            self.termination()
+            self.termination(person)
         elif (self.current_performance < -2):
-            self.demotion(self.change_salary_rate, job_decrease=True)
+            self.demotion(self.change_salary_rate,person, job_decrease=True)
         elif (self.current_performance < -1):
-            self.demotion(self.change_salary_rate)
+            self.demotion(self.change_salary_rate,person)
 
 
     def get_job(self, person):
@@ -69,13 +68,14 @@ class Job:
         job_chance = [self.LOW_JOB_LIST, self.FAMOUS_JOB_LIST]
         if (person.education.current_degree >= Education.BACHELOR) :
             job_chance.append(self.BACHELOR_JOB_LIST)
-        if person.is_female:
-            self.change_to_female_titles()
         self.set_job_level(person)
         self.title = self.randomizer.get_random_item(
                         self.setup.PROFESSIONS[self.randomizer.get_random_item(job_chance)])
+        if person.is_female:
+            self.change_to_female_titles()
         self.set_salary()
         self.employment = Traits.EMPLOYED
+        print("\n{} has get a job as {}, with paycheck = $ {}.\n".format(person.fullname, self.title, self.salary))
 
     def change_to_female_titles(self):
         """Change male only job titles to female titles."""
@@ -83,6 +83,8 @@ class Job:
             self.title = "Waitress"
         if self.title == "Actor":
             self.title = "Actress"
+        if self.title == "Priest":
+            self.title = "Priestess"
 
     def set_job_level(self, person):
         """Set job level based on person's achieved education."""
@@ -103,23 +105,30 @@ class Job:
         self.salary = self.randomizer.get_random_number(
             self.SALARY_MIN_STANDARD, self.SALARY_MAX_STANDARD) * (self.level + 1)
 
-    def promotion(self, salary_increment, job_increase=False):
+    def promotion(self, salary_increment, person,job_increase=False):
         """Job promotion."""
+        print("\n{} just got promoted.\n".format(person.fullname))
         if job_increase and self.level < self.EXECUTIVE:
             self.level += 1
             self.current_performance = self.FLAT_PERFORMANCE
         self.salary = self.salary * (1 + salary_increment)
+        self.salary = round(self.salary,2)
 
 
-    def demotion(self, salary_decrease, job_decrease=False):
+    def demotion(self, salary_decrease, person,job_decrease=False):
+        print("\n{} just got demoted.\n".format(person.fullname))
         """Job demotion."""
         if job_decrease and self.level > 0:
             self.level -= 1
             self.current_performance = self.FLAT_PERFORMANCE
         self.salary = 0 if 1 - salary_decrease < 0 else self.salary * (1 - salary_decrease)
+        self.salary = round(self.salary,2)
+        if (self.salary == 0):
+             self.termination()
 
-    def termination(self):
+    def termination(self,person):
         """Job termination"""
+        print("\n{} got terminated from his/her job.\n".format(person.fullname))
         self.salary = 0
         self.level = 0
         self.employment = Traits.UNEMPLOYED

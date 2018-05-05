@@ -99,7 +99,7 @@ class CareerHandler:
             self.advance_degree(person)
         else:
             if person.job.employment == Traits.EMPLOYED:
-                person.job.progress_job()
+                person.job.progress_job(person)
                 pass
             elif person.job.employment == Traits.UNEMPLOYED and person.age >= Traits.YOUNGADULT.start:
                 if not self.will_start_next_degree(person) and person.can_work:
@@ -112,7 +112,7 @@ class CareerHandler:
 
     def advance_degree(self, person):
         """Advances person's current degree."""
-        person.education.advance_degree(person.is_drug_addict, person.is_alcohol_addict)
+        person.education.advance_degree(person,person.is_drug_addict, person.is_alcohol_addict)
         if person.is_neighbor and not person.education.in_study:
             self.display_completed_degree_message(person)
 

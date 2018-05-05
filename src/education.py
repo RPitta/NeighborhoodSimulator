@@ -57,7 +57,7 @@ class Education:
         self.total_fail = 0
         self.current_year = 0
 
-    def advance_degree(self, is_drug_addict=False, is_alcohol_addict=False):
+    def advance_degree(self, person,is_drug_addict=False, is_alcohol_addict=False):
         """Advance degree."""
         chance_to_fail = self.DRUG_ADDICTION_EFFECT * is_drug_addict + self.ALCOHOL_ADDICTION_EFFECT * is_alcohol_addict + self.CHANCE_OF_BAD_DECISION
         chance_to_success = 100 - (chance_to_fail * 100)
@@ -65,7 +65,7 @@ class Education:
             if self.current_year != self.years_to_complete_degree:
                 self.current_year += 1
             else:
-                self.acquire_degree()
+                self.acquire_degree(person=person)
                 if self.current_degree + 1 != self.DOCTOR:
                     self.available_degree = self.current_degree + 1
         else:
@@ -73,17 +73,19 @@ class Education:
                 return
             self.total_fail += 1
             if self.total_fail > self.FAILING_CLASS_MAX:
-                self.fail_out()
+                self.fail_out(person=person)
 
-    def acquire_degree(self):
+    def acquire_degree(self,person):
         """Append new obtained degree and finish studies."""
+        print("\n{} has acquired a {} degree.\n".format(person.fullname, self.LITERAL_DEGREES[self.current_degree]))
         self.current_year = 0
         self.in_study = False
         self.total_fail = 0
         self.acquired_degree.append(self.current_degree + 1)
 
-    def fail_out(self):
+    def fail_out(self,person):
         """Fail out of current degree."""
+        print("\n{} has fail {} degree.\n".format(person.fullname, self.LITERAL_DEGREES[self.current_degree]))
         self.in_study = False
         self.total_fail = 0
         self.current_year = 0

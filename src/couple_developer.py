@@ -129,6 +129,13 @@ class CoupleDeveloper:
             raise Exception(
                 "Couple is set on having a child but won't get pregnant nor adopt.")
 
+        if (couple.will_adopt and couple.adoption_process_date > 0) or (couple.pregnancy_date > 0):
+           check_date = couple.pregnancy_date if couple.pregnancy_date > 0 else couple.adoption_process_date
+           if (check_date not in couple.oldest.span_left_till_old_age):
+               couple.pregnancy_date = 0
+               couple.adoption_process_date = 0
+               couple.will_adopt = 0
+
         self.unique_dates_validation(couple)
         return couple
 
