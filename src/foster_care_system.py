@@ -82,6 +82,20 @@ class FosterCareSystem:
         self.set_is_adopted_status([child])
         return [child]
 
+    def adopt_child_as_single_parent(self, parent):
+        """Returns only child with statistically random age."""
+        self.check_children_in_foster_care()
+        if len(self.only_childs) == 0:
+            return self.adopt_sibling_set_as_single_parent(parent)
+
+        children_within_range = self.get_children_within_statistical_range(self.only_childs)
+        child = self.randomizer.get_random_item(children_within_range)
+
+        self.link_adoptive_single_family(parent, [child])
+        self.remove_from_system([child])
+        self.set_is_adopted_status([child])
+        return [child]
+
     def adopt_sibling_set(self, couple):
         """Returns a set of siblings with statistically random age."""
         self.check_children_in_foster_care()
@@ -96,6 +110,24 @@ class FosterCareSystem:
         # Set expecting num of children for couple now that they know number of siblings
         couple.expecting_num_of_children = len(children)
         self.link_adoptive_family(couple, children)
+        self.remove_from_system(children)
+        self.set_is_adopted_status(children)
+        return children
+
+    def adopt_sibling_set_as_single_parent(self, parent):
+        """Returns a set of siblings with statistically random age, for single parents."""
+        self.check_children_in_foster_care()
+        if len(self.sibling_sets) == 0:
+            parent.expecting_num_of_children = 1
+            return self.adopt_child_as_single_parent(parent)
+
+        children_within_range = self.get_children_within_statistical_range(self.sibling_sets)
+        child = self.randomizer.get_random_item(children_within_range)
+        children = [child] + list(child.siblings)
+
+        # Set expecting num of children for couple now that they know number of siblings
+        parent.expecting_num_of_children = len(children)
+        self.link_adoptive_single_family(parent, children)
         self.remove_from_system(children)
         self.set_is_adopted_status(children)
         return children
@@ -125,6 +157,18 @@ class FosterCareSystem:
             for child in children:
                 child.surname = child.adoptive_parents[0].surname
         for child in children:
+            child.original_surname = child.surname
+
+    @classmethod
+    def link_adoptive_single_family(cls, parent, children):
+        """Link adopted children to their adoptive family, for single parent."""
+        for child in children:
+            child.adoptive_parents.append(parent)
+        parent.adoptive_children.extend(children)
+
+        # Surname
+        for child in children:
+            child.surname = parent.surname
             child.original_surname = child.surname
 
     def check_children_in_foster_care(self):

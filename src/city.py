@@ -70,7 +70,7 @@ class City:
         """Age up city population."""
         # Add / Remove children in foster care
         self.foster.check_foster_care_system(self.living_outsiders)
-        if len(self.foster.children_up_for_adoption) < 3:
+        if len(self.foster.children_up_for_adoption) < 7:
             self.populate_foster_care_system()
 
         self.do_household_action(neighborhood)
@@ -162,6 +162,12 @@ class City:
                     self.person_developer.set_new_love_date_for_polys(couple)
                     # Add couple to city couples list
                     self.city_couples.append(couple)
+
+            # Single adoption
+            if person.is_single_adoption_process_date:
+                self.pregnancy_handler.start_single_adoption_process(person)
+            if person.is_single_adoption_date:
+                self.population.extend(self.pregnancy_handler.adopt_as_single(person))
 
     def do_couple_action(self):
         """Couple actions for each couple."""

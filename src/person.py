@@ -33,6 +33,8 @@ class Person(Traits):
         self.relationship_status = self.SINGLE
         self.is_pregnant = False
         self.is_in_adoption_process = False
+        self.expecting_num_of_children = -1
+        self.desired_children_left = 10
 
         # Family
         self.parents = []
@@ -65,6 +67,8 @@ class Person(Traits):
         self.in_love_with_another_race = False
         self.in_love_as_throuple = False
         self.in_love_date = -1
+        self.single_adoption_process_date = -1
+        self.single_adoption_date = -1
 
         # Degree
         self.education = Education()
@@ -221,7 +225,9 @@ class Person(Traits):
 
     @property
     def has_divorced_parents(self):
-        if len(self.adoptive_parents) > 0:
+        if len(self.adoptive_parents) == 1:
+            return False
+        elif len(self.adoptive_parents) == 2:
             return self.adoptive_parents[0] in self.adoptive_parents[1].ex_partners or self.adoptive_parents[0] in \
                    self.adoptive_parents[1].ex_spouses
         elif len(self.parents) > 0:
@@ -323,6 +329,15 @@ class Person(Traits):
     @property
     def is_thrown_out_date(self):
         return self.age == self.thrown_out_date
+
+    @property
+    def is_single_adoption_process_date(self):
+        return self.age == self.single_adoption_process_date
+
+    @property
+    def is_single_adoption_date(self):
+        return self.age == self.single_adoption_date
+
 
     # CHILDREN
 

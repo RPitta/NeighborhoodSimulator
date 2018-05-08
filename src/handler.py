@@ -669,6 +669,13 @@ class PregnancyHandler:
         if any(p.is_neighbor for p in couple.persons):
             self.print_expecting_num_of_adoptions(couple)
 
+    def start_single_adoption_process(self, person):
+        """Single person starts adoption process."""
+        person.expecting_num_of_children = self.statistics.get_adoption_num_of_children()
+        person.is_in_adoption_process = True
+        if person.is_neighbor:
+            self.print_expecting_num_of_single_adoptions(person)
+
     @classmethod
     def print_expecting_num_of_adoptions(cls, couple):
         """Display number of adoptions that couple is expecting."""
@@ -678,6 +685,16 @@ class PregnancyHandler:
         elif couple.expecting_num_of_children == Traits.SIBLING_SET:
             print("\n{} and {} have began the process to adopt a sibling set.".format(
                 couple.person1, couple.person2))
+        else:
+            raise Exception("Number of adoptions is not permitted.")
+
+    @classmethod
+    def print_expecting_num_of_single_adoptions(cls, person):
+        """Display number of adoptions that single parent is expecting."""
+        if person.expecting_num_of_children == Traits.ONE_CHILD:
+            print("\n{} has began the process to adopt a child.".format(person))
+        elif person.expecting_num_of_children == Traits.SIBLING_SET:
+            print("\n{} has began the process to adopt a sibling set.".format(person))
         else:
             raise Exception("Number of adoptions is not permitted.")
 
@@ -736,7 +753,7 @@ class PregnancyHandler:
             raise Exception("Number of births is not permitted.")
 
     def adopt(self, couple):
-        """Override adopt method to include print messages."""
+        """Returns adopted children."""
         if not all([p.is_in_adoption_process for p in couple.persons]):
             raise Exception("Couple cannot adopt if not in adoption process.")
 
@@ -753,6 +770,24 @@ class PregnancyHandler:
         else:
             raise Exception("Wrong number of adoptions.")
 
+    def adopt_as_single(self, person):
+        """Returns single person's adopted children."""
+        if person.is_in_adoption_process is False:
+            raise Exception("Person cannot adopt if not in adoption process.")
+
+        if person.expecting_num_of_children == Traits.ONE_CHILD:
+            child = self.foster_care_system.adopt_child_as_single_parent(person)
+            if person.is_neighbor:
+                self.display_single_adoptions_message(person, child)
+            return child
+        elif person.expecting_num_of_children == Traits.SIBLING_SET:
+            children = self.foster_care_system.adopt_sibling_set_as_single_parent(person)
+            if person.is_neighbor:
+                self.display_single_adoptions_message(person, children)
+            return children
+        else:
+            raise Exception("Wrong number of adoptions.")
+
     @classmethod
     def display_adoptions_message(cls, couple, children):
         if len(children) > 1:
@@ -762,6 +797,15 @@ class PregnancyHandler:
         else:
             print("\n{} and {} have adopted a {} aged {}: {}.".format(
                 couple.person1, couple.person2, children[0].baby_gender, children[0].age, children[0].name))
+
+    @classmethod
+    def display_single_adoptions_message(cls, person, children):
+        if len(children) > 1:
+            print("\n{} has adopted a sibling set:".format(person))
+            for child in children:
+                print("{} ({}, age {})".format(child.name, child.baby_gender, child.age))
+        else:
+            print("\n{} has adopted a {} aged {}: {}.".format(person, children[0].baby_gender, children[0].age, children[0].name))
 
     @classmethod
     def print_singleton_message(cls, couple, babies):
@@ -794,3 +838,9 @@ class PregnancyHandler:
             person.is_in_adoption_process = False
         couple.desired_children_left -= couple.expecting_num_of_children
         couple.expecting_num_of_children = 0
+
+    @classmethod
+    def reset_single_adoption(cls, person):
+        person.is_in_adoption_process = False
+        person.desired_children_left -= person.expecting_num_of_children
+        person.expecting_num_of_children = 0

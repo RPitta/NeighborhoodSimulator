@@ -239,6 +239,13 @@ class Neighborhood:
                     # Add couple to couples list
                     self.neighbor_couples.append(couple)
 
+            # Single adoption
+            if person.is_single_adoption_process_date:
+                self.pregnancy_handler.start_single_adoption_process(person)
+            if person.is_single_adoption_date:
+                children = self.pregnancy_handler.adopt_as_single(person)
+                self.handle_new_babies_for_single(children, person)
+
     def do_couple_action(self):
         """Couple actions for each couple."""
         for couple in self.neighbor_couples:
@@ -309,7 +316,7 @@ class Neighborhood:
         self.neighbors = [n for n in self.neighbors if n != person]
 
     def handle_new_babies(self, new_babies, couple):
-        # Add baby/babies to household and neighborhood
+        """Add baby/babies to household and neighborhood."""
         household = [h for h in self.households if couple.person1.apartment_id == h.apartment_id]
         for baby in new_babies:
             self.add_to_neighbors_and_household(household[0], baby)
@@ -321,6 +328,17 @@ class Neighborhood:
         # New pregnancy / adoption date
         if couple.will_have_children:
             self.couple_developer.set_new_pregnancy_or_adoption_process_date(couple)
+
+    def handle_new_babies_for_single(self, new_babies, parent):
+        """Add baby/babies to household and neighborhood, for single parent."""
+        household = [h for h in self.households if parent.apartment_id == h.apartment_id]
+        for baby in new_babies:
+            self.add_to_neighbors_and_household(household[0], baby)
+        # Reset vars
+        if parent.is_in_adoption_process:
+            self.pregnancy_handler.reset_single_adoption(parent)
+        # New adoption date
+        self.person_developer.set_single_adoption(parent)
 
     def remove_dead_and_brokenup_couples(self):
         """Remove divorced/separated couples and couples who contain dead persons."""

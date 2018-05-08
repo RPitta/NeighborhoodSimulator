@@ -217,14 +217,23 @@ class PersonDeveloper:
         person.wants_marriage = True
         person.wants_children = True
 
-    @classmethod
-    def set_aromantic_traits(cls, person):
+    def set_aromantic_traits(self, person):
         """Is liberal and does not want committed relationships if aromantic."""
         person.is_liberal = True
         person.in_love_date = False
         person.in_love_with_family = False
         person.in_love_with_intergenerational = None  # Age not applicable
         person.wants_marriage = False
+        self.set_single_adoption(person)
+
+    def set_single_adoption(self, person):
+        """Single adoption traits if applicable."""
+        if person.wants_children and person.desired_children_left > 0 and person.is_young_adult:
+            person.desired_num_of_children = self.statistics.get_desired_num_of_children()
+            person.desired_children_left = person.desired_num_of_children
+            person.single_adoption_process_date = person.age + self.randomizer.get_random_item(
+                range(1, Traits.ADULT.start - 2))
+            person.single_adoption_date = person.single_adoption_process_date + 2
 
     @classmethod
     def is_family_love_a_possibility(cls, person):
